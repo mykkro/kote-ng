@@ -5,14 +5,14 @@ export default defineConfig({
   server: {
     port: 3333,
     open: true,
+    // Suppress "Failed to load source map" warnings for vendored minified libs
+    // that ship without their accompanying .map files.
+    sourcemapIgnoreList: () => true,
   },
   preview: {
     port: 3333,
   },
-  // Prevent Vite from trying to process legacy script tags as ES modules.
-  // All existing <script src="..."> tags in index.html are served as-is in dev mode.
   optimizeDeps: {
-    // Don't try to pre-bundle anything — all deps are vendored in /js/
     exclude: [],
   },
 });

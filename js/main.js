@@ -145,6 +145,12 @@ function onResize() {
         stage.style.left   = Math.floor((ww - boxsize) / 2) + 'px';
         stage.style.top    = Math.floor((hh - boxsize) / 2) + 'px';
     }
+    // Scale the 1000×1000 logical paper to fill #stage exactly.
+    var paper = document.getElementById('paper');
+    if (paper) {
+        var scale = boxsize / 1000;
+        paper.style.transform = 'scale(' + scale + ')';
+    }
 }
 
 

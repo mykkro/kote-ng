@@ -421,21 +421,15 @@ var AppsGUI = Base.extend({
      * Clears canvas, removes all widgets.
      */
     resetScene: function() {
-        if(r) {
-            // clear paper contents
+        if (r) {
             r.clear();
-            // remove from DOM
-            r.canvas.remove();            
             r = null;
         }
         r = this.makeScene();
     },
     makeScene: function() {
-        var paper = Raphael("paper", "100%", "100%");
-        paper.setViewBox( 0, 0, 1000, 1000, false );
-        var rh = RaphaelHelper;
-        if(DEBUG) rh.drawGrid(paper, "#ccc");    
-        return paper;
+        var container = document.getElementById('paper');
+        return new DOMPaper(container);
     }
 }, {
     showHTML: true,

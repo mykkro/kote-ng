@@ -52,7 +52,7 @@ var CombineWordsGame = TimedGame.extend({
             lastCB = null;
             var nA = cA.order;
             var nB = cB.order;
-            r.line(350+10, nA*self.lineHeight+300+self.boxHeight/2, 650-10, nB*self.lineHeight+300+self.boxHeight/2).attr({
+            r.line(350, nA*self.lineHeight+300+self.boxHeight/2, 650, nB*self.lineHeight+300+self.boxHeight/2).attr({
                 "stroke-width": 10, "stroke": "red", 'arrow-end': 'classic-wide-long', 
         'arrow-start': 'classic-wide-long' }).click(function() {
                 this.remove();

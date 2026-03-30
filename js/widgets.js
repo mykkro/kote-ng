@@ -1,43 +1,309 @@
 
 function isPhoneGap() {
-    return (window.cordova || window.PhoneGap || window.phonegap) 
-    && /^file:\/{3}[^\/]/i.test(window.location.href) 
-    && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+    return (window.cordova || window.PhoneGap || window.phonegap)
+        && /^file:\/{3}[^\/]/i.test(window.location.href)
+        && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
 }
-
 
 var r = null;
 var DEBUG = false;
 var MOBILE = isPhoneGap();
 
-// basic UI widget
+
+// ─── SVG element wrapper ─────────────────────────────────────────────────────
+// Wraps a native SVG element with a Raphael-compatible API surface.
+// Used by the three game scripts (differences, combine-words, sudoku) that call
+// r.circle() / r.rect() / r.line() directly.
+
+function SvgElem(svgEl) {
+    this.node = svgEl;
+    this.attrs = {};
+}
+
+SvgElem.prototype.attr = function(key, val) {
+    if (typeof key === 'object') {
+        for (var k in key) { this._setAttr(k, key[k]); }
+        return this;
+    }
+    if (val !== undefined) {
+        this._setAttr(key, val);
+        return this;
+    }
+    return this.attrs[key];
+};
+
+SvgElem.prototype._setAttr = function(k, v) {
+    this.attrs[k] = v;
+    if (k === 'text') {
+        this.node.textContent = v;
+    } else if (k === 'src') {
+        // Raphael uses 'src' for image URLs; SVG uses 'href'
+        this.node.setAttribute('href', v);
+    } else if (k === 'arrow-end') {
+        this.node.setAttribute('marker-end', 'url(#kote-arrow-end)');
+    } else if (k === 'arrow-start') {
+        this.node.setAttribute('marker-start', 'url(#kote-arrow-start)');
+    } else {
+        this.node.setAttribute(k, v);
+    }
+};
+
+SvgElem.prototype.remove = function() {
+    if (this.node.parentNode) this.node.parentNode.removeChild(this.node);
+};
+
+SvgElem.prototype.show = function() {
+    this.node.style.display = '';
+    return this;
+};
+
+SvgElem.prototype.hide = function() {
+    this.node.style.display = 'none';
+    return this;
+};
+
+SvgElem.prototype.mousedown = function(cb) {
+    this.node.style.pointerEvents = 'all';
+    this.node.addEventListener('mousedown', cb);
+    return this;
+};
+
+SvgElem.prototype.touchstart = function(cb) {
+    this.node.style.pointerEvents = 'all';
+    this.node.addEventListener('touchstart', cb);
+    return this;
+};
+
+SvgElem.prototype.click = function(cb) {
+    this.node.style.pointerEvents = 'all';
+    this.node.addEventListener('click', cb);
+    return this;
+};
+
+SvgElem.prototype.getBBox = function() {
+    try { return this.node.getBBox(); } catch (e) { return { x: 0, y: 0, width: 0, height: 0 }; }
+};
+
+SvgElem.prototype.transform = function() { return this; };
+SvgElem.prototype.animate   = function() { return this; };
+
+
+// ─── SVG Set ─────────────────────────────────────────────────────────────────
+// Raphael-compatible collection object.  Games access .items[] directly.
+
+function SvgSet() {
+    this.items = [];  // Raphael-compatible public array
+}
+
+SvgSet.prototype.push = function(el) { this.items.push(el); return this; };
+SvgSet.prototype.pop  = function()   { return this.items.pop(); };
+
+SvgSet.prototype.forEach = function(cb) {
+    this.items.forEach(cb);
+    return this;
+};
+
+SvgSet.prototype.exclude = function(el) {
+    var i = this.items.indexOf(el);
+    if (i >= 0) this.items.splice(i, 1);
+    return this;
+};
+
+SvgSet.prototype.remove = function() {
+    this.items.forEach(function(el) { el.remove && el.remove(); });
+    this.items = [];
+};
+
+SvgSet.prototype.clear = function() { this.remove(); };
+
+SvgSet.prototype.getBBox = function() {
+    var x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+    this.items.forEach(function(el) {
+        var bb = el.getBBox ? el.getBBox() : null;
+        if (bb) {
+            x1 = Math.min(x1, bb.x);
+            y1 = Math.min(y1, bb.y);
+            x2 = Math.max(x2, bb.x + bb.width);
+            y2 = Math.max(y2, bb.y + bb.height);
+        }
+    });
+    return { x: x1, y: y1, x2: x2, y2: y2, width: x2 - x1, height: y2 - y1 };
+};
+
+SvgSet.prototype.attr      = function(a) { this.items.forEach(function(el) { el.attr && el.attr(a); }); return this; };
+SvgSet.prototype.transform = function()  { return this; };
+SvgSet.prototype.animate   = function()  { return this; };
+
+
+// ─── DOMPaper ────────────────────────────────────────────────────────────────
+// Replaces the Raphael paper object.
+//   r.el      → the #paper div (all widget <div>s are appended here)
+//   r._svg    → a <svg> overlay for direct SVG calls from game scripts
+
+function DOMPaper(containerEl) {
+    this.el   = containerEl;
+    this._svg = null;
+}
+
+DOMPaper.prototype._getSvg = function() {
+    if (!this._svg) {
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 1000 1000');
+        svg.id = 'svg-layer';
+        svg.style.cssText = 'position:absolute;top:0;left:0;width:1000px;height:1000px;' +
+                            'pointer-events:none;z-index:1;overflow:visible;';
+        // Arrow marker definitions used by combine-words (r.line + arrow-end/arrow-start)
+        var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        defs.innerHTML =
+            '<marker id="kote-arrow-end" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="16" ' +
+            '  refX="24" refY="8" orient="auto">' +
+            '  <polygon points="0 0, 24 8, 0 16" fill="context-stroke"/>' +
+            '</marker>' +
+            '<marker id="kote-arrow-start" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="16" ' +
+            '  refX="0" refY="8" orient="auto-start-reverse">' +
+            '  <polygon points="0 0, 24 8, 0 16" fill="context-stroke"/>' +
+            '</marker>';
+        svg.appendChild(defs);
+        this.el.appendChild(svg);
+        this._svg = svg;
+    }
+    return this._svg;
+};
+
+DOMPaper.prototype._makeSvgEl = function(type) {
+    var el = document.createElementNS('http://www.w3.org/2000/svg', type);
+    this._getSvg().appendChild(el);
+    return new SvgElem(el);
+};
+
+DOMPaper.prototype.clear = function() {
+    this.el.innerHTML = '';
+    this._svg = null;
+};
+
+// ── factory methods used by game scripts ──
+
+DOMPaper.prototype.set = function() { return new SvgSet(); };
+
+DOMPaper.prototype.rect = function(x, y, w, h, radius) {
+    var el = this._makeSvgEl('rect');
+    el.node.setAttribute('x', x);
+    el.node.setAttribute('y', y);
+    el.node.setAttribute('width', w);
+    el.node.setAttribute('height', h);
+    if (radius) el.node.setAttribute('rx', radius);
+    el.attrs.x = x; el.attrs.y = y; el.attrs.width = w; el.attrs.height = h;
+    return el;
+};
+
+DOMPaper.prototype.circle = function(cx, cy, rad) {
+    var el = this._makeSvgEl('circle');
+    el.node.setAttribute('cx', cx);
+    el.node.setAttribute('cy', cy);
+    el.node.setAttribute('r', rad);
+    return el;
+};
+
+DOMPaper.prototype.line = function(x1, y1, x2, y2) {
+    var el = this._makeSvgEl('line');
+    el.node.setAttribute('x1', x1);
+    el.node.setAttribute('y1', y1);
+    el.node.setAttribute('x2', x2);
+    el.node.setAttribute('y2', y2);
+    return el;
+};
+
+DOMPaper.prototype.ellipse = function(cx, cy, rx, ry) {
+    var el = this._makeSvgEl('ellipse');
+    el.node.setAttribute('cx', cx);
+    el.node.setAttribute('cy', cy);
+    el.node.setAttribute('rx', rx);
+    el.node.setAttribute('ry', ry);
+    return el;
+};
+
+DOMPaper.prototype.text = function(x, y, text) {
+    var el = this._makeSvgEl('text');
+    el.node.setAttribute('x', x);
+    el.node.setAttribute('y', y);
+    el.node.textContent = text;
+    return el;
+};
+
+DOMPaper.prototype.path = function(d) {
+    var el = this._makeSvgEl('path');
+    el.node.setAttribute('d', Array.isArray(d) ? d.join(' ') : d);
+    return el;
+};
+
+DOMPaper.prototype.image = function(url, x, y, width, height) {
+    var el = this._makeSvgEl('image');
+    el.node.setAttribute('href', url);
+    el.node.setAttribute('x', x);
+    el.node.setAttribute('y', y);
+    el.node.setAttribute('width', width);
+    el.node.setAttribute('height', height);
+    el.attrs.x = x; el.attrs.y = y; el.attrs.width = width; el.attrs.height = height;
+    return el;
+};
+
+
+// ─── Style helpers ───────────────────────────────────────────────────────────
+
+// Maps SVG-style attr names (fill, stroke, …) to CSS on a plain <div>.
+function _applyRectStyle(el, attr) {
+    for (var key in attr) {
+        var v = attr[key];
+        if      (key === 'fill')         el.style.backgroundColor = (v === 'none') ? 'transparent' : v;
+        else if (key === 'stroke')       el.style.borderColor     = (v === 'none') ? 'transparent' : v;
+        else if (key === 'stroke-width') el.style.borderWidth     = (parseInt(v) || 0) + 'px';
+        else if (key === 'opacity')      el.style.opacity         = v;
+    }
+}
+
+// Uses Canvas 2D to measure rendered text width (avoids DOM append/measure round-trip).
+function _measureTextWidth(text, fontFamily, fontSize, fontWeight) {
+    var canvas = document.createElement('canvas');
+    var ctx    = canvas.getContext('2d');
+    ctx.font   = (fontWeight || 'normal') + ' ' + fontSize + 'px ' + (fontFamily || 'Helvetica');
+    return ctx.measureText(text || '').width;
+}
+
+
+// ─── Widget ──────────────────────────────────────────────────────────────────
+
 var Widget = Base.extend({
     constructor: function() {
         this.x = 0;
         this.y = 0;
-        this.root = r.set();
+        this.el = document.createElement('div');
+        this.el.style.position = 'absolute';
+        this.el.style.left = '0px';
+        this.el.style.top  = '0px';
+        r.el.appendChild(this.el);
     },
     setPosition: function(x, y) {
         this.x = x;
         this.y = y;
-        this.root.transform("T"+x+","+y);
+        this.el.style.left = x + 'px';
+        this.el.style.top  = y + 'px';
     },
     setStyle: function(attr) {
-        // apply your styles here...
         this.style = attr;
     },
-    clear: function() {        
-        r.wipe(this.root);
+    clear: function() {
+        if (this.el && this.el.parentNode) {
+            this.el.parentNode.removeChild(this.el);
+        }
     }
 }, {
-    // global styles/utility functions
     layoutButtons: function(buttons, gap, y) {
         var totalWidth = 0;
         buttons.forEach(function(b) {
-            if(totalWidth) totalWidth += gap;
+            if (totalWidth) totalWidth += gap;
             totalWidth += b.w;
         });
-        xx = (1000-totalWidth)/2;
+        var xx = (1000 - totalWidth) / 2;
         buttons.forEach(function(b) {
             b.setPosition(xx, y);
             xx += b.w + gap;
@@ -45,7 +311,9 @@ var Widget = Base.extend({
     }
 });
 
-// UI widget with defined dimensions
+
+// ─── SizedWidget ─────────────────────────────────────────────────────────────
+
 var SizedWidget = Widget.extend({
     constructor: function(w, h) {
         this.base();
@@ -54,188 +322,147 @@ var SizedWidget = Widget.extend({
     }
 });
 
-// bb = new ButtonWidget("Hello, world", 20, 10, 20)
+
+// ─── ButtonWidget ─────────────────────────────────────────────────────────────
+
 var ButtonWidget = Widget.extend({
     constructor: function(text, options) {
         this.base();
         var o = options || {};
-        o.backgroundStyle = Object.assign({}, ButtonWidget.backgroundStyle, o.backgroundStyle);
-        o.clickedBackgroundStyle = Object.assign({}, ButtonWidget.clickedBackgroundStyle, o.clickedBackgroundStyle);
+        o.backgroundStyle          = Object.assign({}, ButtonWidget.backgroundStyle,          o.backgroundStyle);
+        o.clickedBackgroundStyle   = Object.assign({}, ButtonWidget.clickedBackgroundStyle,   o.clickedBackgroundStyle);
         o.highlightedBackgroundStyle = Object.assign({}, ButtonWidget.highlightedBackgroundStyle, o.highlightedBackgroundStyle);
-        o.disabledBackgroundStyle = Object.assign({}, ButtonWidget.disabledBackgroundStyle, o.disabledBackgroundStyle);
-        o.fontSize = o.fontSize || 40;
-        o.fontFamily = o.fontFamily || "Helvetica";
-        o.fontWeight = o.fontWeight || "normal",
-        o.textStyle = {"font-family" : o.fontFamily, "font-size" : o.fontSize, "font-weight": o.fontWeight, "text-anchor" : "start"};
-        this.o = o;
+        o.disabledBackgroundStyle  = Object.assign({}, ButtonWidget.disabledBackgroundStyle,  o.disabledBackgroundStyle);
+        o.fontSize   = o.fontSize   || 40;
+        o.fontFamily = o.fontFamily || 'Helvetica';
+        o.fontWeight = o.fontWeight || 'normal';
+        o.border     = o.border     || 20;
+        o.radius     = o.radius     || 30;
+        this.o    = o;
         this.text = text;
-        this.createElement();
+        this._buildElement();
     },
-    createElement: function() {
+    _buildElement: function() {
         var o = this.o;
-        var text = this.text;
-        o.border = o.border || 20;
-        o.radius = o.radius || 30;
-        var anchor = o.anchor;
-        var border = o.border;
-        var radius = o.radius;
-        var ttt = r.text(0,0,text).attr(this.o.textStyle);
-        var bbox = ttt.node.getBBox();
-        var tw = bbox.width;
-        var th = bbox.height;
-        var tx = bbox.x;
-        var ty = bbox.y;
-        var x = 0;
-        var y = 0;
-        this.dx = border - tx;
-        this.dy = border - ty;
-        this.ttt = ttt;
-        ttt.transform("T"+(x + this.dx)+","+(y + this.dy));
-        var rrr = r.rect(x, y, tw+2*border, th+2*border, radius).attr(this.o.backgroundStyle);
-        ttt.toFront();
-        this.rrr = rrr;
-        this.buttonBackground = rrr;
-        var bbb = r.rect(x, y, tw+2*border, th+2*border, radius).attr(ButtonWidget.emptyStyle);    
-        bbb.node.setAttribute("class","svgbutton");
-        this.root.push(rrr);
-        this.root.push(ttt);
-        this.root.push(bbb);   
-        var self = this; 
-        // use Raphael's touch events
-        if(MOBILE) {
-            bbb.touchstart(function(e) {
-                if(!self.disabled) {
-                    self.onClick();
-                }
-            });
-        } else {
-            bbb.mousedown(function(e) {
-                if(!self.disabled) {
-                    self.onClick();
-                }
-            });            
-        }
-        this.w = tw+2*border;
-        this.h = th + 2*border;
+        Object.assign(this.el.style, {
+            display:         'inline-flex',
+            alignItems:      'center',
+            justifyContent:  'center',
+            padding:         o.border + 'px',
+            borderRadius:    o.radius + 'px',
+            backgroundColor: o.backgroundStyle.fill,
+            border:          (o.backgroundStyle['stroke-width'] || 2) + 'px solid ' + (o.backgroundStyle.stroke || '#333'),
+            fontFamily:      o.fontFamily,
+            fontSize:        o.fontSize + 'px',
+            fontWeight:      o.fontWeight,
+            color:           'black',
+            cursor:          'pointer',
+            userSelect:      'none',
+            whiteSpace:      'nowrap',
+            boxSizing:       'border-box',
+            zIndex:          '10'
+        });
+        this.el.textContent = this.text;
+        // offsetWidth forces synchronous layout — el is already in r.el
+        this.w = this.el.offsetWidth;
+        this.h = this.el.offsetHeight;
+        var self = this;
+        this.el.addEventListener(MOBILE ? 'touchstart' : 'mousedown', function() {
+            if (!self.disabled) self.onClick();
+        });
     },
-    setPosition: function(x, y) {
-        this.base(x, y);
-        this.ttt.transform("T"+(x + this.dx)+","+(y + this.dy));
-    },
-    setEnabled: function(flag) {
-        this.setDisabled(!flag);
-    },
+    setEnabled:  function(flag) { this.setDisabled(!flag); },
     setDisabled: function(flag) {
         this.disabled = flag;
-        this.buttonBackground.attr(flag 
-            ? this.o.disabledBackgroundStyle 
-            : this.o.backgroundStyle);
+        var st = flag ? this.o.disabledBackgroundStyle : this.o.backgroundStyle;
+        this.el.style.backgroundColor = st.fill;
     },
     setHighlighted: function(flag, style) {
         var st = this.o.backgroundStyle;
-        if(flag) {
-            st = Object.assign(this.o.highlightedBackgroundStyle, style);
-        }
+        if (flag) st = Object.assign({}, this.o.highlightedBackgroundStyle, style);
         this.highlighted = flag;
-        this.buttonBackground.attr(st);
+        this.el.style.backgroundColor = st.fill;
+        if (st.stroke) this.el.style.borderColor = st.stroke;
     },
     onClick: function(val) {
-        if(typeof(val)=="function") {
+        if (typeof val === 'function') {
             this._onClick = val;
         } else {
-            // animate button
-            var self = this;            
-            if(self._beforeClick) self._beforeClick(self);
-            var originalBackgroundStyle = self.buttonBackground.attr();
-            self.buttonBackground.animate(self.o.clickedBackgroundStyle, 100, ">", function() {
-                self.buttonBackground.animate(originalBackgroundStyle, 100, "<", function() {            
-                    if(self._onClickAnimationComplete) self._onClickAnimationComplete(self);
-                });
-                if(self._onClick) self._onClick(self);
-            });
+            var self = this;
+            if (self._beforeClick) self._beforeClick(self);
+            var origBg = self.o.backgroundStyle.fill;
+            self.el.style.backgroundColor = self.o.clickedBackgroundStyle.fill;
+            setTimeout(function() {
+                self.el.style.backgroundColor = origBg;
+                if (self._onClick) self._onClick(self);
+                setTimeout(function() {
+                    if (self._onClickAnimationComplete) self._onClickAnimationComplete(self);
+                }, 100);
+            }, 100);
         }
     },
-    // TODO change it - way too complicated...
     onClickAnimationComplete: function(val) {
-        if(typeof(val)=="function") {
+        if (typeof val === 'function') {
             this._onClickAnimationComplete = val;
         } else {
-            var self = this;            
-            if(self._onClickAnimationComplete) self._onClickAnimationComplete(self);
+            if (this._onClickAnimationComplete) this._onClickAnimationComplete(this);
         }
     }
 }, {
-    emptyStyle: {"fill": "none", "stroke":"none"},
-    backgroundStyle: {"fill": "#aac", "stroke":"#333", "stroke-width": 2},
-    clickedBackgroundStyle: {"fill": "#77a", "stroke":"#333", "stroke-width": 2},
-    highlightedBackgroundStyle: {"fill": "#c66", "stroke":"#333", "stroke-width": 2},
-    disabledBackgroundStyle: {"fill": "#eee", "stroke":"#333", "stroke-width": 2}
+    backgroundStyle:          { fill: '#aac', stroke: '#333', 'stroke-width': 2 },
+    clickedBackgroundStyle:   { fill: '#77a', stroke: '#333', 'stroke-width': 2 },
+    highlightedBackgroundStyle: { fill: '#c66', stroke: '#333', 'stroke-width': 2 },
+    disabledBackgroundStyle:  { fill: '#eee', stroke: '#333', 'stroke-width': 2 }
 });
 
-//var aa = new RoundButtonWidget(100, 100, {"class":klazz, "backgroundColor":"cyan"}, caption);
+
+// ─── RoundButtonWidget ────────────────────────────────────────────────────────
+
 var RoundButtonWidget = ButtonWidget.extend({
     constructor: function(text, options) {
         this.base(text, options);
     },
-    createElement: function() {
+    _buildElement: function() {
         var o = this.o;
-        var text = this.text;
-        o.rotation = o.rotation || 0;
-        this.rotation = o.rotation;
-        o.fontSize = o.fontSize || 50;
+        o.fontSize   = o.fontSize   || 50;
         o.fontWeight = o.fontWeight || 'bold';
-        o.border = o.border || 10;
-        var anchor = o.anchor;
-        var border = o.border;
-        var radius = o.radius;
-        var ttt = r.text(0,0,text).attr(this.o.textStyle);
-        var bbox = ttt.node.getBBox();
-        var tw = bbox.width;
-        var th = bbox.height;
-        var tx = bbox.x;
-        var ty = bbox.y;
-        var x = 0;
-        var y = 0;
-        o.radius = o.radius || Math.max(tw+2*border, th+2*border);
-        this.dx = -tw/2;
-        this.dy = 0;
-        this.ttt = ttt;
-        ttt.transform("T"+(x + this.dx)+","+(y + this.dy));
-        var rrr = r.circle(x, y, o.radius).attr(this.o.backgroundStyle);
-        ttt.toFront();
-        this.rrr = rrr;
-        var bbb = r.circle(x, y, o.radius).attr(ButtonWidget.emptyStyle);    
-        bbb.node.setAttribute("class","svgbutton");
-        this.buttonBackground = rrr;
-        this.root.push(rrr);
-        this.root.push(ttt);
-        this.root.push(bbb);   
-        var self = this; 
-        // use Raphael's touch events
-        if(MOBILE) {
-            bbb.touchstart(function(e) {
-                if(!self.disabled) {
-                    self.onClick();
-                }
-            });
-        } else {
-            bbb.mousedown(function(e) {
-                if(!self.disabled) {
-                    self.onClick();
-                }
-            });            
-        }
-        this.w = o.radius;
-        this.h = o.radius;
-    },
-    setPosition: function(x, y) {
-        this.base(x, y);
-        this.root.rotate(this.rotation);
+        o.border     = o.border     || 10;
+        var measuredW = _measureTextWidth(this.text, o.fontFamily, o.fontSize, o.fontWeight);
+        var measuredH = o.fontSize * 1.2;
+        var minDiam   = Math.ceil(Math.max(measuredW + 2 * o.border, measuredH + 2 * o.border));
+        o.radius = o.radius || minDiam;
+        var diam = o.radius * 2;
+        Object.assign(this.el.style, {
+            display:         'inline-flex',
+            alignItems:      'center',
+            justifyContent:  'center',
+            width:           diam + 'px',
+            height:          diam + 'px',
+            borderRadius:    '50%',
+            backgroundColor: o.backgroundStyle.fill,
+            border:          (o.backgroundStyle['stroke-width'] || 2) + 'px solid ' + (o.backgroundStyle.stroke || '#333'),
+            fontFamily:      o.fontFamily || 'Helvetica',
+            fontSize:        o.fontSize + 'px',
+            fontWeight:      o.fontWeight,
+            color:           'black',
+            cursor:          'pointer',
+            userSelect:      'none',
+            boxSizing:       'border-box',
+            zIndex:          '10'
+        });
+        this.el.textContent = this.text;
+        this.w = diam;
+        this.h = diam;
+        var self = this;
+        this.el.addEventListener(MOBILE ? 'touchstart' : 'mousedown', function() {
+            if (!self.disabled) self.onClick();
+        });
     }
 });
 
 
-// resizable UI widget with defined dimensions
+// ─── ResizableWidget ─────────────────────────────────────────────────────────
+
 var ResizableWidget = SizedWidget.extend({
     constructor: function(w, h) {
         this.base(w, h);
@@ -246,325 +473,322 @@ var ResizableWidget = SizedWidget.extend({
     }
 });
 
-// dummy widget - simple rectangle
+
+// ─── RectWidget ──────────────────────────────────────────────────────────────
+
 var RectWidget = ResizableWidget.extend({
     constructor: function(w, h, radius) {
         this.base(w, h);
-        this.shape = r.rect(this.x, this.y, this.w, this.h, radius);
-        this.setStyle({"stroke": "red", "fill": "white"});
-        this.root.push(this.shape);
+        this.el.style.width      = w + 'px';
+        this.el.style.height     = h + 'px';
+        this.el.style.boxSizing  = 'border-box';
+        if (radius) this.el.style.borderRadius = radius + 'px';
+        this.setStyle({ stroke: 'red', fill: 'white' });
     },
     setStyle: function(attr) {
-        this.base(attr);
-        this.shape.attr(attr);
+        this.style = Object.assign(this.style || {}, attr);
+        _applyRectStyle(this.el, attr);
     },
     setSize: function(w, h) {
         this.base(w, h);
-        this.shape.attr({"width": this.w, "height": this.h});
+        this.el.style.width  = w + 'px';
+        this.el.style.height = h + 'px';
     }
 });
 
-// dummy widget - simple circle
+
+// ─── CircleWidget ─────────────────────────────────────────────────────────────
+
 var CircleWidget = ResizableWidget.extend({
     constructor: function(radius) {
         this.radius = radius;
-        this.base(2*radius, 2*radius);
-        this.x = radius;
-        this.y = radius;
-        this.shape = r.circle(this.x, this.y, this.radius);
-        this.setStyle({"stroke": "red", "fill": "white"});
-        this.root.push(this.shape);
+        this.base(2 * radius, 2 * radius);
+        this.el.style.width        = (2 * radius) + 'px';
+        this.el.style.height       = (2 * radius) + 'px';
+        this.el.style.borderRadius = '50%';
+        this.el.style.boxSizing    = 'border-box';
+        this.setStyle({ stroke: 'red', fill: 'white' });
     },
     setStyle: function(attr) {
-        this.base(attr);
-        this.shape.attr(attr);
+        this.style = Object.assign(this.style || {}, attr);
+        _applyRectStyle(this.el, attr);
     },
-    setRadius: function(r) {
-        var x = this.x - this.radius;
-        var y = this.y - this.radius;
-        this.radius = r;
-        this.setPosition(x + this.radius, y + this.radius);
-        this.setSize(x + this.radius, y + this.radius);
-        this.shape.attr({"r": this.radius});
+    setRadius: function(newRadius) {
+        this.radius = newRadius;
+        this.w = 2 * newRadius;
+        this.h = 2 * newRadius;
+        this.el.style.width  = this.w + 'px';
+        this.el.style.height = this.h + 'px';
     },
-    // do not call tjhis directly
-    // use setRadius instead
     setSize: function(w, h) {
         this.base(w, h);
     }
 });
 
+
+// ─── PieWidget (sector via conic-gradient) ────────────────────────────────────
+
+// sector() kept for backward compat — still usable via the SVG shim if needed.
 function sector(cx, cy, radius, startAngle, endAngle, params) {
     var rad = Math.PI / 180;
-    var x1 = cx + radius * Math.cos(-startAngle * rad),
-        x2 = cx + radius * Math.cos(-endAngle * rad),
-        y1 = cy + radius * Math.sin(-startAngle * rad),
-        y2 = cy + radius * Math.sin(-endAngle * rad);
-    return r.path(["M", cx, cy, "L", x1, y1, "A", radius, radius, 0, +(endAngle - startAngle > 180), 0, x2, y2, "z"]).attr(params);
+    var x1  = cx + radius * Math.cos(-startAngle * rad);
+    var x2  = cx + radius * Math.cos(-endAngle   * rad);
+    var y1  = cy + radius * Math.sin(-startAngle * rad);
+    var y2  = cy + radius * Math.sin(-endAngle   * rad);
+    return r.path(
+        ['M', cx, cy, 'L', x1, y1, 'A', radius, radius, 0,
+         +(endAngle - startAngle > 180), 0, x2, y2, 'z'].join(' ')
+    ).attr(params || {});
 }
 
 var PieWidget = ResizableWidget.extend({
     constructor: function(radius, startAngle, endAngle) {
-        this.radius = radius;
-        this.base(2*radius, 2*radius);
-        this.x = 0;
-        this.y = 0;
+        this.radius     = radius;
+        this.base(2 * radius, 2 * radius);
         this.startAngle = startAngle;
-        this.endAngle = endAngle;
-        this.style = {"stroke": "red", "fill": "white"};
-        this._updateShape();
+        this.endAngle   = endAngle;
+        this._pieStyle  = { stroke: 'none', fill: 'white' };
+        this.el.style.width        = (2 * radius) + 'px';
+        this.el.style.height       = (2 * radius) + 'px';
+        this.el.style.borderRadius = '50%';
+        this._updatePie();
     },
-    _updateShape: function() {
-        if(this.shape) {
-            this.shape.remove();
-        }
-        this.root.clear();
-        this.shape = sector(this.x+this.radius, this.y+this.radius, this.radius, this.startAngle, this.endAngle, {});
-        this.setStyle(this.style);
-        this.root.push(this.shape);
+    _updatePie: function() {
+        var fill = this._pieStyle.fill || 'white';
+        if (fill === 'none') fill = 'transparent';
+        // CSS conic-gradient starts from north; Raphael angles start from east.
+        var s = this.startAngle - 90;
+        var e = this.endAngle   - 90;
+        this.el.style.background =
+            'conic-gradient(transparent ' + s + 'deg, ' + fill + ' ' + s + 'deg ' + e + 'deg, transparent ' + e + 'deg)';
     },
     setStyle: function(attr) {
-        this.base(attr);
-        this.shape.attr(attr);
+        this._pieStyle = Object.assign(this._pieStyle, attr);
+        this._updatePie();
     },
     setAngles: function(startAngle, endAngle) {
         this.startAngle = startAngle;
-        this.endAngle = endAngle;
-        this._updateShape();
-    },
-    setPosition: function(x, y) {
-        this.base(x, y);
-        this._updateShape();
+        this.endAngle   = endAngle;
+        this._updatePie();
     }
 });
 
-// multi-line text label widget
-// anchor - one of: start middle end
-// !!!!! multiline works properly only for anchor=start!
+
+// ─── TextWidget ───────────────────────────────────────────────────────────────
+
 var TextWidget = Widget.extend({
-    constructor: function(maxWidth, fontSize, anchor, text, style) {
+    constructor: function(maxWidth, fontSize, anchor, text) {
         this.base();
         this.maxWidth = maxWidth;
         this.fontSize = fontSize;
-        this.anchor = anchor;
-        this.textStyle = {"font-family" : "Helvetica", "font-weight" : "bold", "font-size" : fontSize, "text-anchor" : anchor};
-        this.setText(text);
+        this.anchor   = anchor;
+        Object.assign(this.el.style, {
+            width:      maxWidth + 'px',
+            fontSize:   fontSize + 'px',
+            fontFamily: 'Helvetica, Arial, sans-serif',
+            fontWeight: 'bold',
+            lineHeight: (fontSize * 1.35) + 'px',
+            whiteSpace: 'pre-wrap',
+            wordWrap:   'break-word',
+            textAlign:  anchor === 'middle' ? 'center' : anchor === 'end' ? 'right' : 'left',
+            color:        'black',   // SVG text defaulted to black; match that here
+            zIndex:       '3',       // render above SVG layer (z:1) and Clickable (z:2)
+            pointerEvents:'none'     // let clicks pass through to Clickable beneath
+        });
+        this.setText(text || '');
+    },
+    setText: function(text) {
+        this.text = text || '';
+        this.el.textContent = this.text;
     },
     setStyle: function(attr) {
-        this.base(attr);
-        this.shapes.forEach(function(s) { s.attr(attr); });
-    },
-    // TODO test it...
-    setCssClass: function(css) {
-        TTT = this;
-        this.shapes.forEach(function(s) { s[0].node.setAttribute("class", css); })
-    },    
-    setText: function(text) {
-        var self = this;
-        this.text = text || "";
-        var x = 0;
-        /*
-        if(this.anchor == "middle") {
-            x = this.maxWidth/2;                            
-        } else if(this.anchor == "end") {
-            x = this.maxWidth;
+        this.style = attr;
+        for (var key in attr) {
+            var v = attr[key];
+            if      (key === 'fill')        this.el.style.color      = (v === 'none') ? 'transparent' : v;
+            else if (key === 'font-size')   this.el.style.fontSize   = v + 'px';
+            else if (key === 'font-family') this.el.style.fontFamily = v;
+            else if (key === 'font-weight') this.el.style.fontWeight = v;
         }
-        */
-        this.lines = this.text.split("\n"); //.filter(function(l) { return l != ""; });
-        var yy = this.fontSize / 2; 
-        this.shapes = [];
-        this.lines.forEach(function(l) {
-            /* 
-            // obsolete...
-            var shape = r.paragraph({
-                x : x, 
-                y : yy, 
-                maxWidth : self.maxWidth, 
-                text : l, 
-                textStyle : self.textStyle,
-                lineHeight : self.fontSize * 1.35
-                // TODO maxHeight
-            });
-            */
-            var shape = r.multitext({
-                x : x, 
-                y : yy, 
-                maxWidth : self.maxWidth, 
-                text : l, 
-                textStyle : self.textStyle,
-                lineHeight : self.fontSize * 1.35
-                // TODO maxHeight
-            });
-
-            var bbox = shape.getBBox();
-            yy += Math.max(bbox.height + self.fontSize * 0.5, self.fontSize * 1.15);
-            self.shapes.push(shape);
-        });
-        // clear Raphael set
-        var set = this.root;
-        set.forEach(function(el, idx) {
-            el.remove();
-            set.exclude(el);
-        });
-        this.shapes.forEach(function(s) { self.root.push(s); });
-        this.setPosition(this.x, this.y);
+    },
+    setCssClass: function(css) {
+        this.el.className = css;
     },
     getTextboxSize: function() {
-        var bbox = this.root.getBBox();
-        return { width: bbox.x2 - this.x, height: bbox.y2 - this.y };
+        return { width: this.el.offsetWidth, height: this.el.offsetHeight };
     }
 });
 
+
+// ─── ImageWidget ──────────────────────────────────────────────────────────────
 
 var ImageWidget = ResizableWidget.extend({
     constructor: function(url, width, height) {
         this.base(width, height);
-        this.image = r.image(url, 0, 0, this.w, this.h);
-        this.root.push(this.image);
+        this.el.style.width    = width  + 'px';
+        this.el.style.height   = height + 'px';
+        this.el.style.overflow = 'hidden';
+        this.image = document.createElement('img');
+        this.image.src = url;
+        Object.assign(this.image.style, {
+            width:          width  + 'px',
+            height:         height + 'px',
+            display:        'block',
+            pointerEvents:  'none',
+            transition:     ''
+        });
+        // Raphael-compatible animate() shim used by memory-game
+        this.image.animate = function(attrs, duration, callback) {
+            var el = this;
+            var ms = duration || 200;
+            el.style.transition = 'opacity ' + ms + 'ms';
+            if ('opacity' in attrs) el.style.opacity = attrs.opacity;
+            if (callback) setTimeout(function() { callback(); }, ms);
+        };
+        this.el.appendChild(this.image);
     },
     setSize: function(w, h) {
         this.base(w, h);
-        this.image.attr({"width": this.w, "height": this.h});
+        this.el.style.width      = w + 'px';
+        this.el.style.height     = h + 'px';
+        this.image.style.width   = w + 'px';
+        this.image.style.height  = h + 'px';
     },
-    setSrc: function(url) {
-        this.image.attr('src', url);
-    },
-    getSrc: function() {
-        return this.image.attr('src');
-    },
-    setBlank: function() {
-        this.setSrc("assets/blank.png");
-    }
+    setSrc:   function(url) { this.image.src = url; },
+    getSrc:   function()    { return this.image.src; },
+    setBlank: function()    { this.setSrc('assets/blank.png'); }
 });
 
 
-// TODO: setPosition does not work OK (it moves only the overlay)
+// ─── Clickable ────────────────────────────────────────────────────────────────
+// Wraps a child widget and forwards pointer events to it.
+// The child's el is re-parented inside this widget's el; child coordinates
+// are then relative to the Clickable's origin (matches Raphael set behaviour).
+
 var Clickable = SizedWidget.extend({
     constructor: function(child) {
         this.child = child;
         this.base(child.w, child.h);
+        this.el.style.width  = child.w + 'px';
+        this.el.style.height = child.h + 'px';
+        this.el.style.cursor = 'pointer';
+        this.el.style.zIndex = '2';
+        // Adopt child — move it from r.el into this container.
+        // Games often call child.setPosition(x,y) BEFORE wrapping in Clickable.
+        // We inherit that position for the Clickable itself and reset the child to (0,0).
+        if (child.el.parentNode) child.el.parentNode.removeChild(child.el);
+        child.el.style.left = '0px';
+        child.el.style.top  = '0px';
+        child.el.style.pointerEvents = 'none';
+        this.el.appendChild(child.el);
+        // Place the Clickable where the child was so the hit area matches the visual.
+        this.setPosition(child.x, child.y);
         var self = this;
-        var overlay = r.rect(child.x, child.y, child.w, child.h).attr({"fill":"white", "stroke": "none", "opacity": 0.001});
-        this.root.push(child);
-        this.root.push(overlay);
-        if(MOBILE) {
-            overlay.touchstart(function(e) {
-                if(!self.disabled) {
-                    self.onClick(e);
-                }
-            });
-        } else {
-            overlay.mousedown(function(e) {
-                if(!self.disabled) {
-                    self.onClick(e);
-                }
-            });            
-        }
+        this.el.addEventListener(MOBILE ? 'touchstart' : 'mousedown', function(e) {
+            if (!self.disabled) self.onClick(e);
+        });
     },
     _getMouseCoordinates: function(e) {
-        var bnds = e.target.getBoundingClientRect();   
-        var fx = (e.clientX - bnds.left)/bnds.width * this.w;
-        var fy = (e.clientY - bnds.top)/bnds.height * this.h;
+        var bnds = e.currentTarget.getBoundingClientRect();
+        var fx = (e.clientX - bnds.left) / bnds.width  * this.w;
+        var fy = (e.clientY - bnds.top)  / bnds.height * this.h;
         return { x: fx, y: fy };
     },
     onClick: function(val) {
-        if(typeof(val)=="function") {
+        if (typeof val === 'function') {
             this._onClick = val;
         } else {
-            if(this._onClick) this._onClick(this, val);
+            if (this._onClick) this._onClick(this, val);
         }
     },
     clear: function() {
         this.child.clear();
         this.base();
-    }    
+    }
 });
+
+
+// ─── GroupWidget ──────────────────────────────────────────────────────────────
+// Container widget.  addChild() re-parents the child's el inside the group's el
+// so child coordinates are relative to the group (mirrors Raphael set transforms).
 
 var GroupWidget = Widget.extend({
     constructor: function(children) {
-        this.children = children || [];
+        this.children = [];
         this.base();
         var self = this;
-        this.children.forEach(function(c) {
-            self.addChild(c);
-        });
+        (children || []).forEach(function(c) { self.addChild(c); });
     },
     addChild: function(widget) {
         this.children.push(widget);
-        this.root.push(widget.root);
+        if (widget.el && widget.el.parentNode) widget.el.parentNode.removeChild(widget.el);
+        this.el.appendChild(widget.el);
     },
     clearContents: function() {
-        var self = this;
-        this.children.forEach(function(c) {
-            self.root.exclude(c.root);
-            c.clear();
-        });
+        this.children.forEach(function(c) { c.clear(); });
         this.children = [];
     }
 });
 
 
-// use like this:
-// bb = new AppPreviewWidget("apps/mental-rotation/preview.png", "Title", "Subtitle", ["perception", "memory"])
-// TODO button behaviour merge with Clickable
-var AppPreviewWidget = Widget.extend({    
-    constructor: function(previewUrl, title, subtitle, tags, size) {
+// ─── AppPreviewWidget ─────────────────────────────────────────────────────────
+
+var AppPreviewWidget = Widget.extend({
+    constructor: function(previewUrl, title, _subtitle, tags, size) {
         this.base();
-        var size = size || 250.0;
-        var alpha = size/250.0;
-        var previewWidth = Math.floor(250*alpha);
-        var previewHeight = Math.floor(250*alpha);
-        var previewImageWidth = Math.floor(150*alpha);
-        var previewImageHeight = Math.floor(150*alpha);
-        var titleStyle = { "fill": "black", "stroke": "none", "font-size": Math.floor(22*alpha), "anchor": "middle"};
-        var tagsStyle = { "fill": "blue", "stroke": "none", "font-size": Math.floor(14*alpha), "anchor": "middle"};
-        var roundingSmall = Math.floor(5*alpha);
-        var roundingBig = Math.floor(30*alpha);
-        var imageY = Math.floor(10*alpha);
-        var titleY = Math.floor(30*alpha);
-        var tagsY = Math.floor(80*alpha);
-        this.background = r.roundedRectangle(0, 0, previewWidth, previewHeight, roundingSmall, roundingSmall, roundingBig, roundingSmall).attr(AppPreviewWidget.backgroundStyle);
-        this.image = r.image(previewUrl, (previewWidth-previewImageWidth)/2, imageY, previewImageWidth, previewImageHeight);                
-        this.title = r.text(previewWidth/2,previewImageHeight + titleY,title).attr(titleStyle);
-        //this.subtitle = r.text(previewWidth/2,previewImageHeight + 57,subtitle).attr(AppPreviewWidget.subtitleStyle);
-        this.tags = r.text(previewWidth/2,previewImageHeight + tagsY,(tags || []).join(", ")).attr(tagsStyle);
-        this.overlay = r.rect(0, 0, previewWidth, previewHeight).attr(ButtonWidget.emptyStyle);
-        var bbb = this.overlay;
-        bbb.node.setAttribute("class","svgbutton");
-        this.root.push(this.background);
-        this.root.push(this.image);
-        this.root.push(this.title);
-        //this.root.push(this.subtitle);
-        this.root.push(this.tags);
-        this.root.push(this.overlay);
-        this.w = previewWidth;
-        this.h = previewHeight;
+        size = size || 250;
+        var a    = size / 250;
+        var imgS = Math.floor(150 * a);
+        var rSm  = Math.floor(5  * a);
+        var rBig = Math.floor(30 * a);
+        var pad  = Math.floor(10 * a);
+        Object.assign(this.el.style, {
+            width:           size + 'px',
+            height:          size + 'px',
+            backgroundColor: 'rgba(255,255,255,0.6)',
+            borderRadius:    rSm + 'px ' + rSm + 'px ' + rBig + 'px ' + rSm + 'px',
+            cursor:          'pointer',
+            overflow:        'hidden',
+            display:         'flex',
+            flexDirection:   'column',
+            alignItems:      'center',
+            justifyContent:  'center',
+            padding:         pad + 'px',
+            boxSizing:       'border-box',
+            userSelect:      'none',
+            zIndex:          '10'
+        });
+        var img = document.createElement('img');
+        img.src = previewUrl;
+        img.style.cssText = 'width:' + imgS + 'px;height:' + imgS + 'px;display:block;pointer-events:none;flex-shrink:0;';
+        this.el.appendChild(img);
+
+        var titleEl = document.createElement('div');
+        titleEl.textContent = title;
+        titleEl.style.cssText = 'font-size:' + Math.floor(22 * a) + 'px;color:#000;text-align:center;' +
+            'margin-top:' + Math.floor(8 * a) + 'px;pointer-events:none;overflow:hidden;width:100%;word-wrap:break-word;';
+        this.el.appendChild(titleEl);
+
+        var tagsEl = document.createElement('div');
+        tagsEl.textContent = (tags || []).join(', ');
+        tagsEl.style.cssText = 'font-size:' + Math.floor(14 * a) + 'px;color:blue;text-align:center;' +
+            'margin-top:' + Math.floor(4 * a) + 'px;pointer-events:none;overflow:hidden;width:100%;';
+        this.el.appendChild(tagsEl);
+
+        this.w = size;
+        this.h = size;
         var self = this;
-        // use Raphael's touch events        
-        if(MOBILE) {
-            bbb.touchstart(function(e) {
-                if(!self.disabled) {
-                    self.onClick();
-                }
-            });
-        } else {
-            bbb.mousedown(function(e) {
-                if(!self.disabled) {
-                    self.onClick();
-                }
-            });            
-        }
+        this.el.addEventListener(MOBILE ? 'touchstart' : 'mousedown', function() {
+            if (!self.disabled) self.onClick();
+        });
     },
     onClick: function(val) {
-        if(typeof(val)=="function") {
+        if (typeof val === 'function') {
             this._onClick = val;
         } else {
-            if(this._onClick) this._onClick(this);
+            if (this._onClick) this._onClick(this);
         }
     }
 }, {
-    backgroundStyle: {"fill":"white", "stroke": "none", "opacity": 0.6},
-    titleStyle: { "fill": "black", "stroke": "none", "font-size": "22", "anchor": "middle"},
-    subtitleStyle: { "fill": "black", "stroke": "none", "font-size": "16", "anchor": "middle"},
-    tagsStyle: { "fill": "blue", "stroke": "none", "font-size": "14", "anchor": "middle"}
+    backgroundStyle: { fill: 'white', stroke: 'none', opacity: 0.6 }
 });
