@@ -1,0 +1,13 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "en",
+    "translations": {
+        "L": "Repeat count",
+        "N": "N",
+        "displayDuration": "Display for [ms]",
+        "repeatAfter": "Repeat after [ms]",
+        "dualType": "Shape type",
+        "matchProbability": "Match Probability"
+    }
+}

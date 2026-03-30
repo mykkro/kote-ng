@@ -1,0 +1,18 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "cz",
+    "translations": {
+        "yellow": "\u017elut\u00e1",
+        "blue": "modr\u00e1",
+        "red": "\u010derven\u00e1",
+        "green": "zelen\u00e1",
+        "Repeat count": "Po\u010det opakov\u00e1n\u00ed",
+        "Minimum reaction time": "Nejkrat\u0161\u00ed doba reakce",
+        "Average reaction time": "Pr\u016fm\u011brn\u00e1 doba reakce",
+        "matchProbability": "Pravd\u011bpodobnost shody v %",
+        "Text": "textu",
+        "Color": "barvy",
+        "matchType": "Shoda podle"
+    }
+}

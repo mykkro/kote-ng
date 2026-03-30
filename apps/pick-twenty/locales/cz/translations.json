@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "cz",
+    "translations": {
+        "Total time": "Celkov\u00fd \u010das",
+        "Mistakes total": "Po\u010det chyb",
+        "N": "Po\u010det c\u00edl\u016f",
+        "rotateGoals": "Rotovat c\u00edle"
+    }
+}

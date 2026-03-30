@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Find 9 Differences",
+        "subtitle": "Can you find all 9 differences between two pictures?",
+        "description": "This is a type of the puzzle games where two versions of the same picture are shown side by side, and the player has to find all differences between them.",
+        "instructions": "Two pictures will be displayed. There are 9 differences between two pictures. Mark the locations on the left picture, then press OK to evaluate the results."
+    }
+}

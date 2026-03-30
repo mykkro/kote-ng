@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Mahjongg",
+        "subtitle": " ",
+        "description": "Kameny pro hru Mahjongg vytvo\u0159il Martin Persson (http://www.martinpersson.org).",
+        "instructions": "C\u00edlem hry je odstranit z hern\u00edho pole 144 kamen\u016f, kdy hr\u00e1\u010d postupn\u011b klik\u00e1 na dvojice stejn\u00fdch kamen\u016f. P\u0159itom mus\u00ed hr\u00e1\u010d d\u00e1vat pozor, aby na p\u0159\u00edslu\u0161n\u00fdch kamenech nele\u017eely \u017e\u00e1dn\u00e9 jin\u00e9, a aby byly z lev\u00e9 nebo z prav\u00e9 strany voln\u011b p\u0159\u00edstupn\u00e9. \nHra kon\u010d\u00ed, pokud jsou z hern\u00edho pole odstran\u011bny v\u0161echny kameny.\n"
+    }
+}

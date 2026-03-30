@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Reak\u010dn\u00ed test",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "Strefte se do c\u00edle co nejrychleji pot\u00e9, co se objev\u00ed."
+    }
+}

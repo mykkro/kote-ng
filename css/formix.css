@@ -1,0 +1,54 @@
+/* not working on mobile... */
+/*
+#form-wrapper {
+	font-size: 10px;
+    font-size: 1.5vw;
+}
+*/
+
+#form {
+	color: black;
+	font-size: 1.3em;
+}
+
+.formix label {
+	margin-right: 1em;
+	font-weight: bold;
+	font-size: 1.3em;
+}
+
+.formix, .formix input, .formix select, .formix option {
+	font-size: 1.3em;
+}
+
+.formix input[type="checkbox"], .formix input[type="radio"] {
+	cursor: pointer;
+	width: 1.1em;
+	height: 1.1em;
+}
+
+.formix > h2 {
+	font-size: 150%;
+}
+
+.formix-field {
+	padding: 0.5em;
+}
+
+.formix-radiogroup {
+	display: inline-block;
+}
+
+.formix-radiogroup input {
+	margin-right: 1.5em;
+	margin-left: 0.5em;
+}
+
+.formix-radiogroup span {
+	font-size: 1.3em;
+}
+
+.formix-field label {
+	display: inline-block;
+	width: 10em;
+}

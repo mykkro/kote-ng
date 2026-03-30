@@ -1,0 +1,41 @@
+[
+    {
+        "name": "N",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 1,
+        "maxValue": 20,
+        "default": 12
+    },
+    {
+        "name": "allowedShift",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 100,
+        "maxValue": 10000,
+        "by": 100,
+        "default": 1000
+    },
+    {
+        "name": "targetTimeout",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 100,
+        "maxValue": 10000,
+        "by": 100,
+        "default": 3000
+    },
+    {
+        "name": "avgFrameLen",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 100,
+        "maxValue": 10000,
+        "by": 1000,
+        "default": 5000
+    }
+]

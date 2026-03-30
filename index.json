@@ -1,0 +1,1583 @@
+{
+    "info": {
+        "doctype": "playonweb-app-scaffold",
+        "version": 1.0,
+        "last_update": null
+    },
+    "apps": [
+        {
+            "name": "colortest-reverse",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Color Reaction Test",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "Choose the colored square which matches the color of the text appearing in the center of the screen as fast as possible."
+                    },
+                    "translations": {
+                        "yellow": "yellow",
+                        "blue": "blue",
+                        "red": "red",
+                        "green": "green",
+                        "Repeat count": "Repeat count",
+                        "Minimum reaction time": "Minimum reaction time",
+                        "Average reaction time": "Average reaction time",
+                        "matchProbability": "Match probability in %",
+                        "Text": "text",
+                        "Color": "color",
+                        "matchType": "Match type"
+                    },
+                    "preview": false
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Reak\u010dn\u00ed test  \u2013 barvy",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "Zvolte v\u017edy co nejrychleji \u010dtverec se shodnou barvou, jakou m\u00e1 n\u00e1pis, kter\u00fd se objev\u00ed uprost\u0159ed."
+                    },
+                    "translations": {
+                        "yellow": "\u017elut\u00e1",
+                        "blue": "modr\u00e1",
+                        "red": "\u010derven\u00e1",
+                        "green": "zelen\u00e1",
+                        "Repeat count": "Po\u010det opakov\u00e1n\u00ed",
+                        "Minimum reaction time": "Nejkrat\u0161\u00ed doba reakce",
+                        "Average reaction time": "Pr\u016fm\u011brn\u00e1 doba reakce",
+                        "matchProbability": "Pravd\u011bpodobnost shody v %",
+                        "Text": "textu",
+                        "Color": "barvy",
+                        "matchType": "Shoda podle"
+                    },
+                    "preview": true
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": true,
+            "config": [
+                {
+                    "description": "",
+                    "name": "N",
+                    "title": "Repeat count",
+                    "default": 10,
+                    "type": "int",
+                    "maxValue": 50,
+                    "minValue": 1
+                },
+                {
+                    "description": "",
+                    "name": "matchProbability",
+                    "title": "",
+                    "default": 35,
+                    "type": "int",
+                    "maxValue": 100,
+                    "minValue": 0
+                },
+                {
+                    "valueLabels": [
+                        "Color",
+                        "Text"
+                    ],
+                    "values": [
+                        "color",
+                        "text"
+                    ],
+                    "description": "",
+                    "title": "",
+                    "default": "color",
+                    "type": "string",
+                    "name": "matchType"
+                }
+            ],
+            "settings": null,
+            "tags": [
+                "visual",
+                "attention"
+            ],
+            "gameClass": "ReverseColorTestGame"
+        },
+        {
+            "name": "dual-n-back",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Dual N-Back",
+                        "subtitle": "Challenge your working memory",
+                        "description": "The n-back task is a continuous performance task that is commonly used as an assessment in cognitive neuroscience to measure a part of working memory and working memory capacity. The subject is presented with a sequence of stimuli, and the task consists of indicating when the current stimulus matches the one from n steps earlier in the sequence. The load factor n can be adjusted to make the task more or less difficult.",
+                        "instructions": "When the game starts, you will see an item (a colored box or a traffic sign) placed at one of 9 possible positions in a 3x3 grid. Remember where the item appeared and also remember its color (or sign type). After a few seconds, another item appears in a different position. The task is, to recall if the currently shown item is at the same position or if it has tyhe same shape as the item shown N frames back (N times ago). If you think the current item has the same position as item shown N frames earlier, press the Position button; if it has the same color (sign type), press the Color/Sign button. Press both buttons if both of position and shape/color are matched. Start with N=2 (2-back), and eventually you will be good enough to try 3-back, 4-back and so on."
+                    },
+                    "translations": {
+                        "Repeat count": "Repeat count",
+                        "N": "N",
+                        "displayDuration": "Display for [ms]",
+                        "repeatAfter": "Repeat after [ms]",
+                        "dualType": "Shape type",
+                        "nColors": "Number of colors",
+                        "nSigns": "Number of signs",
+                        "Colors": "Colors",
+                        "Signs": "Signs",
+                        "matchProbability": "Match probability"
+                    },
+                    "preview": false
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Dual N-Back",
+                        "subtitle": "Procvi\u010dte svoji pracovn\u00ed pam\u011b\u0165",
+                        "description": " ",
+                        "instructions": "Na za\u010d\u00e1tku hry se objev\u00ed modr\u00fd \u010dtverec na jedn\u00e9 z\u00a0dev\u00edti mo\u017en\u00fdch pozic. Zapamatujte si, kde se \u010dtverec objevil. Po n\u011bkolika vte\u0159in\u00e1ch prodlevy se objev\u00ed \u010dtverec znovu na stejn\u00e9m, nebo jin\u00e9m m\u00edst\u011b. Pokud se objevil na takov\u00e9m m\u00edst\u011b, na kter\u00e9m se objevil o N zobrazen\u00ed d\u0159\u00edve, zm\u00e1\u010dkn\u011bte tla\u010d\u00edtko s\u00a0n\u00e1pisem \u201epozice\u201c ve spodn\u00ed \u010d\u00e1sti obrazovky.\nD\u00e1le sledujete, zda barva/tvar zobrazen\u00e9ho \u010dtverce se shoduje s\u00a0barvou/tvarem objektu, kter\u00fd se objevil o N zobrazen\u00ed d\u0159\u00edve. Podle toho, jak\u00e1 varianta nastala, zvol\u00edte tla\u010d\u00edtko ve spodn\u00ed \u010d\u00e1sti obrazovky.\nVhodn\u00e9 je nejprve procvi\u010dit \u00falohu Single N-Back a za\u010d\u00edt od obt\u00ed\u017enosti N=1.\n"
+                    },
+                    "translations": {
+                        "Repeat count": "Po\u010det opakov\u00e1n\u00ed",
+                        "N": "N",
+                        "displayDuration": "Doba zobrazen\u00ed [ms]",
+                        "repeatAfter": "Opakuj za [ms]",
+                        "dualType": "Typ objekt\u016f",
+                        "nColors": "Po\u010det barev",
+                        "nSigns": "Po\u010det zna\u010dek",
+                        "Colors": "Barvy",
+                        "Signs": "Zna\u010dky",
+                        "matchProbability": "Pravd\u011bpodobnost shody"
+                    },
+                    "preview": false
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": {
+                        "N": 1,
+                        "dualType": "signs"
+                    }
+                }
+            ],
+            "resources": {},
+            "preview": true,
+            "config": [
+                {
+                    "name": "N",
+                    "title": "N",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 3,
+                    "default": 2
+                },
+                {
+                    "name": "L",
+                    "title": "Repeat count",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 5,
+                    "maxValue": 50,
+                    "default": 10
+                },
+                {
+                    "name": "displayDuration",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 500,
+                    "maxValue": 10000,
+                    "by": 100,
+                    "default": 1000
+                },
+                {
+                    "name": "repeatAfter",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 500,
+                    "maxValue": 10000,
+                    "by": 100,
+                    "default": 3000
+                },
+                {
+                    "name": "matchProbability",
+                    "title": "",
+                    "description": "",
+                    "type": "float",
+                    "minValue": 0.2,
+                    "maxValue": 0.8,
+                    "by": 0.05,
+                    "default": 0.4
+                },
+                {
+                    "name": "dualType",
+                    "title": "",
+                    "description": "",
+                    "type": "string",
+                    "values": [
+                        "colors",
+                        "signs"
+                    ],
+                    "valueLabels": [
+                        "Colors",
+                        "Signs"
+                    ],
+                    "default": "signs"
+                },
+                {
+                    "name": "nColors",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 8,
+                    "default": 4
+                },
+                {
+                    "name": "nSigns",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 8,
+                    "default": 5
+                }
+            ],
+            "settings": {
+                "N": 2,
+                "dualType": "colors"
+            },
+            "tags": [
+                "visual",
+                "memory",
+                "attention"
+            ],
+            "gameClass": "NBackDualGame"
+        },
+        {
+            "name": "memory-game",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Pairs",
+                        "subtitle": " ",
+                        "description": "This is a memory game where you need to find matching pairs of tiles.",
+                        "instructions": "Turn one tile and then try to find a matching tile. If the tiles match, they will remain turned face up. Repeat until all pairs are matched (all tiles are turned face up)."
+                    },
+                    "translations": {
+                        "End": "End",
+                        "All cards found!": "All cards found!"
+                    },
+                    "preview": false
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Pexeso",
+                        "subtitle": " ",
+                        "description": "Pexeso je obl\u00edben\u00e1 hra, kdy je \u00fakolem hledat stejn\u00e9 obr\u00e1zkov\u00e9 dvojice.",
+                        "instructions": "Na za\u010d\u00e1tku hry jsou v\u0161echna pol\u00ed\u010dka (karty) obr\u00e1cena obr\u00e1zkem dol\u016f. Hr\u00e1\u010d m\u016f\u017ee najednou oto\u010dit dv\u011b karty. Pokud se jejich obr\u00e1zky shoduj\u00ed, karty z\u016fstanou oto\u010den\u00e9 a hra pokra\u010duje do t\u00e9 doby ne\u017e jsou odkryty v\u0161echny obr\u00e1zkov\u00e9 dvojice. C\u00edlem hr\u00e1\u010de je zde nal\u00e9zt v\u0161echny dvojice v co nejkrat\u0161\u00edm \u010dase."
+                    },
+                    "translations": {
+                        "End": "Konec",
+                        "All cards found!": "V\u0161echny dvojice nalezeny!"
+                    },
+                    "preview": false
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "tileset": "tileset.json"
+                    },
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                },
+                {
+                    "name": "animals",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {
+                                "title": "Pairs (Animals)"
+                            },
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {
+                                "title": "Pexeso (zv\u00ed\u0159ata)"
+                            },
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "tileset": "tileset.json"
+                    },
+                    "preview": true,
+                    "config": null,
+                    "settings": null
+                },
+                {
+                    "name": "sports",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {
+                                "title": "Pairs (Sports)"
+                            },
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {
+                                "title": "Pexeso (sport)"
+                            },
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "tileset": "tileset.json"
+                    },
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": true,
+            "config": null,
+            "settings": null,
+            "tags": [
+                "visual",
+                "memory",
+                "entertainment"
+            ],
+            "gameClass": "MemoryGame"
+        },
+        {
+            "name": "questionary",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Questionary",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": " "
+                    },
+                    "translations": null,
+                    "preview": false
+                },
+                {
+                    "name": "cz",
+                    "metadata": {},
+                    "translations": null,
+                    "preview": false
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "barthel-en",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {
+                                "title": "Barthel Index",
+                                "subtitle": " ",
+                                "description": " ",
+                                "instructions": "The Barthel scale or Barthel ADL index is an ordinal scale used to measure performance in activities of daily living. Each performance item is rated on this scale with a given number of points assigned to each level or ranking. The maximum score corresponds to full independence - the patient does not need help at all, not even verbal cues.\n\nDependency score:\n\n0-20 points: total dependency\n21-60 points: dependency\n61-90 points: moderate dependency\n91-99 points: slight dependency\n100 points: independency\n"
+                            },
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "questionary": "questionary.json"
+                    },
+                    "preview": true,
+                    "config": null,
+                    "settings": null
+                },
+                {
+                    "name": "barthel-cz",
+                    "locales": [
+                        {
+                            "name": "cz",
+                            "metadata": {
+                                "title": "Barthel Index",
+                                "subtitle": " ",
+                                "description": " ",
+                                "instructions": "Barthel Index je standardizovan\u00fd test ur\u010den\u00fd k\u00a0hodnocen\u00ed sob\u011bsta\u010dnosti. Body jsou p\u0159id\u011blov\u00e1ny podle toho, co pacient re\u00e1ln\u011b dok\u00e1\u017ee. Pln\u00fd po\u010det bod\u016f vylu\u010duje i jen minim\u00e1ln\u00ed pomoc, v\u010detn\u011b n\u00e1pov\u011bdy. Pacient m\u016f\u017ee p\u0159i hodnocen\u00fdch \u010dinnostech vyu\u017e\u00edvat mechanick\u00e9 pom\u016fcky (madla na st\u011bn\u00e1ch, hole, berle apod.).\n\nHodnocen\u00ed sob\u011bsta\u010dnosti:\n\n0-40 bod\u016f\tvysoce z\u00e1visl\u00fd\n45-60 bod\u016f\tz\u00e1vislost st\u0159edn\u00edho stupn\u011b\n65-95 bod\u016f\tlehk\u00e1 z\u00e1vislost\n100 bod\u016f\tnez\u00e1visl\u00fd\n"
+                            },
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "questionary": "questionary.json"
+                    },
+                    "preview": true,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": true,
+            "config": null,
+            "settings": null,
+            "tags": [
+                "survey"
+            ],
+            "gameClass": "Questionary"
+        },
+        {
+            "name": "single-n-back",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Single N-Back",
+                        "subtitle": "Challenge your working memory",
+                        "description": "The n-back task is a continuous performance task that is commonly used as an assessment in cognitive neuroscience to measure a part of working memory and working memory capacity. The subject is presented with a sequence of stimuli, and the task consists of indicating when the current stimulus matches the one from n steps earlier in the sequence. The load factor n can be adjusted to make the task more or less difficult.",
+                        "instructions": "When the game starts, you will see a blue box placed at one of 9 possible positions in a 3x3 grid. Remember where the box appeared. After a few seconds, another box appears in a different position. The task is, to recall if the currently shown box is at the same position as the box shown N frames back (N times ago). If you think the current box has the same position as the box shown N frames earlier, press the Position button. Start with N=2 (2-back), and eventually you will be good enough to try 3-back, 4-back and so on."
+                    },
+                    "translations": {
+                        "L": "Repeat count",
+                        "N": "N",
+                        "displayDuration": "Display for [ms]",
+                        "repeatAfter": "Repeat after [ms]",
+                        "dualType": "Shape type",
+                        "matchProbability": "Match Probability"
+                    },
+                    "preview": false
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Single N-Back",
+                        "subtitle": "Procvi\u010dte svoji pracovn\u00ed pam\u011b\u0165",
+                        "description": " ",
+                        "instructions": "Na za\u010d\u00e1tku hry se objev\u00ed modr\u00fd \u010dtverec na jedn\u00e9 z\u00a0dev\u00edti mo\u017en\u00fdch pozic. Zapamatujte si, kde se \u010dtverec objevil. Po n\u011bkolika vte\u0159in\u00e1ch prodlevy se objev\u00ed \u010dtverec znovu na stejn\u00e9m, nebo jin\u00e9m m\u00edst\u011b. Pokud se objevil na takov\u00e9m m\u00edst\u011b, na kter\u00e9m byl zobrazen\u00fd o N zobrazen\u00ed d\u0159\u00edve, zm\u00e1\u010dkn\u011bte tla\u010d\u00edtko s\u00a0n\u00e1pisem \u201epozice\u201c ve spodn\u00ed \u010d\u00e1sti obrazovky.\nP\u0159i nastaven\u00ed p\u0159edvolby N=1 sledujete, zda se zobrazil \u010dtverec na stejn\u00e9m m\u00edst\u011b dvakr\u00e1t po sob\u011b.\nP\u0159i nastaven\u00ed p\u0159edvolby N=2 vzpom\u00edn\u00e1te, zda se zobrazil \u010dtverec na stejn\u00e9m m\u00edst\u011b ob jedno zobrazen\u00ed d\u0159\u00edve.\nP\u0159i nastaven\u00ed p\u0159edvolby N=3 sledujete, zda se zobrazil \u010dtverec na stejn\u00e9m m\u00edst\u011b jako o t\u0159i zobrazen\u00ed d\u0159\u00edve.\nVhodn\u00e9 je za\u010d\u00edt nejprve od obt\u00ed\u017enosti N=1.\n"
+                    },
+                    "translations": {
+                        "L": "Po\u010det opakov\u00e1n\u00ed",
+                        "N": "N",
+                        "displayDuration": "Doba zobrazen\u00ed [ms]",
+                        "repeatAfter": "Opakuj za [ms]",
+                        "matchProbability": "Pravd\u011bpodobnost shody"
+                    },
+                    "preview": false
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": true,
+            "config": [
+                {
+                    "name": "N",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 3,
+                    "default": 2
+                },
+                {
+                    "name": "L",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 5,
+                    "maxValue": 50,
+                    "default": 10
+                },
+                {
+                    "name": "displayDuration",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 500,
+                    "maxValue": 10000,
+                    "by": 100,
+                    "default": 1000
+                },
+                {
+                    "name": "repeatAfter",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 500,
+                    "maxValue": 10000,
+                    "by": 100,
+                    "default": 3000
+                },
+                {
+                    "name": "matchProbability",
+                    "title": "",
+                    "description": "",
+                    "type": "float",
+                    "minValue": 0.2,
+                    "maxValue": 0.8,
+                    "by": 0.05,
+                    "default": 0.4
+                }
+            ],
+            "settings": null,
+            "tags": [
+                "visual",
+                "memory",
+                "attention"
+            ],
+            "gameClass": "NBackSingleGame"
+        },
+        {
+            "name": "combine-words",
+            "gamepackName": "czech",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Combine Words",
+                        "subtitle": "Test your vocabulary skills",
+                        "description": "This is a simple test where you are shown left and right parts of some words in two columns. Connect the matching parts together!",
+                        "instructions": "Two columns are displayed, containing starting and ending parts of words. Starting parts are grouped in the left column, ending parts in the right column. You can match starts and ends by clicking a word in left column then a word in right column (a red connection line will be shown). You can remove the connection line by clicking on it. After all word parts are matched, press the OK button to evaluate the result."
+                    },
+                    "translations": null,
+                    "preview": true
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Spojov\u00e1n\u00ed slov",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "Spojte \u010d\u00e1sti slova z lev\u00e9ho a prav\u00e9ho sloupce tak, jak k sob\u011b pat\u0159\u00ed."
+                    },
+                    "translations": null,
+                    "preview": true
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "english",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "wordlist": "wordlist.json"
+                    },
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                },
+                {
+                    "name": "czech",
+                    "locales": [
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "wordlist": "wordlist.json"
+                    },
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": false,
+            "config": null,
+            "settings": null,
+            "tags": [
+                "verbal"
+            ],
+            "gameClass": "CombineWordsGame"
+        },
+        {
+            "name": "combine-words",
+            "gamepackName": "english",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Combine Words",
+                        "subtitle": "Test your vocabulary skills",
+                        "description": "This is a simple test where you are shown left and right parts of some words in two columns. Connect the matching parts together!",
+                        "instructions": "Two columns are displayed, containing starting and ending parts of words. Starting parts are grouped in the left column, ending parts in the right column. You can match starts and ends by clicking a word in left column then a word in right column (a red connection line will be shown). You can remove the connection line by clicking on it. After all word parts are matched, press the OK button to evaluate the result."
+                    },
+                    "translations": null,
+                    "preview": true
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Spojov\u00e1n\u00ed slov",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "Spojte \u010d\u00e1sti slova z lev\u00e9ho a prav\u00e9ho sloupce tak, jak k sob\u011b pat\u0159\u00ed."
+                    },
+                    "translations": null,
+                    "preview": true
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "english",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "wordlist": "wordlist.json"
+                    },
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                },
+                {
+                    "name": "czech",
+                    "locales": [
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "wordlist": "wordlist.json"
+                    },
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": false,
+            "config": null,
+            "settings": null,
+            "tags": [
+                "verbal"
+            ],
+            "gameClass": "CombineWordsGame"
+        },
+        {
+            "name": "mental-rotation",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Mental Rotation",
+                        "subtitle": "Test your mental rotation skills",
+                        "description": "Mental rotation is the process in which a person manipulates a two-dimensional or three-dimensional object his or her mind. This activity tends to be centralized in the right cerebral cortex. This process was first tested in 1971 by Roger Shepard and Jacqueline Metzler.  They found that the more angular rotation an object had, the longer the reaction time will be for a person to determine if the new object is congruent to the original object.",
+                        "instructions": "From the pictures offered below, pick the one you think is a rotated version of a shape presented above."
+                    },
+                    "translations": {
+                        "Which of the shapes below is a rotated version of the shape shown left?": "Which of the shapes below is a rotated version of the shape shown left?"
+                    },
+                    "preview": true
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Prostorov\u00e1 orientace",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "V horn\u00ed \u010d\u00e1sti obrazovky je zobrazen trojrozm\u011brn\u00fd objekt, slo\u017een\u00fd z jednotliv\u00fdch kostek (kter\u00fdch je typicky 6-10). Dole je zobrazeno n\u011bkolik dal\u0161\u00edch objekt\u016f. Vyberte ten z nich, kter\u00fd se po nato\u010den\u00ed bude shodovat s objektem naho\u0159e. Pouze jedna mo\u017enost je spr\u00e1vn\u00e1!"
+                    },
+                    "translations": {
+                        "Which of the shapes below is a rotated version of the shape shown left?": "Vyberte z obr\u00e1zk\u016f dole ten, kter\u00fd je po nato\u010den\u00ed shodn\u00fd s obr\u00e1zkem naho\u0159e!"
+                    },
+                    "preview": true
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": false,
+            "config": null,
+            "settings": null,
+            "tags": [
+                "visual",
+                "spatial"
+            ],
+            "gameClass": "MentalRotationGame"
+        },
+        {
+            "name": "reaction-time",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Reaction Time Test",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "Click the targets immediately after they appear."
+                    },
+                    "translations": {
+                        "Hit ratio": "Hit ratio",
+                        "Average delay": "Average delay",
+                        "N": "Repeat count",
+                        "avgFrameLen": "Time until next object [ms]",
+                        "allowedShift": "Time tolerance [ms]",
+                        "targetTimeout": "Object disappears after [ms]",
+                        "Best reaction time": "Best reaction time",
+                        "Average reaction time": "Average reaction time"
+                    },
+                    "preview": true
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Reak\u010dn\u00ed test",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "Strefte se do c\u00edle co nejrychleji pot\u00e9, co se objev\u00ed."
+                    },
+                    "translations": {
+                        "Hit ratio": "Procento z\u00e1sah\u016f",
+                        "Average delay": "Pr\u016fm\u011brn\u00e1 doba reakce",
+                        "N": "Po\u010det opakov\u00e1n\u00ed",
+                        "avgFrameLen": "\u010cas do dal\u0161\u00edho objektu [ms]",
+                        "allowedShift": "Povolen\u00e1 odchylka \u010dasu [ms]",
+                        "targetTimeout": "Objekt zmiz\u00ed za [ms]",
+                        "Best reaction time": "Nejkrat\u0161\u00ed doba reakce",
+                        "Average reaction time": "Pr\u016fm\u011brn\u00e1 doba reakce"
+                    },
+                    "preview": true
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": true,
+            "config": [
+                {
+                    "name": "N",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 20,
+                    "default": 12
+                },
+                {
+                    "name": "allowedShift",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 100,
+                    "maxValue": 10000,
+                    "by": 100,
+                    "default": 1000
+                },
+                {
+                    "name": "targetTimeout",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 100,
+                    "maxValue": 10000,
+                    "by": 100,
+                    "default": 3000
+                },
+                {
+                    "name": "avgFrameLen",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 100,
+                    "maxValue": 10000,
+                    "by": 1000,
+                    "default": 5000
+                }
+            ],
+            "settings": null,
+            "tags": [
+                "visual",
+                "attention"
+            ],
+            "gameClass": "ReactionTimeGame"
+        },
+        {
+            "name": "slideshow",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Slideshow",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": " "
+                    },
+                    "translations": null,
+                    "preview": false
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "body1",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {
+                                "title": "Sample Exercise",
+                                "subtitle": " ",
+                                "description": " "
+                            },
+                            "preview": false
+                        }
+                    ],
+                    "resources": {
+                        "slideshow": "slideshow.json"
+                    },
+                    "preview": true,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": true,
+            "config": null,
+            "settings": null,
+            "tags": [
+                "instructional"
+            ],
+            "gameClass": "Slideshow"
+        },
+        {
+            "name": "differences",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Find 9 Differences",
+                        "subtitle": "Can you find all 9 differences between two pictures?",
+                        "description": "This is a type of the puzzle games where two versions of the same picture are shown side by side, and the player has to find all differences between them.",
+                        "instructions": "Two pictures will be displayed. There are 9 differences between two pictures. Mark the locations on the left picture, then press OK to evaluate the results."
+                    },
+                    "translations": null,
+                    "preview": true
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Najdi 9 rozd\u00edl\u016f",
+                        "subtitle": "Dok\u00e1\u017ee\u0161 naj\u00edt v\u0161ech 9 rozd\u00edl\u016f mezi obr\u00e1zky?",
+                        "description": " ",
+                        "instructions": "Uvid\u00ed\u0161 2 obr\u00e1zky. Budou t\u00e9m\u011b\u0159 stejn\u00e9, li\u0161\u00ed se pouze na 9 m\u00edstech. Ozna\u010d m\u00edsta, kde se obr\u00e1zky li\u0161\u00ed, v lev\u00e9m z obr\u00e1zk\u016f. A\u017e ozna\u010d\u00ed\u0161 v\u0161ech 9 m\u00edst kde si mysl\u00ed\u0161 \u017ee se rozd\u00edly nal\u00e9zaj\u00ed, klikni na OK pro vyhodnocen\u00ed."
+                    },
+                    "translations": null,
+                    "preview": true
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": false,
+            "config": null,
+            "settings": null,
+            "tags": [
+                "visual"
+            ],
+            "gameClass": "DifferencesGame"
+        },
+        {
+            "name": "pick-twenty",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Pick 20",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "In this game, your goal is to find a sequence of numbers as fast as you can. Start with clicking on number one and then continue with higher numbers. If you click on wrong number, it will be shortly highlighted in red. The game ends when you find the whole sequence and click on its last number."
+                    },
+                    "translations": {
+                        "Total time": "Total time",
+                        "Mistakes total": "Mistakes total",
+                        "N": "Number of goals",
+                        "rotateGoals": "Rotate goals"
+                    },
+                    "preview": true
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Najdi posloupnost",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "V t\u00e9to h\u0159e m\u00e1te za \u00fakol hledat posloupnost \u010d\u00edsel. Na obrazovce se objev\u00ed n\u00e1hodn\u011b \u010d\u00edsla po\u010d\u00ednaje od jedn\u00e9. Pokud kliknete na spr\u00e1vn\u00e9 \u010d\u00edslo v posloupnosti (jedni\u010dkou po\u010d\u00ednaje), \u010d\u00edslo zezelen\u00e1 a vy m\u016f\u017eete pokra\u010dovat dal\u0161\u00edm. Zvol\u00edte-li \u010d\u00edslo \u0161patn\u011b, \u010d\u00edslo na chv\u00edli z\u010derven\u00e1. Hra kon\u010d\u00ed jakmile projdete celou posloupnost a zvol\u00edte jej\u00ed posledn\u00ed \u010d\u00edslo."
+                    },
+                    "translations": {
+                        "Total time": "Celkov\u00fd \u010das",
+                        "Mistakes total": "Po\u010det chyb",
+                        "N": "Po\u010det c\u00edl\u016f",
+                        "rotateGoals": "Rotovat c\u00edle"
+                    },
+                    "preview": true
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {},
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {},
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": false,
+            "config": [
+                {
+                    "name": "N",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 20,
+                    "default": 10
+                },
+                {
+                    "name": "rotateGoals",
+                    "title": "",
+                    "description": "",
+                    "type": "boolean",
+                    "default": true
+                }
+            ],
+            "settings": null,
+            "tags": [
+                "visual",
+                "attention"
+            ],
+            "gameClass": "PickTwentyGame"
+        },
+        {
+            "name": "sudoku",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Sudoku",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": " "
+                    },
+                    "translations": {
+                        "Show mistakes": "Show mistakes",
+                        "Total time": "Total Time [s]"
+                    },
+                    "preview": true
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Sudoku",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "Vypl\u0148te sudoku tak, aby v\u00a0\u017e\u00e1dn\u00e9m \u0159\u00e1dku, sloupci ani nebylo \u017e\u00e1dn\u00e9 \u010d\u00edslo dvakr\u00e1t."
+                    },
+                    "translations": {
+                        "Show mistakes": "Zv\u00fdraznit chyby",
+                        "Total time": "Celkov\u00fd \u010das [s]"
+                    },
+                    "preview": false
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {
+                                "title": "Sudoku"
+                            },
+                            "preview": true
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {
+                                "title": "Sudoku"
+                            },
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": true,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {},
+            "preview": true,
+            "config": [
+                {
+                    "name": "showMistakes",
+                    "title": "Show mistakes",
+                    "description": "",
+                    "type": "boolean",
+                    "default": true
+                }
+            ],
+            "settings": null,
+            "tags": [
+                "entertainment"
+            ],
+            "gameClass": "SudokuGame"
+        },
+        {
+            "name": "mahjongg",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Mahjongg",
+                        "subtitle": " ",
+                        "description": "Mahjongg artwork created by Martin Persson (http://www.martinpersson.org).",
+                        "instructions": " "
+                    },
+                    "translations": {
+                        "Show mistakes": "Show mistakes",
+                        "Total time": "Total Time [s]",
+                        "All pairs found!": "All pairs found!",
+                        "No more moves left!": "No more moves left!"
+                    },
+                    "credits": [
+                        "Tiles for Mahjongg game by Martin Persson <http://www.martinpersson.org>"
+                    ],
+                    "preview": false
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Mahjongg",
+                        "subtitle": " ",
+                        "description": "Kameny pro hru Mahjongg vytvo\u0159il Martin Persson (http://www.martinpersson.org).",
+                        "instructions": "C\u00edlem hry je odstranit z hern\u00edho pole 144 kamen\u016f, kdy hr\u00e1\u010d postupn\u011b klik\u00e1 na dvojice stejn\u00fdch kamen\u016f. P\u0159itom mus\u00ed hr\u00e1\u010d d\u00e1vat pozor, aby na p\u0159\u00edslu\u0161n\u00fdch kamenech nele\u017eely \u017e\u00e1dn\u00e9 jin\u00e9, a aby byly z lev\u00e9 nebo z prav\u00e9 strany voln\u011b p\u0159\u00edstupn\u00e9. \nHra kon\u010d\u00ed, pokud jsou z hern\u00edho pole odstran\u011bny v\u0161echny kameny.\n"
+                    },
+                    "translations": {
+                        "Show mistakes": "Zv\u00fdraznit chyby",
+                        "Total time": "Celkov\u00fd \u010das [s]",
+                        "All pairs found!": "Dobr\u00e1 pr\u00e1ce!",
+                        "No more moves left!": "Dal\u0161\u00ed tah nen\u00ed mo\u017en\u00fd!"
+                    },
+                    "credits": [
+                        "Kameny pro hru Majhongg: Martin Persson <http://www.martinpersson.org>"
+                    ],
+                    "preview": false
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {
+                                "title": "Mahjongg"
+                            },
+                            "credits": null,
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {
+                                "title": "Mahjongg"
+                            },
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {
+                "tileset": "tileset.json"
+            },
+            "preview": true,
+            "config": null,
+            "settings": null,
+            "tags": [
+                "entertainment"
+            ],
+            "gameClass": "Mahjongg"
+        },
+        {
+            "name": "fifteen",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Fifteen",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "The Fifteen puzzle consists of 15 squares numbered from 1 to 15 that are placed in a 4\u00d74 \"box\" leaving one position out of the 16 empty. The goal is to reposition the squares from a given arbitrary starting arrangement by sliding them one at a time into the correct configuration (from 1 to 15)."
+                    },
+                    "translations": {
+                        "Total time": "Total Time [s]",
+                        "randomMovesNo": "Number of random moves",
+                        "Number of moves": "Number of moves"
+                    },
+                    "preview": false
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Patn\u00e1ctka",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": "Hlavolam Patn\u00e1ctka je tvo\u0159en \u0161estn\u00e1cti poli. V patn\u00e1cti z nich jsou obsa\u017eeny d\u00edlky, v jednom poli je \"mezera\". Ta umo\u017e\u0148uje p\u0159esouv\u00e1n\u00ed jednotliv\u00fdch d\u00edlk\u016f. C\u00edlem hlavolamu je se\u0159adit d\u00edlky tak, aby tvo\u0159ily posloupnost \u010d\u00edsel od 1 do 15 a z\u00e1rove\u0148 um\u00edstit mezeru do prav\u00e9ho doln\u00edho rohu hlavolamu."
+                    },
+                    "translations": {
+                        "Total time": "Celkov\u00fd \u010das [s]",
+                        "randomMovesNo": "Po\u010det n\u00e1hodn\u00fdch tah\u016f",
+                        "Number of moves": "Po\u010det tah\u016f"
+                    },
+                    "preview": false
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {
+                                "title": "Fifteen"
+                            },
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {
+                                "title": "Patn\u00e1ctka"
+                            },
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {
+                "tileset": "tileset.json"
+            },
+            "preview": true,
+            "config": [
+                {
+                    "name": "randomMovesNo",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 100,
+                    "default": 30
+                }
+            ],
+            "settings": null,
+            "tags": [
+                "entertainment"
+            ],
+            "gameClass": "Fifteen"
+        },
+        {
+            "name": "minefield",
+            "gamepackName": "default",
+            "locales": [
+                {
+                    "name": "en",
+                    "metadata": {
+                        "title": "Minefield",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": " "
+                    },
+                    "translations": {
+                        "Total time": "Total Time [s]",
+                        "randomMovesNo": "Number of random moves",
+                        "gridRows": "No. of grid rows",
+                        "gridCols": "No. of grid columns",
+                        "gridMines": "No. of mines",
+                        "Number of moves": "Number of moves",
+                        "Uncover": "Uncover",
+                        "Flag": "Flag"
+                    },
+                    "preview": false
+                },
+                {
+                    "name": "cz",
+                    "metadata": {
+                        "title": "Minov\u00e9 pole",
+                        "subtitle": " ",
+                        "description": " ",
+                        "instructions": " "
+                    },
+                    "translations": {
+                        "Total time": "Celkov\u00fd \u010das [s]",
+                        "randomMovesNo": "Po\u010det n\u00e1hodn\u00fdch tah\u016f",
+                        "gridRows": "Po\u010det \u0159\u00e1dk\u016f m\u0159\u00ed\u017eky",
+                        "gridCols": "Po\u010det sloupc\u016f m\u0159\u00ed\u017eky",
+                        "gridMines": "Po\u010det min",
+                        "Number of moves": "Po\u010det tah\u016f",
+                        "Uncover": "Odkr\u00fdt",
+                        "Flag": "Ozna\u010dit"
+                    },
+                    "preview": false
+                }
+            ],
+            "gamepacks": [
+                {
+                    "name": "default",
+                    "locales": [
+                        {
+                            "name": "en",
+                            "metadata": {
+                                "title": "Minefield"
+                            },
+                            "preview": false
+                        },
+                        {
+                            "name": "cz",
+                            "metadata": {
+                                "title": "Minov\u00e9 pole"
+                            },
+                            "preview": false
+                        }
+                    ],
+                    "resources": {},
+                    "preview": false,
+                    "config": null,
+                    "settings": null
+                }
+            ],
+            "resources": {
+                "tileset": "tileset.json"
+            },
+            "preview": true,
+            "config": [
+                {
+                    "name": "gridRows",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 6,
+                    "maxValue": 20,
+                    "default": 10
+                },
+                {
+                    "name": "gridCols",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 6,
+                    "maxValue": 20,
+                    "default": 10
+                },
+                {
+                    "name": "gridMines",
+                    "title": "",
+                    "description": "",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 200,
+                    "default": 20
+                }
+            ],
+            "settings": null,
+            "tags": [
+                "entertainment"
+            ],
+            "gameClass": "Minefield"
+        }
+    ],
+    "locales": [
+        {
+            "name": "en",
+            "metadata": {
+                "title": "C-Tester",
+                "subtitle": "C-Tester",
+                "description": "C-Tester description comes here..."
+            },
+            "translations": {
+                "Start": "Start",
+                "Settings": "Settings",
+                "Instructions": "Instructions",
+                "Exit": "Exit",
+                "Save": "Save",
+                "Reset": "Reset",
+                "Back": "Back",
+                "History": "History",
+                "Results": "Results",
+                "Play again": "Play again",
+                "Run again": "Run again",
+                "Position": "Position",
+                "Color": "Color",
+                "Sign": "Sign",
+                "Both": "Both",
+                "attention": "attention",
+                "memory": "memory",
+                "spatial": "spatial",
+                "visual": "visual",
+                "survey": "survey",
+                "verbal": "verbal",
+                "entertainment": "entertainment",
+                "instructional": "instructional",
+                "Next": "Next",
+                "Previous": "Previous",
+                "OK": "OK",
+                "Finish": "Finish",
+                "Score": "Score",
+                "Result": "Result",
+                "Question count": "Question count",
+                "Page count": "Page count",
+                "Language": "Language",
+                "Correctness": "Correctness",
+                "Total time": "Total time",
+                "N/A": "N/A",
+                "About": "About",
+                "History is empty": "History is empty"
+            },
+            "credits": [
+                "fontSize=26@This application was created at at the 1st Faculty of Medicine of Charles University.",
+                null,
+                "For more applications visit Albertov research center",
+                "<http://www.albertov.cz/kote-en>",
+                null,
+                null,
+                "Various vector icons used in the GUI by FlatIcon <http://www.flaticon.com>",
+                "Font Awesome by Dave Gandy <http://fontawesome.io>"
+            ],
+            "preview": false
+        },
+        {
+            "name": "cz",
+            "metadata": {
+                "title": "Kote",
+                "subtitle": "Kognitivn\u00ed testov\u00e1n\u00ed",
+                "description": "C-Tester description comes here..."
+            },
+            "translations": {
+                "Start": "Start",
+                "Settings": "Nastaven\u00ed",
+                "Instructions": "Instrukce",
+                "Exit": "Konec",
+                "Save": "Ulo\u017eit",
+                "Reset": "Reset",
+                "Back": "Zp\u011bt",
+                "History": "Historie",
+                "Results": "V\u00fdsledky",
+                "Play again": "Hr\u00e1t znovu",
+                "Run again": "Opakovat",
+                "Position": "Pozice",
+                "Color": "Barva",
+                "Sign": "Zna\u010dka",
+                "Both": "Oboj\u00ed",
+                "attention": "pozornost",
+                "memory": "pam\u011b\u0165",
+                "spatial": "prostorov\u00fd",
+                "visual": "vizu\u00e1ln\u00ed",
+                "survey": "dotazn\u00edk",
+                "verbal": "slovn\u00ed",
+                "entertainment": "z\u00e1bava",
+                "instructional": "instrukce",
+                "Next": "Dal\u0161\u00ed",
+                "Previous": "P\u0159edchoz\u00ed",
+                "OK": "OK",
+                "Finish": "Konec",
+                "Score": "Sk\u00f3re",
+                "Result": "V\u00fdsledek",
+                "Question count": "Po\u010det ot\u00e1zek",
+                "Page count": "Po\u010det stran",
+                "Language": "Jazyk",
+                "Correctness": "\u00dasp\u011b\u0161nost",
+                "Total time": "Celkov\u00fd \u010das",
+                "N/A": "N/A",
+                "About": "O aplikaci",
+                "History is empty": "Historie je pr\u00e1zdn\u00e1"
+            },
+            "credits": [
+                "fontSize=26@Aplikace byla vytvo\u0159ena na 1. l\u00e9ka\u0159sk\u00e9 fakult\u011b Univerzity Karlovy.",
+                null,
+                "Pro dal\u0161\u00ed aplikace nav\u0161tivte Albertov research center",
+                "<http://www.albertov.cz/kote>",
+                null,
+                null,
+                "R\u016fzn\u00e9 vektorov\u00e9 ikony: FlatIcon <http://www.flaticon.com>",
+                "Font Awesome: Dave Gandy <http://fontawesome.io>"
+            ],
+            "preview": false
+        }
+    ],
+    "icon": "kote2",
+    "settings": null,
+    "languages": [
+        "en",
+        "cz"
+    ]
+}

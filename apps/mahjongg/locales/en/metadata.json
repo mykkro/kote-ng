@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Mahjongg",
+        "subtitle": " ",
+        "description": "Mahjongg artwork created by Martin Persson (http://www.martinpersson.org).",
+        "instructions": " "
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "name": "Kote",
+  "short_name": "Kote",
+  "version": "org.mykkro.kote.therapy",
+  "description": "Cognitive testing",
+  "author": "Myrousz",
+  "icons": [],
+  "start_url": "index.html",
+  "theme_color": "#ffffff"
+}

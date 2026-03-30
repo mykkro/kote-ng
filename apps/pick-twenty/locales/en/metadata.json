@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Pick 20",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "In this game, your goal is to find a sequence of numbers as fast as you can. Start with clicking on number one and then continue with higher numbers. If you click on wrong number, it will be shortly highlighted in red. The game ends when you find the whole sequence and click on its last number."
+    }
+}

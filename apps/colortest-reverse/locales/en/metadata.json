@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Color Reaction Test",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "Choose the colored square which matches the color of the text appearing in the center of the screen as fast as possible."
+    }
+}

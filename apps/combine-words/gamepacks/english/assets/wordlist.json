@@ -1,0 +1,39 @@
+{
+  "$type": "playonweb-combine-words-wordlist",
+  "name": "sampleWordlist",
+  "title": "Sample Wordlist",
+  "version": "1.0",
+  "sets": [
+        [
+            "TEMPE-RATURE",
+            "POSI-TION",
+            "TOGE-THER",
+            "HOLI-DAY",
+            "TOLE-RANCE",
+            "MOVE-MENT"
+        ],
+        [
+            "ENVI-RONMENT",
+            "CIRCUM-STANCE",
+            "LANGU-AGE",
+            "OPE-RATION",
+            "DIRE-CTION",
+            "PERFOR-MANCE"
+        ], [
+            "COMMUNI-CATION",
+            "OPPORTU-NITY",
+            "POPU-LATION",
+            "ARCHI-TECTURE",
+            "LAND-SCAPE",
+            "BREAK-FAST"
+        ], [
+            "AFTER-NOON",
+            "ANI-MAL",
+            "DIFFI-CULTY",
+            "TRANS-PORT",
+            "AQUA-RIUM",
+            "LOCOMO-TIVE"
+        ]
+    ]
+  
+}

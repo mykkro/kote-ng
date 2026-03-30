@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Prostorov\u00e1 orientace",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "V horn\u00ed \u010d\u00e1sti obrazovky je zobrazen trojrozm\u011brn\u00fd objekt, slo\u017een\u00fd z jednotliv\u00fdch kostek (kter\u00fdch je typicky 6-10). Dole je zobrazeno n\u011bkolik dal\u0161\u00edch objekt\u016f. Vyberte ten z nich, kter\u00fd se po nato\u010den\u00ed bude shodovat s objektem naho\u0159e. Pouze jedna mo\u017enost je spr\u00e1vn\u00e1!"
+    }
+}

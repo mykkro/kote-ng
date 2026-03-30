@@ -1,0 +1,9 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "en",
+    "translations": {
+        "End": "End",
+        "All cards found!": "All cards found!"
+    }
+}

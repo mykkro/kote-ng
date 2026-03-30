@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Mental Rotation",
+        "subtitle": "Test your mental rotation skills",
+        "description": "Mental rotation is the process in which a person manipulates a two-dimensional or three-dimensional object his or her mind. This activity tends to be centralized in the right cerebral cortex. This process was first tested in 1971 by Roger Shepard and Jacqueline Metzler.  They found that the more angular rotation an object had, the longer the reaction time will be for a person to determine if the new object is congruent to the original object.",
+        "instructions": "From the pictures offered below, pick the one you think is a rotated version of a shape presented above."
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "en",
+    "translations": {
+        "Total time": "Total Time [s]",
+        "randomMovesNo": "Number of random moves",
+        "Number of moves": "Number of moves"
+    }
+}

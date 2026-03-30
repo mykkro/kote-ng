@@ -1,0 +1,15 @@
+start:			play-button
+instructions:	information-button
+next:			chevron-sign-to-right
+previous:		chevron-sign-left
+back:			level-up
+quit:			cross-mark-on-a-black-circle-background
+abort:			cross-mark-on-a-black-circle-background
+replay:			refresh-arrow
+save:			check-mark
+reset:			dot-and-circle
+settings:		cog-wheel-silhouette
+history:		list
+about:			leter-a-inside-a-black-circle
+home:			home	
+

@@ -1,0 +1,29 @@
+[
+    {
+        "name": "gridRows",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 6,
+        "maxValue": 20,
+        "default": 10
+    },
+    {
+        "name": "gridCols",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 6,
+        "maxValue": 20,
+        "default": 10
+    },
+    {
+        "name": "gridMines",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 1,
+        "maxValue": 200,
+        "default": 20
+    }
+]

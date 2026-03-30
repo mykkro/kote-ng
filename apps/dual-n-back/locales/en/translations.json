@@ -1,0 +1,17 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "en",
+    "translations": {
+        "Repeat count": "Repeat count",
+        "N": "N",
+        "displayDuration": "Display for [ms]",
+        "repeatAfter": "Repeat after [ms]",
+        "dualType": "Shape type",
+        "nColors": "Number of colors",
+        "nSigns": "Number of signs",
+        "Colors": "Colors",
+        "Signs": "Signs",
+        "matchProbability": "Match probability"
+    }
+}

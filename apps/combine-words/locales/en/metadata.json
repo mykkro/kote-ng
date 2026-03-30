@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Combine Words",
+        "subtitle": "Test your vocabulary skills",
+        "description": "This is a simple test where you are shown left and right parts of some words in two columns. Connect the matching parts together!",
+        "instructions": "Two columns are displayed, containing starting and ending parts of words. Starting parts are grouped in the left column, ending parts in the right column. You can match starts and ends by clicking a word in left column then a word in right column (a red connection line will be shown). You can remove the connection line by clicking on it. After all word parts are matched, press the OK button to evaluate the result."
+    }
+}

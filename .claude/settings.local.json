@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(node build.mjs)",
+      "Bash(grep -n \"jQuery\\\\|$\\\\.\" c:/Work/kote-ng/apps/minefield/script.js)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Work/kote-ng/apps/$f/**)",
+      "Bash(grep -rn \"jQuery\\\\|\\\\bjQuery\\\\b\\\\|$\\\\.ajax\\\\|$\\\\.getJSON\\\\|$\\\\.extend\\\\|jQuery\\\\.Deferred\\\\|\\\\.done\\(function\" c:/Work/kote-ng/js/ c:/Work/kote-ng/apps/ --include=\"*.js\")",
+      "Bash(grep -rn \"jQuery\\\\|$\\\\.ajax\\\\|$\\\\.getJSON\\\\|$\\\\.extend\\\\|jQuery\\\\.Deferred\\\\|\\\\.done\\(function\" c:/Work/kote-ng/js/main.js c:/Work/kote-ng/js/GameGUI.js c:/Work/kote-ng/js/AppsGUI.js c:/Work/kote-ng/js/formix.js c:/Work/kote-ng/js/HistoryLogger.js c:/Work/kote-ng/js/widgets.js c:/Work/kote-ng/js/widgets.html.js c:/Work/kote-ng/apps/combine-words/script.js c:/Work/kote-ng/apps/fifteen/script.js c:/Work/kote-ng/apps/memory-game/script.js c:/Work/kote-ng/apps/mahjongg/script.js c:/Work/kote-ng/apps/minefield/script.js c:/Work/kote-ng/apps/questionary/script.js c:/Work/kote-ng/apps/slideshow/script.js c:/Work/kote-ng/apps/pick-twenty/script.js c:/Work/kote-ng/apps/sudoku/script.js)",
+      "Bash(grep -n \"$\\\\.\" c:/Work/kote-ng/js/widgets.js)"
+    ]
+  }
+}

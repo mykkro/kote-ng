@@ -1,0 +1,44 @@
+.sign {
+	display: block;
+	width: 100px;
+	height: 100px;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+.sign1 {
+	background-image: url("assets/signs/sign1.png");
+}
+.sign2 {
+	background-image: url("assets/signs/sign2.jpg");
+}
+.sign3 {
+	background-image: url("assets/signs/sign3.jpg");
+}
+.sign4 {
+	background-image: url("assets/signs/sign4.jpg");
+}
+.sign5 {
+	background-image: url("assets/signs/sign5.png");
+}
+.sign6 {
+	background-image: url("assets/signs/sign6.png");
+}
+.sign7 {
+	background-image: url("assets/signs/sign7.png");
+}
+.sign8 {
+	background-image: url("assets/signs/sign8.png");
+}
+.sign9 {
+	background-image: url("assets/signs/sign9.png");
+}
+.sign10 {
+	background-image: url("assets/signs/sign10.jpg");
+}
+
+
+.counter {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+}

@@ -1,0 +1,14 @@
+{
+  "name": "kote-ng",
+  "version": "1.0.0",
+  "description": "KoTe – Kognitivní testování (Cognitive Testing)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node build.mjs",
+    "preview": "vite preview --port 3333"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

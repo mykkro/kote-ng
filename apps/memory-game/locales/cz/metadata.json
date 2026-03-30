@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Pexeso",
+        "subtitle": " ",
+        "description": "Pexeso je obl\u00edben\u00e1 hra, kdy je \u00fakolem hledat stejn\u00e9 obr\u00e1zkov\u00e9 dvojice.",
+        "instructions": "Na za\u010d\u00e1tku hry jsou v\u0161echna pol\u00ed\u010dka (karty) obr\u00e1cena obr\u00e1zkem dol\u016f. Hr\u00e1\u010d m\u016f\u017ee najednou oto\u010dit dv\u011b karty. Pokud se jejich obr\u00e1zky shoduj\u00ed, karty z\u016fstanou oto\u010den\u00e9 a hra pokra\u010duje do t\u00e9 doby ne\u017e jsou odkryty v\u0161echny obr\u00e1zkov\u00e9 dvojice. C\u00edlem hr\u00e1\u010de je zde nal\u00e9zt v\u0161echny dvojice v co nejkrat\u0161\u00edm \u010dase."
+    }
+}

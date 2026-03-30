@@ -1,0 +1,15 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "en",
+    "translations": {
+        "Total time": "Total Time [s]",
+        "randomMovesNo": "Number of random moves",
+        "gridRows": "No. of grid rows",
+        "gridCols": "No. of grid columns",
+        "gridMines": "No. of mines",
+        "Number of moves": "Number of moves",
+        "Uncover": "Uncover",
+        "Flag": "Flag"
+    }
+}

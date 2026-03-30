@@ -1,0 +1,8 @@
+{
+    "$type": "playonweb-credits",
+    "version": "1.0",
+    "language": "en",
+    "credits": [
+        "Tiles for Mahjongg game by Martin Persson <http://www.martinpersson.org>"
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "en",
+    "translations": {
+        "Total time": "Total time",
+        "Mistakes total": "Mistakes total",
+        "N": "Number of goals",
+        "rotateGoals": "Rotate goals"
+    }
+}

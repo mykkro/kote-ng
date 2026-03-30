@@ -1,0 +1,15 @@
+{
+    "$type": "playonweb-credits",
+    "version": "1.0",
+    "language": "en",
+    "credits": [
+        "fontSize=26@This application was created at at the 1st Faculty of Medicine of Charles University.",
+        null,
+        "For more applications visit Albertov research center",
+        "<http://www.albertov.cz/kote-en>",
+        null,
+        null,
+        "Various vector icons used in the GUI by FlatIcon <http://www.flaticon.com>",
+        "Font Awesome by Dave Gandy <http://fontawesome.io>"
+    ]
+}

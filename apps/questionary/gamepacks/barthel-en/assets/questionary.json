@@ -1,0 +1,219 @@
+{
+  "$type": "playonweb-questionary",
+  "name": "barthel-test",
+  "title": "Barthel ADL Index",
+  "subtitle": "Barthel Dependency Test",
+  "description": "",
+  "instructions": "The Barthel scale or Barthel ADL index is an ordinal scale used to measure performance in activities of daily living. Each performance item is rated on this scale with a given number of points assigned to each level or ranking. The maximum score corresponds to full independence - the patient does not need help at all, not even verbal cues.\n\nDependency score:\n\n0-20 points: total dependency\n21-60 points: dependency\n61-90 points: moderate dependency\n91-99 points: slight dependency\n100 points: independency",
+  "version": "1.0",
+  "language": "en",
+  "questions": [
+  	{
+  		"question": "FEEDING",
+        "type": "single-choice",
+  		  "answers": [
+    			{
+    				"answer": "unable",
+    				"score": 0
+    			},
+    			{
+    				"answer": "needs help cutting, spreading butter, etc., or requires modified diet",
+    				"score": 5
+    			},
+    			{
+    				"answer": "independent",
+    				"score": 10
+    			}
+    		]
+  	},
+  	{
+  		"question": "BATHING",
+        "type": "single-choice",
+  		"answers": [
+  			{
+  				"answer": "dependent",
+  				"score": 0
+  			},
+  			{
+  				"answer": "independent (or in shower)",
+  				"score": 5
+  			}
+  		]
+  	},
+  	{
+  		"question": "GROOMING",
+        "type": "single-choice",
+  		"answers": [
+  			{
+  				"answer": "needs to help with personal care",
+  				"score": 0
+  			},
+  			{
+  				"answer": "independent face/hair/teeth/shaving (implements provided)",
+  				"score": 5
+  			}
+  		]
+  	},
+  	{
+  		"question": "DRESSING",
+        "type": "single-choice",
+  		"answers": [
+  			{
+  				"answer": "dependent",
+  				"score": 0
+  			},
+  			{
+  				"answer": "needs help but can do about half unaided",
+  				"score": 5
+  			},
+  			{
+  				"answer": "independent (including buttons, zips, laces, etc.)",
+  				"score": 10
+  			}
+  		]
+  	},
+  	{
+  		"question": "BOWELS",
+        "type": "single-choice",
+  		"answers": [
+  			{
+  				"answer": "incontinent (or needs to be given enemas)",
+  				"score": 0
+  			},
+  			{
+  				"answer": "occasional accident",
+  				"score": 5
+  			},
+  			{
+  				"answer": "continent",
+  				"score": 10
+  			}
+  		]
+  	},
+  	{
+  		"question": "BLADDER",
+        "type": "single-choice",
+  		"answers": [
+  			{
+  				"answer": "incontinent, or catheterized and unable to manage alone",
+  				"score": 0
+  			},
+  			{
+  				"answer": "occasional accident",
+  				"score": 5
+  			},
+  			{
+  				"answer": "continent",
+  				"score": 10
+  			}
+  		]
+  	},
+  	{
+  		"question": "TOILET USE",
+        "type": "single-choice",
+  		"answers": [
+  			{
+  				"answer": "dependent",
+  				"score": 0
+  			},
+  			{
+  				"answer": "needs some help, but can do something alone",
+  				"score": 5
+  			},
+  			{
+  				"answer": "independent (on and off, dressing, wiping)",
+  				"score": 10
+  			}
+  		]
+  	},
+  	{
+  		"question": "TRANSFERS (BED TO CHAIR AND BACK)",
+        "type": "single-choice",
+  		"answers": [
+  			{
+  				"answer": "unable, no sitting balance",
+  				"score": 0
+  			},
+  			{
+  				"answer": "major help (one or two people, physical), can sit",
+  				"score": 5
+  			},
+  			{
+  				"answer": "minor help (verbal or physical)",
+  				"score": 10
+  			},
+  			{
+  				"answer": "independent",
+  				"score": 15
+  			}
+  		]
+  	},
+  	{
+  		"question": "MOBILITY (ON LEVEL SURFACES)",
+        "type": "single-choice",
+  		"answers": [
+  			{
+  				"answer": "immobile or < 50 yards",
+  				"score": 0
+  			},
+  			{
+  				"answer": "wheelchair independent, including corners, > 50 yards",
+  				"score": 5
+  			},
+  			{
+  				"answer": "walks with help of one person (verbal or physical) > 50 yards",
+  				"score": 10
+  			},
+  			{
+  				"answer": "independent (but may use any aid; for example, stick) > 50 yards",
+  				"score": 15
+  			}
+  		]
+  	},
+  	{
+  		"question": "STAIRS",
+        "type": "single-choice",
+  		"answers": [
+  			{
+  				"answer": "unable",
+  				"score": 0
+  			},
+  			{
+  				"answer": "needs help (verbal, physical, carrying aid)",
+  				"score": 5
+  			},
+  			{
+  				"answer": "independent",
+  				"score": 10
+  			}
+  		]
+  	}
+  ],
+  "scoring": [
+  	{
+  		"from": 0,
+  		"to": 20,
+  		"verdict": "total dependency"
+  	},
+  	{
+  		"from": 21,
+  		"to": 60,
+  		"verdict": "severe dependency"
+  	},
+  	{
+  		"from": 61,
+  		"to": 90,
+  		"verdict": "moderate dependency"
+  	},
+  	{
+  		"from": 91,
+  		"to": 99,
+  		"verdict": "slight dependency"
+  	},
+  	{
+  		"from": 100,
+  		"to": 100,
+  		"verdict": "independency"
+  	}
+  ]
+}

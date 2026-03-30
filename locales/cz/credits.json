@@ -1,0 +1,15 @@
+{
+    "$type": "playonweb-credits",
+    "version": "1.0",
+    "language": "cz",
+    "credits": [
+        "fontSize=26@Aplikace byla vytvo\u0159ena na 1. l\u00e9ka\u0159sk\u00e9 fakult\u011b Univerzity Karlovy.",
+        null,
+        "Pro dal\u0161\u00ed aplikace nav\u0161tivte Albertov research center",
+        "<http://www.albertov.cz/kote>",
+        null,
+        null,
+        "R\u016fzn\u00e9 vektorov\u00e9 ikony: FlatIcon <http://www.flaticon.com>",
+        "Font Awesome: Dave Gandy <http://fontawesome.io>"
+    ]
+}

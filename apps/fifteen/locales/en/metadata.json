@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Fifteen",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "The Fifteen puzzle consists of 15 squares numbered from 1 to 15 that are placed in a 4\u00d74 \"box\" leaving one position out of the 16 empty. The goal is to reposition the squares from a given arbitrary starting arrangement by sliding them one at a time into the correct configuration (from 1 to 15)."
+    }
+}

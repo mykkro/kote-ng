@@ -1,0 +1,15 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "cz",
+    "translations": {
+        "Total time": "Celkov\u00fd \u010das [s]",
+        "randomMovesNo": "Po\u010det n\u00e1hodn\u00fdch tah\u016f",
+        "gridRows": "Po\u010det \u0159\u00e1dk\u016f m\u0159\u00ed\u017eky",
+        "gridCols": "Po\u010det sloupc\u016f m\u0159\u00ed\u017eky",
+        "gridMines": "Po\u010det min",
+        "Number of moves": "Po\u010det tah\u016f",
+        "Uncover": "Odkr\u00fdt",
+        "Flag": "Ozna\u010dit"
+    }
+}

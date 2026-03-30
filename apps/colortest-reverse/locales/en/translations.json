@@ -1,0 +1,18 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "en",
+    "translations": {
+        "yellow": "yellow",
+        "blue": "blue",
+        "red": "red",
+        "green": "green",
+        "Repeat count": "Repeat count",
+        "Minimum reaction time": "Minimum reaction time",
+        "Average reaction time": "Average reaction time",
+        "matchProbability": "Match probability in %",
+        "Text": "text",
+        "Color": "color",
+        "matchType": "Match type"
+    }
+}

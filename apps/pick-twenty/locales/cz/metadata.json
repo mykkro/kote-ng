@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Najdi posloupnost",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "V t\u00e9to h\u0159e m\u00e1te za \u00fakol hledat posloupnost \u010d\u00edsel. Na obrazovce se objev\u00ed n\u00e1hodn\u011b \u010d\u00edsla po\u010d\u00ednaje od jedn\u00e9. Pokud kliknete na spr\u00e1vn\u00e9 \u010d\u00edslo v posloupnosti (jedni\u010dkou po\u010d\u00ednaje), \u010d\u00edslo zezelen\u00e1 a vy m\u016f\u017eete pokra\u010dovat dal\u0161\u00edm. Zvol\u00edte-li \u010d\u00edslo \u0161patn\u011b, \u010d\u00edslo na chv\u00edli z\u010derven\u00e1. Hra kon\u010d\u00ed jakmile projdete celou posloupnost a zvol\u00edte jej\u00ed posledn\u00ed \u010d\u00edslo."
+    }
+}

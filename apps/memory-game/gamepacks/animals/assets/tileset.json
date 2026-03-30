@@ -1,0 +1,131 @@
+{
+  "$type": "playonweb-tileset",
+  "name": "sampleTileset",
+  "title": "Sample Tileset",
+  "version": "1.0",
+  "width": 256,
+  "height": 256,
+  "count": 15,
+  "tiles": {
+    "game":[
+    {
+      "name": "tile1",
+      "url": "pex01.jpg"
+    },
+    {
+      "name": "tile2",
+      "url": "pex02.jpg"
+    },
+    {
+      "name": "tile3",
+      "url": "pex03.jpg"
+    },
+    {
+      "name": "tile4",
+      "url": "pex04.jpg"
+    },
+    {
+      "name": "tile5",
+      "url": "pex05.jpg"
+    },
+    {
+      "name": "tile6",
+      "url": "pex06.jpg"
+    },
+    {
+      "name": "tile7",
+      "url": "pex07.jpg"
+    },
+    {
+      "name": "tile8",
+      "url": "pex08.jpg"
+    },
+    {
+      "name": "tile9",
+      "url": "pex09.jpg"
+    },
+    {
+      "name": "tile10",
+      "url": "pex10.jpg"
+    },
+    {
+      "name": "tile11",
+      "url": "pex11.jpg"
+    },
+    {
+      "name": "tile12",
+      "url": "pex12.jpg"
+    },
+    {
+      "name": "tile13",
+      "url": "pex13.jpg"
+    },
+    {
+      "name": "tile14",
+      "url": "pex14.jpg"
+    },
+    {
+      "name": "tile15",
+      "url": "pex15.jpg"
+    },
+    {
+      "name": "tile16",
+      "url": "pex16.jpg"
+    },
+    {
+      "name": "tile17",
+      "url": "pex17.jpg"
+    },
+    {
+      "name": "tile18",
+      "url": "pex18.jpg"
+    },
+    {
+      "name": "tile19",
+      "url": "pex19.jpg"
+    },
+    {
+      "name": "tile20",
+      "url": "pex20.jpg"
+    },
+    {
+      "name": "tile21",
+      "url": "pex21.jpg"
+    },
+    {
+      "name": "tile22",
+      "url": "pex22.jpg"
+    },
+    {
+      "name": "tile24",
+      "url": "pex24.jpg"
+    },
+    {
+      "name": "tile25",
+      "url": "pex25.jpg"
+    },
+    {
+      "name": "tile26",
+      "url": "pex26.jpg"
+    },
+    {
+      "name": "tile27",
+      "url": "pex27.jpg"
+    },
+    {
+      "name": "tile28",
+      "url": "pex28.jpg"
+    },
+    {
+      "name": "tile29",
+      "url": "pex29.jpg"
+    }
+  ],
+  "backgrounds": [
+    {
+      "name": "tileBackground",
+      "url": "tileback.png"
+    }
+  ]
+  }
+}

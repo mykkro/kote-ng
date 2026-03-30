@@ -1,0 +1,67 @@
+{
+  "$type": "playonweb-tileset",
+  "name": "sampleTileset",
+  "title": "Sample Tileset",
+  "version": "1.0",
+  "width": 256,
+  "height": 256,
+  "count": 10,
+  "tiles": {
+    "game":[
+    {
+      "name": "tile1",
+      "url": "baseball_ball.png"
+    },
+    {
+      "name": "tile2",
+      "url": "basketball_ball.png"
+    },
+    {
+      "name": "tile3",
+      "url": "boxing_gloves.png"
+    },
+    {
+      "name": "tile5",
+      "url": "football_ball.png"
+    },
+    {
+      "name": "tile4",
+      "url": "volleyball_ball.png"
+    },
+    {
+      "name": "tile6",
+      "url": "golf_ball.png"
+    },
+    {
+      "name": "tile7",
+      "url": "hockey_iceskate.png"
+    },
+    {
+      "name": "tile8",
+      "url": "motorsport_helmet.png"
+    },
+    {
+      "name": "tile9",
+      "url": "skateboard.png"
+    },
+    {
+      "name": "tile10",
+      "url": "soccer_ball.png"
+    },
+    {
+      "name": "tile11",
+      "url": "tennis_ball.png"
+    },
+    {
+      "name": "tile12",
+      "url": "tennis.png"
+    }
+  ],
+  "backgrounds": [
+    {
+      "name": "tileBackground",
+      "url": "tileback.png"
+    }
+  ]
+  }
+}

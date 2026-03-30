@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Patn\u00e1ctka",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "Hlavolam Patn\u00e1ctka je tvo\u0159en \u0161estn\u00e1cti poli. V patn\u00e1cti z nich jsou obsa\u017eeny d\u00edlky, v jednom poli je \"mezera\". Ta umo\u017e\u0148uje p\u0159esouv\u00e1n\u00ed jednotliv\u00fdch d\u00edlk\u016f. C\u00edlem hlavolamu je se\u0159adit d\u00edlky tak, aby tvo\u0159ily posloupnost \u010d\u00edsel od 1 do 15 a z\u00e1rove\u0148 um\u00edstit mezeru do prav\u00e9ho doln\u00edho rohu hlavolamu."
+    }
+}

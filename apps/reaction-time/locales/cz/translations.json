@@ -1,0 +1,15 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "cz",
+    "translations": {
+        "Hit ratio": "Procento z\u00e1sah\u016f",
+        "Average delay": "Pr\u016fm\u011brn\u00e1 doba reakce",
+        "N": "Po\u010det opakov\u00e1n\u00ed",
+        "avgFrameLen": "\u010cas do dal\u0161\u00edho objektu [ms]",
+        "allowedShift": "Povolen\u00e1 odchylka \u010dasu [ms]",
+        "targetTimeout": "Objekt zmiz\u00ed za [ms]",
+        "Best reaction time": "Nejkrat\u0161\u00ed doba reakce",
+        "Average reaction time": "Pr\u016fm\u011brn\u00e1 doba reakce"
+    }
+}

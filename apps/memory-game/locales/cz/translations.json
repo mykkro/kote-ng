@@ -1,0 +1,9 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "cz",
+    "translations": {
+        "End": "Konec",
+        "All cards found!": "V\u0161echny dvojice nalezeny!"
+    }
+}

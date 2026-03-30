@@ -1,0 +1,35 @@
+[
+    {
+        "description": "",
+        "name": "N",
+        "title": "Repeat count",
+        "default": 10,
+        "type": "int",
+        "maxValue": 50,
+        "minValue": 1
+    },
+    {
+        "description": "",
+        "name": "matchProbability",
+        "title": "",
+        "default": 35,
+        "type": "int",
+        "maxValue": 100,
+        "minValue": 0
+    },
+    {
+        "valueLabels": [
+            "Color",
+            "Text"
+        ],
+        "values": [
+            "color",
+            "text"
+        ],
+        "description": "",
+        "title": "",
+        "default": "color",
+        "type": "string",
+        "name": "matchType"
+    }
+]

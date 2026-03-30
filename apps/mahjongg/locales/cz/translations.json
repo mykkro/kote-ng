@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "cz",
+    "translations": {
+        "Show mistakes": "Zv\u00fdraznit chyby",
+        "Total time": "Celkov\u00fd \u010das [s]",
+        "All pairs found!": "Dobr\u00e1 pr\u00e1ce!",
+        "No more moves left!": "Dal\u0161\u00ed tah nen\u00ed mo\u017en\u00fd!"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Najdi 9 rozd\u00edl\u016f",
+        "subtitle": "Dok\u00e1\u017ee\u0161 naj\u00edt v\u0161ech 9 rozd\u00edl\u016f mezi obr\u00e1zky?",
+        "description": " ",
+        "instructions": "Uvid\u00ed\u0161 2 obr\u00e1zky. Budou t\u00e9m\u011b\u0159 stejn\u00e9, li\u0161\u00ed se pouze na 9 m\u00edstech. Ozna\u010d m\u00edsta, kde se obr\u00e1zky li\u0161\u00ed, v lev\u00e9m z obr\u00e1zk\u016f. A\u017e ozna\u010d\u00ed\u0161 v\u0161ech 9 m\u00edst kde si mysl\u00ed\u0161 \u017ee se rozd\u00edly nal\u00e9zaj\u00ed, klikni na OK pro vyhodnocen\u00ed."
+    }
+}

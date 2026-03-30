@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Reak\u010dn\u00ed test  \u2013 barvy",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "Zvolte v\u017edy co nejrychleji \u010dtverec se shodnou barvou, jakou m\u00e1 n\u00e1pis, kter\u00fd se objev\u00ed uprost\u0159ed."
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "$type": "playonweb-credits",
+    "version": "1.0",
+    "language": "cz",
+    "credits": [
+        "Kameny pro hru Majhongg: Martin Persson <http://www.martinpersson.org>"
+    ]
+}

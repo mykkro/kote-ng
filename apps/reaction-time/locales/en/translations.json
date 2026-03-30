@@ -1,0 +1,15 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "en",
+    "translations": {
+        "Hit ratio": "Hit ratio",
+        "Average delay": "Average delay",
+        "N": "Repeat count",
+        "avgFrameLen": "Time until next object [ms]",
+        "allowedShift": "Time tolerance [ms]",
+        "targetTimeout": "Object disappears after [ms]",
+        "Best reaction time": "Best reaction time",
+        "Average reaction time": "Average reaction time"
+    }
+}

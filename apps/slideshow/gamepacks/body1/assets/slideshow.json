@@ -1,0 +1,55 @@
+{
+  "$type": "playonweb-slideshow",
+  "name": "sampleSlideshow",
+  "title": "Sample Slideshow",
+  "version": "1.0",
+  "language": "en",
+  "slides": [
+    {
+      "type": "intro",
+      "name": "intro",
+      "title": "Sample Exercise",
+      "subtitle": "Six steps",
+      "description": "Enter description here"
+    },
+    {
+      "type": "content",
+      "name": "slide1",
+      "backgroundUrl": "slide1.png",
+      "title": "Enter title here",
+      "subtitle": "Enter subtitle here"
+    },
+    {
+      "type": "content",
+      "name": "slide2",
+      "backgroundUrl": "slide2.png"
+    },
+    {
+      "type": "content",
+      "name": "slide3",
+      "backgroundUrl": "slide3.png"
+    },
+    {
+      "type": "content",
+      "name": "slide4",
+      "backgroundUrl": "slide4.png"
+    },
+    {
+      "type": "content",
+      "name": "slide5",
+      "backgroundUrl": "slide5.png"
+    },
+    {
+      "type": "content",
+      "name": "slide6",
+      "backgroundUrl": "slide6.png"
+    },
+    {
+      "type": "outro",
+      "name": "outro",
+      "title": "End of Sample Exercise",
+      "subtitle": "End of six steps",
+      "description": "Enter description here"
+    }
+  ]
+}

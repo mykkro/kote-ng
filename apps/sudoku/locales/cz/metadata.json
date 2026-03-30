@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Sudoku",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "Vypl\u0148te sudoku tak, aby v\u00a0\u017e\u00e1dn\u00e9m \u0159\u00e1dku, sloupci ani nebylo \u017e\u00e1dn\u00e9 \u010d\u00edslo dvakr\u00e1t."
+    }
+}

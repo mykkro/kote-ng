@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Dual N-Back",
+        "subtitle": "Procvi\u010dte svoji pracovn\u00ed pam\u011b\u0165",
+        "description": " ",
+        "instructions": "Na za\u010d\u00e1tku hry se objev\u00ed modr\u00fd \u010dtverec na jedn\u00e9 z\u00a0dev\u00edti mo\u017en\u00fdch pozic. Zapamatujte si, kde se \u010dtverec objevil. Po n\u011bkolika vte\u0159in\u00e1ch prodlevy se objev\u00ed \u010dtverec znovu na stejn\u00e9m, nebo jin\u00e9m m\u00edst\u011b. Pokud se objevil na takov\u00e9m m\u00edst\u011b, na kter\u00e9m se objevil o N zobrazen\u00ed d\u0159\u00edve, zm\u00e1\u010dkn\u011bte tla\u010d\u00edtko s\u00a0n\u00e1pisem \u201epozice\u201c ve spodn\u00ed \u010d\u00e1sti obrazovky.\nD\u00e1le sledujete, zda barva/tvar zobrazen\u00e9ho \u010dtverce se shoduje s\u00a0barvou/tvarem objektu, kter\u00fd se objevil o N zobrazen\u00ed d\u0159\u00edve. Podle toho, jak\u00e1 varianta nastala, zvol\u00edte tla\u010d\u00edtko ve spodn\u00ed \u010d\u00e1sti obrazovky.\nVhodn\u00e9 je nejprve procvi\u010dit \u00falohu Single N-Back a za\u010d\u00edt od obt\u00ed\u017enosti N=1.\n"
+    }
+}

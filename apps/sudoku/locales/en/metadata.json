@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Sudoku",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": " "
+    }
+}

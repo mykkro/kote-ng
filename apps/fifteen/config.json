@@ -1,0 +1,11 @@
+[
+    {
+        "name": "randomMovesNo",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 1,
+        "maxValue": 100,
+        "default": 30
+    }
+]

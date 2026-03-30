@@ -1,0 +1,72 @@
+{
+    "$type": "playonweb-fifteen-tileset", 
+    "tiles": [
+        {
+            "url": "tile000.png", 
+            "name": "tile000"
+        }, 
+        {
+            "url": "tile001.png", 
+            "name": "tile001"
+        }, 
+        {
+            "url": "tile002.png", 
+            "name": "tile002"
+        }, 
+        {
+            "url": "tile003.png", 
+            "name": "tile003"
+        }, 
+        {
+            "url": "tile004.png", 
+            "name": "tile004"
+        }, 
+        {
+            "url": "tile005.png", 
+            "name": "tile005"
+        }, 
+        {
+            "url": "tile006.png", 
+            "name": "tile006"
+        }, 
+        {
+            "url": "tile007.png", 
+            "name": "tile007"
+        }, 
+        {
+            "url": "tile008.png", 
+            "name": "tile008"
+        }, 
+        {
+            "url": "tile009.png", 
+            "name": "tile009"
+        }, 
+        {
+            "url": "tile010.png", 
+            "name": "tile010"
+        }, 
+        {
+            "url": "tile011.png", 
+            "name": "tile011"
+        }, 
+        {
+            "url": "tile012.png", 
+            "name": "tile012"
+        }, 
+        {
+            "url": "tile013.png", 
+            "name": "tile013"
+        }, 
+        {
+            "url": "tile014.png", 
+            "name": "tile014"
+        }, 
+        {
+            "url": "tile015.png", 
+            "name": "tile015"
+        }
+    ], 
+    "version": "1.0", 
+    "name": "sampleTileset", 
+    "title": "Sample Tileset"
+}

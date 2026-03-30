@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Single N-Back",
+        "subtitle": "Procvi\u010dte svoji pracovn\u00ed pam\u011b\u0165",
+        "description": " ",
+        "instructions": "Na za\u010d\u00e1tku hry se objev\u00ed modr\u00fd \u010dtverec na jedn\u00e9 z\u00a0dev\u00edti mo\u017en\u00fdch pozic. Zapamatujte si, kde se \u010dtverec objevil. Po n\u011bkolika vte\u0159in\u00e1ch prodlevy se objev\u00ed \u010dtverec znovu na stejn\u00e9m, nebo jin\u00e9m m\u00edst\u011b. Pokud se objevil na takov\u00e9m m\u00edst\u011b, na kter\u00e9m byl zobrazen\u00fd o N zobrazen\u00ed d\u0159\u00edve, zm\u00e1\u010dkn\u011bte tla\u010d\u00edtko s\u00a0n\u00e1pisem \u201epozice\u201c ve spodn\u00ed \u010d\u00e1sti obrazovky.\nP\u0159i nastaven\u00ed p\u0159edvolby N=1 sledujete, zda se zobrazil \u010dtverec na stejn\u00e9m m\u00edst\u011b dvakr\u00e1t po sob\u011b.\nP\u0159i nastaven\u00ed p\u0159edvolby N=2 vzpom\u00edn\u00e1te, zda se zobrazil \u010dtverec na stejn\u00e9m m\u00edst\u011b ob jedno zobrazen\u00ed d\u0159\u00edve.\nP\u0159i nastaven\u00ed p\u0159edvolby N=3 sledujete, zda se zobrazil \u010dtverec na stejn\u00e9m m\u00edst\u011b jako o t\u0159i zobrazen\u00ed d\u0159\u00edve.\nVhodn\u00e9 je za\u010d\u00edt nejprve od obt\u00ed\u017enosti N=1.\n"
+    }
+}

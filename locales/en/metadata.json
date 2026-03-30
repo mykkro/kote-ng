@@ -1,0 +1,10 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "C-Tester",
+        "subtitle": "C-Tester",
+        "description": "C-Tester description comes here..."
+    }
+}

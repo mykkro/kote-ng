@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Pairs",
+        "subtitle": " ",
+        "description": "This is a memory game where you need to find matching pairs of tiles.",
+        "instructions": "Turn one tile and then try to find a matching tile. If the tiles match, they will remain turned face up. Repeat until all pairs are matched (all tiles are turned face up)."
+    }
+}

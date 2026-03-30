@@ -1,0 +1,17 @@
+{
+    "$type": "playonweb-translation",
+    "version": "1.0",
+    "language": "cz",
+    "translations": {
+        "Repeat count": "Po\u010det opakov\u00e1n\u00ed",
+        "N": "N",
+        "displayDuration": "Doba zobrazen\u00ed [ms]",
+        "repeatAfter": "Opakuj za [ms]",
+        "dualType": "Typ objekt\u016f",
+        "nColors": "Po\u010det barev",
+        "nSigns": "Po\u010det zna\u010dek",
+        "Colors": "Barvy",
+        "Signs": "Zna\u010dky",
+        "matchProbability": "Pravd\u011bpodobnost shody"
+    }
+}

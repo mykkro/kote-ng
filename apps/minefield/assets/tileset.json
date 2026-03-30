@@ -1,0 +1,60 @@
+{
+    "$type": "playonweb-minefield-tileset", 
+    "tiles": [
+        {
+            "url": "tile000.png", 
+            "name": "empty"
+        }, 
+        {
+            "url": "tile004.png", 
+            "name": "cover"
+        }, 
+        {
+            "url": "tile008.png", 
+            "name": "number1"
+        }, 
+        {
+            "url": "tile009.png", 
+            "name": "number2"
+        }, 
+        {
+            "url": "tile010.png", 
+            "name": "number3"
+        }, 
+        {
+            "url": "tile011.png", 
+            "name": "number4"
+        }, 
+        {
+            "url": "tile012.png", 
+            "name": "number5"
+        }, 
+        {
+            "url": "tile013.png", 
+            "name": "number6"
+        }, 
+        {
+            "url": "tile014.png", 
+            "name": "number7"
+        }, 
+        {
+            "url": "tile015.png", 
+            "name": "number8"
+        }, 
+        {
+            "url": "tile005.png", 
+            "name": "mine"
+        }, 
+        {
+            "url": "tile006.png", 
+            "name": "mine-exploded"
+        }, 
+        {
+            "url": "tile007.png", 
+            "name": "flag"
+        }
+    ], 
+    "version": "1.0", 
+    "name": "sampleTileset", 
+    "title": "Sample Tileset"
+}

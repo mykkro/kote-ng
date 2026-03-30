@@ -1,0 +1,10 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Sample Exercise",
+        "subtitle": " ",
+        "description": " "
+    }
+}

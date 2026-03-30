@@ -1,0 +1,50 @@
+[
+    {
+        "name": "N",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 1,
+        "maxValue": 3,
+        "default": 2
+    },
+    {
+        "name": "L",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 5,
+        "maxValue": 50,
+        "default": 10
+    },
+    {
+        "name": "displayDuration",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 500,
+        "maxValue": 10000,
+        "by": 100,
+        "default": 1000
+    },
+    {
+        "name": "repeatAfter",
+        "title": "",
+        "description": "",
+        "type": "int",
+        "minValue": 500,
+        "maxValue": 10000,
+        "by": 100,
+        "default": 3000
+    },
+    {
+        "name": "matchProbability",
+        "title": "",
+        "description": "",
+        "type": "float",
+        "minValue": 0.2,
+        "maxValue": 0.8,
+        "by": 0.05,
+        "default": 0.4
+    }
+]

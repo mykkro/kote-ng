@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "en",
+    "keys": {
+        "title": "Dual N-Back",
+        "subtitle": "Challenge your working memory",
+        "description": "The n-back task is a continuous performance task that is commonly used as an assessment in cognitive neuroscience to measure a part of working memory and working memory capacity. The subject is presented with a sequence of stimuli, and the task consists of indicating when the current stimulus matches the one from n steps earlier in the sequence. The load factor n can be adjusted to make the task more or less difficult.",
+        "instructions": "When the game starts, you will see an item (a colored box or a traffic sign) placed at one of 9 possible positions in a 3x3 grid. Remember where the item appeared and also remember its color (or sign type). After a few seconds, another item appears in a different position. The task is, to recall if the currently shown item is at the same position or if it has tyhe same shape as the item shown N frames back (N times ago). If you think the current item has the same position as item shown N frames earlier, press the Position button; if it has the same color (sign type), press the Color/Sign button. Press both buttons if both of position and shape/color are matched. Start with N=2 (2-back), and eventually you will be good enough to try 3-back, 4-back and so on."
+    }
+}

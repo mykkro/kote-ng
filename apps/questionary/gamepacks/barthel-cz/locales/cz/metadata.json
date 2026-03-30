@@ -1,0 +1,11 @@
+{
+    "$type": "playonweb-localized-metadata",
+    "version": "1.0",
+    "language": "cz",
+    "keys": {
+        "title": "Barthel Index",
+        "subtitle": " ",
+        "description": " ",
+        "instructions": "Barthel Index je standardizovan\u00fd test ur\u010den\u00fd k\u00a0hodnocen\u00ed sob\u011bsta\u010dnosti. Body jsou p\u0159id\u011blov\u00e1ny podle toho, co pacient re\u00e1ln\u011b dok\u00e1\u017ee. Pln\u00fd po\u010det bod\u016f vylu\u010duje i jen minim\u00e1ln\u00ed pomoc, v\u010detn\u011b n\u00e1pov\u011bdy. Pacient m\u016f\u017ee p\u0159i hodnocen\u00fdch \u010dinnostech vyu\u017e\u00edvat mechanick\u00e9 pom\u016fcky (madla na st\u011bn\u00e1ch, hole, berle apod.).\n\nHodnocen\u00ed sob\u011bsta\u010dnosti:\n\n0-40 bod\u016f\tvysoce z\u00e1visl\u00fd\n45-60 bod\u016f\tz\u00e1vislost st\u0159edn\u00edho stupn\u011b\n65-95 bod\u016f\tlehk\u00e1 z\u00e1vislost\n100 bod\u016f\tnez\u00e1visl\u00fd\n"
+    }
+}

@@ -1,0 +1,57 @@
+.html-widget {
+    position: absolute;
+    display: block;
+    left: 0px;
+    top: 0px;
+}
+.html-button-widget button {
+}            
+.html-button-widget.round-btn button {
+    border-radius: 50%;
+    border: none;
+}
+.html-button-widget.round-btn.btn1 button {
+    border: 5px solid transparent;
+}
+.html-button-widget.round-btn.btn1.correct button {
+    border: 5px solid green;
+}
+.html-button-widget.round-btn.btn1.incorrect button {
+    border: 5px solid red;
+}
+.html-button-widget.round-btn button[disabled], .html-button-widget button[disabled]:hover {
+    background-color: white;
+}
+.html-button-widget.round-btn button:hover {
+    background-color: red;
+}
+
+.html-button-widget button[disabled], .html-button-widget button[disabled]:hover {
+    background-color: lightgray;
+}
+.html-button-widget button:hover {
+    background-color: yellow;
+}
+
+.html-button-widget.highlighted button {
+    background-color: green;
+}
+
+.html-button-widget.highlighted button:hover {
+    background-color: green;
+}
+
+.html-input-widget input {
+    background-color: orange;
+    font-size: 80px;
+    font-weight: bold;
+}
+.html-input-widget input[readonly], .html-input-widget input[readonly]:hover {
+    background-color: gray;
+}
+.html-input-widget input:hover {
+    background-color: yellow;
+}
+.html-series-input-widget input {
+    text-transform: uppercase;
+}
