@@ -1,8 +1,8 @@
 {
-    "$type": "playonweb-localized-metadata",
-    "version": "1.0",
-    "language": "cz",
     "keys": {
         "title": "Pexeso (zv\u00ed\u0159ata)"
-    }
+    }, 
+    "$type": "playonweb-localized-metadata", 
+    "version": "1.0", 
+    "language": "cz"
 }

@@ -1,8 +1,8 @@
 {
-    "$type": "playonweb-localized-metadata",
-    "version": "1.0",
-    "language": "en",
     "keys": {
-        "title": "Pairs (Sports)"
-    }
+        "title": "Memory Game (Sports)"
+    }, 
+    "$type": "playonweb-localized-metadata", 
+    "version": "1.0", 
+    "language": "en"
 }
