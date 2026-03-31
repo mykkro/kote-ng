@@ -17,6 +17,20 @@ if ($profile === '') $profile = 'default';
 
 // ?lang=en | ?lang=cz | ?lang=en-US | ?lang=cs-CZ  (empty = auto-detect in browser)
 $lang = isset($_GET['lang']) ? preg_replace('/[^a-zA-Z0-9_\-]/', '', $_GET['lang']) : '';
+
+// ?app=NAME&gamepack=NAME — direct-launch a specific app (used by apps.php)
+$app      = isset($_GET['app'])      ? preg_replace('/[^a-zA-Z0-9_\-]/', '', $_GET['app'])      : '';
+$gamepack = isset($_GET['gamepack']) ? preg_replace('/[^a-zA-Z0-9_\-]/', '', $_GET['gamepack']) : '';
+
+// ?back=URL — where the Exit button should return to (must be a same-site relative URL)
+$back = '';
+if (!empty($_GET['back'])) {
+    $raw_back = $_GET['back'];
+    // Only allow relative URLs starting with known pages
+    if (preg_match('/^(apps\.php|index\.php)[?&a-zA-Z0-9=_%\-\.]*$/', $raw_back)) {
+        $back = $raw_back;
+    }
+}
 ?><!DOCTYPE html>
 <!--
     Licensed to the Apache Software Foundation (ASF) under one
@@ -73,8 +87,14 @@ $lang = isset($_GET['lang']) ? preg_replace('/[^a-zA-Z0-9_\-]/', '', $_GET['lang
         <link rel="stylesheet" type="text/css" href="css/main.css">
         <title>KoTe</title>
 
-        <!-- Profile and optional language override injected server-side -->
-        <script>var KOTE_PROFILE = <?php echo json_encode($profile); ?>; var KOTE_LANG = <?php echo json_encode($lang); ?>;</script>
+        <!-- Runtime configuration injected server-side -->
+        <script>
+            var KOTE_PROFILE  = <?php echo json_encode($profile); ?>;
+            var KOTE_LANG     = <?php echo json_encode($lang); ?>;
+            var KOTE_APP      = <?php echo json_encode($app); ?>;
+            var KOTE_GAMEPACK = <?php echo json_encode($gamepack ?: 'default'); ?>;
+            var KOTE_BACK_URL = <?php echo json_encode($back); ?>;
+        </script>
     </head>
     <body>
         <div class="app">

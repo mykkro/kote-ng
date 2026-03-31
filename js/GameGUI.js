@@ -144,7 +144,12 @@ class GameGUI extends Base {
     }
 
     showGameSelectionPage() {
-        this.appgui.showMainPage();
+        // If we were launched from an external page (e.g. apps.php), go back there.
+        if (typeof KOTE_BACK_URL !== 'undefined' && KOTE_BACK_URL) {
+            window.location.href = KOTE_BACK_URL;
+        } else {
+            this.appgui.showMainPage();
+        }
     }
 
     // render various widgets

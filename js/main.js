@@ -40,7 +40,12 @@ function startup(db, locale, usertoken) {
     appgui = new AppsGUI(db, locale, usertoken);
     appgui.onReady(function() {
         console.log("AppGUI ready!");
-        appgui.showAppsPage();
+        // Direct-launch mode: ?app= was supplied (e.g. from apps.php).
+        if (typeof KOTE_APP !== 'undefined' && KOTE_APP) {
+            appgui.launchSpecificApp(KOTE_APP, typeof KOTE_GAMEPACK !== 'undefined' ? KOTE_GAMEPACK : 'default');
+        } else {
+            appgui.showAppsPage();
+        }
     });
     appgui.init();
 }

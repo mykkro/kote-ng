@@ -371,6 +371,19 @@ class AppsGUI extends Base {
         }
     }
 
+    // Launch a specific app by name (used when arriving from apps.php via ?app=).
+    // Shows the Exit button so the user can navigate back to KOTE_BACK_URL.
+    launchSpecificApp(appName, gamepackName) {
+        this.resetScene();
+        var instance = this.index.instance(appName, gamepackName || 'default', this.locale);
+        if (!instance) {
+            console.error('launchSpecificApp: app not found', appName, gamepackName);
+            return;
+        }
+        var engine = new GameGUI(this, instance);
+        engine.start();
+    }
+
     launchApp(selectedApp) {
         var self = this;
         console.log("AppsGUI.launchApp", selectedApp);
