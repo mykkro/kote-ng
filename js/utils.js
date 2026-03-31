@@ -264,6 +264,17 @@ if (!Object.keys) {
 */
 
 
+function generateUUID() {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0;
+        var v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 String.prototype.hashCode = function() {
   var hash = 0, i, chr;
   if (this.length === 0) return hash;
@@ -302,19 +313,3 @@ var h = function(tag, attrs) {
     return el;
 };
 
-var pouchDbJsonDump = function(db) {
-   db.allDocs({
-    include_docs: true,
-    attachments: true
-  }).then(function (result) {
-    console.log(result);
-    console.log("Rows: "+result.rows.length);
-
-    // start - logging enabled...
-    
-
-  }).catch(function (err) {
-    console.log(err);
-    
-  });  
-}

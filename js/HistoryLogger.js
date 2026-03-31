@@ -1,135 +1,71 @@
 class HistoryLogger extends Base {
     constructor(db, locale, usertoken) {
         super();
-        console.log("History.constructor", db, locale, usertoken);
         this.db = db;
         this.locale = locale;
         this.usertoken = usertoken;
+        this.currentSessionId = null;
     }
-    stringifySettings(settings) {
-        var out = [];
-        for(var key in settings) {
-            out.push(key+"="+settings[key]);
-        }
-        return out.join(",");
-    }
+
     logGameEvent(game, gamepack, locale, settings, eventType, eventData, eventData2, eventData3) {
         var timestamp = new Date().toISOString();
-        var settingsStr = this.stringifySettings(settings);
-        var idStr = game + ":" + gamepack + ":" + locale + ":" + settingsStr;
-        console.log("Log game event:", this.usertoken, timestamp, idStr, idStr.hashCode(), eventType, eventData, eventData2, eventData3);
-        var logItem = {
-            "$type": "game-event",
-            "_id": timestamp,
-            "usertoken": this.usertoken,
-            "timestamp": timestamp,
-            "game": game,
-            "gamepack": gamepack,
-            "locale": locale,
-            "settings": settings,
-            "ident": idStr,
-            "hash": idStr.hashCode(),
-            "eventType": eventType,
-            "eventData": eventData,
-            "eventData2": eventData2,
-            "eventData3": eventData3
+
+        // Session lifecycle: create UUID on gameStarted, clear after finish/abort.
+        if (eventType === 'gameStarted') {
+            this.currentSessionId = generateUUID();
         }
+
+        var sessionId = this.currentSessionId;
+
+        var logItem = {
+            '$type':      'game-event',
+            '_id':        sessionId || timestamp,
+            'sessionId':  sessionId,
+            'profile':    this.usertoken,
+            'timestamp':  timestamp,
+            'game':       game,
+            'gamepack':   gamepack,
+            'locale':     locale,
+            'settings':   settings,
+            'eventType':  eventType,
+            'eventData':  eventData,
+            'eventData2': eventData2,
+            'eventData3': eventData3
+        };
+
         this.storeToDB(logItem);
+
+        if (eventType === 'gameFinished' || eventType === 'gameAborted') {
+            this.currentSessionId = null;
+        }
     }
+
     storeToDB(logItem) {
         var self = this;
-        if(!self.db) {
-            // database not available...
-            // TODO use local storage!
-        } else {
-          self.db.put(logItem, function callback(err, result) {
-            // console.log("PouchDB.put:", err, result);
-          });
-        }
+        if (!self.db) return;
+        self.db.put(logItem);
     }
+
     renderHistory(loc, data, messageIfEmpty) {
-        var makeGameTitle = function(gameTitle) {
-            return h('span', { 'class': 'gametitle' }, gameTitle);
-        }
-
-        var makeGamepackTitle = function(gamepackTitle) {
-            return h('span', { 'class': 'gamepacktitle' }, gamepackTitle);
-        }
-
-        var makeLocaleWidget = function(locale) {
-            return h('span', null, locale);
-        }
-
-        var makeSettingsWidget = function(settings) {
-            var si = [];
-            for(var s in settings) {
-                si.push(s + "=" + settings[s]);
-            }
-            return h('div', { 'class': 'gamesettings' }, si.join(", "));
-        }
-
-        var makeGameItem = function(rec) {
-            var game     = rec.game;
-            var gamepack = rec.gamepack;
-            var locale   = rec.locale;
-            return h('div', { 'class': 'gameitem' },
-                h('div', { 'class': 'gametitlebar' },
-                    makeGameTitle(game),
-                    makeGamepackTitle(gamepack),
-                    makeLocaleWidget(locale)
-                ),
-                makeSettingsWidget(rec.settings)
-            );
-        }
-
-        var makeDateTime = function(date, time) {
-            return h('div', { 'class': 'datetime' },
-                h('div', { 'class': 'gamedate' }, date),
-                h('div', { 'class': 'gametime' }, time)
-            );
-        }
-
-        var makeResults = function(results) {
-            var res = h('div', { 'class': 'gameresults' });
-            var rr = [];
-            results.forEach(function(r) {
-                if(typeof(r) == "string") {
-                    var parts = r.split(":");
-                    if(parts.length == 2) {
-                        rr.push({ label: parts[0], value: parts[1] });
-                    }
-                }
-            });
-            rr.forEach(function(r) {
-                console.log(r.label, r.value);
-                res.appendChild(
-                    h('div', { 'class': 'gameresult' },
-                        h('div', { 'class': 'gamelabel' }, r.label),
-                        h('div', { 'class': 'gamevalue' }, r.value)
-                    )
-                );
-            });
-            return res;
-        }
-
         var records = data.docs || [];
         var historyForm = document.getElementById('history-form');
         historyForm.innerHTML = '';
 
-        if(records.length == 0) {
+        if (records.length === 0) {
             historyForm.appendChild(h('div', { 'class': 'historyempty' }, messageIfEmpty));
             return;
         }
 
-        // group records by ident
+        // Group records by ident (game + gamepack + locale + settings combo).
         var idents   = [];
         var identMap = {};
         records.forEach(function(r) {
-            if(r.ident in identMap) {
-                identMap[r.ident].push(r);
+            var ident = r.ident || r.game;
+            if (ident in identMap) {
+                identMap[ident].push(r);
             } else {
-                idents.push(r.ident);
-                identMap[r.ident] = [r];
+                idents.push(ident);
+                identMap[ident] = [r];
             }
         });
 
@@ -137,25 +73,70 @@ class HistoryLogger extends Base {
         historyForm.appendChild(out);
 
         idents.forEach(function(ident) {
-            var records = identMap[ident];
-            var first   = records[0];
-            var gi = h('div', { 'class': 'gametopitem' });
+            var recs  = identMap[ident];
+            var first = recs[0];
+            var gi    = h('div', { 'class': 'gametopitem' });
             gi.appendChild(makeGameItem(first));
-            records.forEach(function(r) {
+            recs.forEach(function(r) {
                 var ts   = r.timestamp;
                 var dt   = new Date(ts);
                 var date = dt.toLocaleDateString(loc);
                 var time = dt.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                var result = r.eventData3 || [];
-                console.log("Rec:", date, time, result);
+                var report = r.eventData3 || [];
                 gi.appendChild(
                     h('div', { 'class': 'gamerecord' },
                         makeDateTime(date, time),
-                        makeResults(result)
+                        makeResults(report)
                     )
                 );
             });
             out.appendChild(gi);
         });
+
+        // ---- helpers ----
+
+        function makeGameItem(rec) {
+            return h('div', { 'class': 'gameitem' },
+                h('div', { 'class': 'gametitlebar' },
+                    h('span', { 'class': 'gametitle' },     rec.game     || ''),
+                    h('span', { 'class': 'gamepacktitle' }, rec.gamepack || ''),
+                    h('span', null,                         rec.locale   || '')
+                ),
+                makeSettingsWidget(rec.settings)
+            );
+        }
+
+        function makeSettingsWidget(settings) {
+            var si = [];
+            for (var s in (settings || {})) {
+                si.push(s + '=' + settings[s]);
+            }
+            return h('div', { 'class': 'gamesettings' }, si.join(', '));
+        }
+
+        function makeDateTime(date, time) {
+            return h('div', { 'class': 'datetime' },
+                h('div', { 'class': 'gamedate' }, date),
+                h('div', { 'class': 'gametime' }, time)
+            );
+        }
+
+        function makeResults(results) {
+            var res = h('div', { 'class': 'gameresults' });
+            (results || []).forEach(function(r) {
+                if (typeof r === 'string') {
+                    var parts = r.split(':');
+                    if (parts.length >= 2) {
+                        res.appendChild(
+                            h('div', { 'class': 'gameresult' },
+                                h('div', { 'class': 'gamelabel' }, parts[0]),
+                                h('div', { 'class': 'gamevalue' }, parts.slice(1).join(':').trim())
+                            )
+                        );
+                    }
+                }
+            });
+            return res;
+        }
     }
 }
