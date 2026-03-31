@@ -63,14 +63,12 @@ function esc($s) {
 // ---------------------------------------------------------------------------
 $apps = [];
 foreach ($indexData['apps'] as $app) {
-    // App-level locale
     $appLocale = null;
     foreach ($app['locales'] as $l) {
         if ($l['name'] === $locale) { $appLocale = $l; break; }
     }
     if (!$appLocale) continue;
 
-    // Gamepack + gamepack locale
     $gamepackName = $app['gamepackName'] ?? 'default';
     $gamepack = null;
     foreach ($app['gamepacks'] as $gp) {
@@ -83,7 +81,6 @@ foreach ($indexData['apps'] as $app) {
     }
     if (!$gpLocale) continue;
 
-    // Title / subtitle / description / instructions — gamepack locale wins over app locale
     $title        = $gpLocale['metadata']['title']        ?? $appLocale['metadata']['title']        ?? $app['name'];
     $subtitle     = $gpLocale['metadata']['subtitle']     ?? $appLocale['metadata']['subtitle']     ?? '';
     $description  = $gpLocale['metadata']['description']  ?? $appLocale['metadata']['description']  ?? '';
@@ -92,17 +89,14 @@ foreach ($indexData['apps'] as $app) {
     $description  = trim($description);
     $instructions = trim($instructions);
 
-    // Config fields: gamepack-level config overrides app-level config (null = inherit)
     $config = $app['config'] ?? [];
     if (!empty($gamepack['config'])) $config = $gamepack['config'];
 
-    // Tags
     $tags = [];
     foreach ($app['tags'] ?? [] as $tag) {
         $tags[] = $tr[$tag] ?? $tag;
     }
 
-    // Preview URL (same resolution order as MetaInstance in Meta.js)
     $previewUrl = null;
     if ($app['preview']          ?? false) $previewUrl = "apps/{$app['name']}/preview.png";
     if ($appLocale['preview']    ?? false) $previewUrl = "apps/{$app['name']}/locales/{$locale}/preview.png";
@@ -125,500 +119,221 @@ foreach ($indexData['apps'] as $app) {
 }
 
 // ---------------------------------------------------------------------------
-// Build the self-referencing URL (for back links, lang switcher, etc.)
+// Build the self-referencing URL
 // ---------------------------------------------------------------------------
 $selfBase = 'apps.php?profile=' . urlencode($profile);
 if ($langParam) $selfBase .= '&lang=' . urlencode($langParam);
-
-// The URL that index.php will receive as ?back= when launching a game
-$backUrl = $selfBase;
-
-// App title
+$backUrl  = $selfBase;
 $appTitle = $fwMeta['title'] ?? 'KoTe';
 
 ?><!DOCTYPE html>
-<html lang="<?= esc($locale) ?>">
+<html lang="<?= esc($locale) ?>" data-bs-theme="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= esc($appTitle) ?></title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
     <style>
-        /* ------------------------------------------------------------------ */
-        /* apps.php — standalone HTML launcher                                 */
-        /* ------------------------------------------------------------------ */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #1a1a2e; }
 
-        body {
-            font-family: system-ui, sans-serif;
-            background: var(--color-bg, #1a1a2e);
-            color: var(--color-text, #e0e0e0);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Top bar */
-        .topbar {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: .75rem 1.5rem;
-            background: rgba(255,255,255,.05);
-            border-bottom: 1px solid rgba(255,255,255,.1);
-            flex-wrap: wrap;
-        }
-        .topbar-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #f90;
-            flex: 1;
-        }
-        .topbar-profile {
-            font-size: .85rem;
-            opacity: .7;
-        }
-        .lang-switch a {
-            padding: .25rem .5rem;
-            border-radius: 4px;
-            text-decoration: none;
-            color: inherit;
-            font-size: .85rem;
-            opacity: .6;
-            transition: opacity .15s;
-        }
-        .lang-switch a.active, .lang-switch a:hover { opacity: 1; font-weight: 600; }
-
-        /* Main content area */
-        main {
-            flex: 1;
-            padding: 1.5rem;
-            max-width: 1100px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        /* App grid */
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .app-card {
-            background: rgba(255,255,255,.07);
-            border: 1px solid rgba(255,255,255,.12);
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            transition: transform .15s, background .15s;
-            display: flex;
-            flex-direction: column;
-        }
-        .app-card:hover {
-            transform: translateY(-3px);
-            background: rgba(255,255,255,.13);
-        }
-        .app-card-preview {
-            width: 100%;
-            aspect-ratio: 1;
-            object-fit: cover;
-            background: rgba(0,0,0,.3);
-        }
-        .app-card-preview-placeholder {
-            width: 100%;
-            aspect-ratio: 1;
-            background: rgba(255,153,0,.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: #f90;
-        }
-        .app-card-body {
-            padding: .75rem;
-            flex: 1;
-        }
-        .app-card-title {
-            font-size: .95rem;
-            font-weight: 600;
-            line-height: 1.3;
-            margin-bottom: .25rem;
-        }
-        .app-card-subtitle {
-            font-size: .8rem;
-            opacity: .6;
-        }
-        .app-card-tags {
-            padding: 0 .75rem .6rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: .3rem;
-        }
-        .app-card-tag {
-            font-size: .7rem;
-            padding: .15rem .45rem;
-            border-radius: 999px;
-            background: rgba(255,153,0,.2);
-            color: #f90;
-        }
-
-        /* Action bar — second row of topbar */
-        .action-bar {
-            display: flex;
-            gap: .75rem;
-            flex-wrap: wrap;
-            padding: .5rem 1.5rem;
-            background: rgba(255,255,255,.03);
-            border-bottom: 1px solid rgba(255,255,255,.08);
-        }
-        .action-bar button {
-            padding: .4rem 1.1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,.2);
-            background: rgba(255,255,255,.08);
-            color: inherit;
-            font-size: .9rem;
-            cursor: pointer;
-            transition: background .15s;
-        }
-        .action-bar button:hover, .action-bar button.active {
-            background: rgba(255,153,0,.25);
-            border-color: #f90;
-            color: #f90;
-        }
-
-        /* Section pages (history / about / settings) — replace the grid */
-        .section-page {
-            display: none;
-            padding-bottom: 2rem;
-        }
+        /* Section visibility */
+        .section-page { display: none; }
         .section-page.open { display: block; }
-        .section-page h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #f90;
-            margin-bottom: 1.25rem;
-        }
+        .in-section #btn-back   { display: inline-flex !important; }
+        .in-section #action-bar { display: none !important; }
+        .in-section #app-grid   { display: none !important; }
 
-        /* Back button in topbar */
-        .btn-back {
-            display: none;
-            align-items: center;
-            gap: .4rem;
-            padding: .35rem .85rem;
-            border-radius: 7px;
-            border: 1px solid rgba(255,255,255,.25);
-            background: rgba(255,255,255,.08);
-            color: inherit;
-            font-size: .9rem;
-            cursor: pointer;
-            transition: background .15s;
-        }
-        .btn-back:hover { background: rgba(255,153,0,.25); border-color: #f90; color: #f90; }
-        .in-section .btn-back   { display: flex; }
-        .in-section .action-bar { display: none; }
-        .in-section .app-grid   { display: none; }
-
-        /* History panel — light background, dark text */
-        #panel-history {
-            background: #fff;
-            color: #111;
-            border-radius: 10px;
-            padding: 1.25rem;
-        }
-        #panel-history h2 { color: #c70; }
-        #panel-history .history-empty { color: #555; }
-        #panel-history .gametopitem { border-color: #ccc; }
-        #panel-history .gametitlebar { background: rgba(200,120,0,.15); }
-        #panel-history .gametitle    { color: #222; }
-        #panel-history .gamepacktitle{ color: #555; }
-        #panel-history .gamesettings { color: #444; }
-        #panel-history .datetime     { color: #555; }
-        #panel-history .gamerecord   { border-color: #e0e0e0; }
-        #panel-history .gameresult   { background: rgba(0,0,0,.06); color: #222; }
-        #panel-history .gamesettings { color: #333; }
-        #panel-history .gamelabel    { color: #333; }
-        #panel-history .gamevalue    { color: #111; }
-        .history-empty { opacity: .6; font-style: italic; }
-
-        /* History inside game launcher tab — same dark-text treatment */
-        .game-tab-box .gametopitem   { border-color: #ccc; background: #fff; border-radius: 6px; }
-        .game-tab-box .gametitlebar  { background: rgba(200,120,0,.15); }
-        .game-tab-box .gametitle     { color: #222; }
-        .game-tab-box .gamepacktitle { color: #555; }
-        .game-tab-box .gamesettings  { color: #333; }
-        .game-tab-box .gamerecord    { border-color: #e0e0e0; }
-        .game-tab-box .datetime      { color: #555; }
-        .game-tab-box .gameresult    { background: rgba(0,0,0,.06); color: #222; }
-        .game-tab-box .gamelabel     { color: #333; }
-        .game-tab-box .gamevalue     { color: #111; }
-        .game-tab-box .history-empty { color: #555; }
-        .gametopitem {
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            overflow: hidden;
-        }
-        .gametitlebar {
-            background: rgba(255,153,0,.15);
-            padding: .5rem .75rem;
-            display: flex;
-            gap: .75rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .gametitle     { font-weight: 700; font-size: .95rem; }
-        .gamepacktitle { opacity: .7; font-size: .85rem; }
-        .gamesettings  { opacity: .6; font-size: .8rem; padding: .25rem .75rem; }
-        .gamerecord {
-            display: flex;
-            gap: 1rem;
-            padding: .5rem .75rem;
-            border-top: 1px solid rgba(255,255,255,.07);
-            flex-wrap: wrap;
-            align-items: flex-start;
-        }
-        .datetime { font-size: .8rem; opacity: .6; white-space: nowrap; }
-        .gameresults { display: flex; flex-wrap: wrap; gap: .5rem; }
-        .gameresult {
-            font-size: .82rem;
-            background: rgba(255,255,255,.06);
-            border-radius: 6px;
-            padding: .2rem .55rem;
-        }
-        .gamelabel { display: inline; opacity: .7; }
-        .gamelabel::after { content: ': '; }
-        .gamevalue { display: inline; font-weight: 600; }
-
-        /* Game launcher panel */
-        #panel-game { color: #e8e8e8; }
-        .game-launcher { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
-        .game-preview-wrap {
-            width: 100%; max-width: 420px;
-            border-radius: 12px; overflow: hidden;
-            cursor: pointer; position: relative;
-        }
-        .game-preview-wrap img {
-            width: 100%; display: block;
-            transition: opacity .15s;
-        }
-        .game-preview-wrap:hover img { opacity: .85; }
-        .game-preview-placeholder {
+        /* App cards */
+        .app-card { text-decoration: none; color: inherit; transition: transform .15s; }
+        .app-card:hover { transform: translateY(-3px); color: inherit; }
+        .app-card-preview { width: 100%; aspect-ratio: 1; object-fit: cover; }
+        .app-card-preview-placeholder {
             width: 100%; aspect-ratio: 1;
-            background: rgba(255,153,0,.1);
             display: flex; align-items: center; justify-content: center;
-            font-size: 5rem; color: #f90;
-            cursor: pointer;
+            font-size: 3rem; color: #f90; background: rgba(255,153,0,.1);
         }
-        .game-preview-wrap .play-overlay {
-            position: absolute; inset: 0;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity .2s;
+
+        /* Game launcher preview */
+        .game-preview-wrap { position: relative; cursor: pointer; max-width: 400px; }
+        .game-preview-wrap img { width: 100%; display: block; border-radius: .5rem; transition: opacity .15s; }
+        .game-preview-wrap:hover img { opacity: .85; }
+        .play-overlay {
+            position: absolute; inset: 0; display: flex;
+            align-items: center; justify-content: center; opacity: 0; transition: opacity .2s;
         }
         .game-preview-wrap:hover .play-overlay { opacity: 1; }
         .play-overlay-circle {
-            width: 72px; height: 72px; border-radius: 50%;
-            background: rgba(0,0,0,.55);
+            width: 68px; height: 68px; border-radius: 50%;
+            background: rgba(0,0,0,.6);
             display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; color: #fff;
+            font-size: 1.8rem; color: #fff;
         }
-        .game-title-block { text-align: center; }
-        .game-title-block h2 { font-size: 1.5rem; font-weight: 700; color: #f90; margin-bottom: .25rem; }
-        .game-title-block p  { font-size: .9rem; opacity: .7; }
-        .game-action-btns {
-            display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center;
+        .game-preview-placeholder {
+            width: 100%; aspect-ratio: 1; max-width: 400px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 5rem; color: #f90; background: rgba(255,153,0,.1);
+            cursor: pointer; border-radius: .5rem;
         }
-        .game-action-btns .btn-launch {
-            font-size: 1.1rem; padding: .65rem 2rem;
-        }
-        .game-tab-content { width: 100%; max-width: 640px; }
-        .game-tab-box {
-            background: rgba(255,255,255,.07);
-            border-radius: 10px; padding: 1.25rem;
-            margin-top: .5rem;
-        }
-        .game-tab-box h3 { font-size: 1rem; font-weight: 700; color: #f90; margin-bottom: .85rem; }
-        .instructions-text { line-height: 1.7; font-size: .92rem; white-space: pre-wrap; }
-        .settings-field { margin-bottom: .85rem; }
-        .settings-field label { display: block; font-size: .85rem; opacity: .75; margin-bottom: .3rem; }
-        .settings-field select, .settings-field input[type=number] {
-            width: 100%; padding: .4rem .6rem;
-            border-radius: 6px; border: 1px solid rgba(255,255,255,.2);
-            background: rgba(255,255,255,.08); color: inherit; font-size: .9rem;
-        }
+        .instructions-text { white-space: pre-wrap; line-height: 1.7; }
 
-        /* Settings panel */
-        .settings-form { display: flex; flex-direction: column; gap: 1rem; max-width: 360px; }
-        .settings-form label { font-size: .9rem; opacity: .8; display: block; margin-bottom: .3rem; }
-        .settings-form select, .settings-form input {
-            width: 100%;
-            padding: .45rem .7rem;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,.2);
-            background: rgba(255,255,255,.08);
-            color: inherit;
-            font-size: .9rem;
-        }
-        .settings-form .btn-row { display: flex; gap: .75rem; margin-top: .5rem; }
-        .btn {
-            padding: .5rem 1.1rem;
-            border-radius: 7px;
-            border: 1px solid rgba(255,255,255,.2);
-            background: rgba(255,255,255,.1);
-            color: inherit;
-            font-size: .9rem;
-            cursor: pointer;
-            transition: background .15s;
-        }
-        .btn-primary {
-            background: #f90;
-            border-color: #f90;
-            color: #000;
-            font-weight: 600;
-        }
-        .btn-primary:hover { background: #ffa820; }
-        .btn:hover { background: rgba(255,255,255,.18); }
+        /* History items — base (dark bg) */
+        .gametopitem  { border: 1px solid rgba(255,255,255,.12); border-radius: .5rem; margin-bottom: 1rem; overflow: hidden; }
+        .gametitlebar { background: rgba(255,153,0,.15); padding: .5rem .75rem; display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; }
+        .gametitle    { font-weight: 700; }
+        .gamepacktitle{ opacity: .7; font-size: .85rem; }
+        .gamesettings { font-size: .8rem; color: #bbb; padding: .2rem .75rem; }
+        .gamerecord   { display: flex; gap: 1rem; padding: .5rem .75rem; border-top: 1px solid rgba(255,255,255,.07); flex-wrap: wrap; }
+        .datetime     { font-size: .8rem; opacity: .6; white-space: nowrap; }
+        .gameresults  { display: flex; flex-wrap: wrap; gap: .4rem; }
+        .gameresult   { font-size: .82rem; background: rgba(255,255,255,.08); border-radius: .35rem; padding: .15rem .5rem; }
+        .gamelabel    { opacity: .8; }
+        .gamelabel::after { content: ': '; }
+        .gamevalue    { font-weight: 600; }
+        .history-empty { opacity: .6; font-style: italic; }
 
-        /* About panel */
-        #panel-about { color: #e8e8e8; }
-        #panel-about p { color: #e8e8e8; }
-        #panel-about h2 { color: #f90; }
-        .credits-line { margin-bottom: .6rem; line-height: 1.6; }
-        .credits-line a { color: #f90; }
+        /* History items — light bg override (used in history panel and game tab) */
+        .history-light .gametopitem   { border-color: #ccc; background: #fff; }
+        .history-light .gametitlebar  { background: rgba(200,120,0,.12); }
+        .history-light .gametitle     { color: #111; }
+        .history-light .gamepacktitle { color: #555; }
+        .history-light .gamesettings  { color: #333; }
+        .history-light .gamerecord    { border-color: #e0e0e0; }
+        .history-light .datetime      { color: #555; opacity: 1; }
+        .history-light .gameresult    { background: rgba(0,0,0,.06); color: #111; }
+        .history-light .gamelabel     { color: #333; opacity: 1; }
+        .history-light .gamevalue     { color: #111; }
+        .history-light .history-empty { color: #555; opacity: 1; }
+
+        /* Credits */
+        .credits-line { margin-bottom: .5rem; line-height: 1.6; }
     </style>
 </head>
 <body>
 
-<!-- Top bar -->
-<header class="topbar">
-    <button class="btn-back" id="btn-back">&#8592; <?= tr('Back') ?></button>
-    <span class="topbar-title" id="topbar-title"><?= esc($appTitle) ?></span>
-    <span class="topbar-profile"><?= esc($profile) ?></span>
-    <nav class="lang-switch">
-        <?php foreach ($languages as $lng): ?>
-            <a href="apps.php?profile=<?= urlencode($profile) ?>&lang=<?= urlencode($lng) ?>"
-               class="<?= $locale === $lng ? 'active' : '' ?>"><?= esc(strtoupper($lng)) ?></a>
-        <?php endforeach; ?>
-    </nav>
-</header>
-
-<!-- Action bar — sits just below the topbar -->
-<nav class="action-bar">
-    <button id="btn-settings"><?= tr('Settings') ?></button>
-    <button id="btn-history"><?= tr('History') ?></button>
-    <button id="btn-about"><?= tr('About') ?></button>
+<!-- Navbar -->
+<nav class="navbar bg-dark border-bottom border-secondary px-3 py-2">
+    <div class="d-flex align-items-center gap-2 w-100">
+        <button class="btn btn-outline-secondary btn-sm d-none" id="btn-back">&#8592; <?= tr('Back') ?></button>
+        <span class="fw-bold fs-5 me-auto" id="topbar-title" style="color:#f90"><?= esc($appTitle) ?></span>
+        <span class="text-secondary small me-2"><?= esc($profile) ?></span>
+        <nav class="d-flex gap-2">
+            <?php foreach ($languages as $lng): ?>
+                <a href="apps.php?profile=<?= urlencode($profile) ?>&lang=<?= urlencode($lng) ?>"
+                   class="text-decoration-none <?= $locale === $lng ? 'text-warning fw-bold' : 'text-secondary' ?>"><?= esc(strtoupper($lng)) ?></a>
+            <?php endforeach; ?>
+        </nav>
+    </div>
 </nav>
 
-<main>
+<!-- Action bar -->
+<div class="d-flex gap-2 px-3 py-2 bg-dark border-bottom border-secondary" id="action-bar">
+    <button class="btn btn-outline-secondary btn-sm" id="btn-settings"><?= tr('Settings') ?></button>
+    <button class="btn btn-outline-secondary btn-sm" id="btn-history"><?= tr('History') ?></button>
+    <button class="btn btn-outline-secondary btn-sm" id="btn-about"><?= tr('About') ?></button>
+</div>
+
+<main class="container-xl py-4">
 
     <!-- Game launcher section -->
     <section class="section-page" id="panel-game">
-        <div class="game-launcher" id="game-launcher">
+        <div class="d-flex flex-column align-items-center gap-3">
             <div class="game-preview-wrap" id="game-preview-wrap">
                 <img id="game-preview-img" src="" alt="" style="display:none">
                 <div class="game-preview-placeholder" id="game-preview-placeholder" style="display:none">&#127918;</div>
                 <div class="play-overlay"><div class="play-overlay-circle">&#9654;</div></div>
             </div>
-            <div class="game-title-block">
-                <h2 id="game-title"></h2>
-                <p id="game-subtitle"></p>
+            <div class="text-center">
+                <h2 class="fw-bold" id="game-title" style="color:#f90"></h2>
+                <p class="text-secondary mb-0" id="game-subtitle"></p>
             </div>
-            <div class="game-action-btns" id="game-action-btns"></div>
-            <div class="game-tab-content" id="game-tab-content"></div>
+            <div class="d-flex flex-wrap gap-2 justify-content-center" id="game-action-btns"></div>
+            <div class="w-100" style="max-width:640px" id="game-tab-content"></div>
         </div>
     </section>
 
-    <!-- Settings section -->
+    <!-- Global settings section -->
     <section class="section-page" id="panel-settings">
-        <h2><?= tr('Settings') ?></h2>
-        <div class="settings-form">
-            <div>
-                <label for="sel-language"><?= tr('Language') ?></label>
-                <select id="sel-language">
+        <h4 class="mb-3" style="color:#f90"><?= tr('Settings') ?></h4>
+        <div style="max-width:360px">
+            <div class="mb-3">
+                <label class="form-label" for="sel-language"><?= tr('Language') ?></label>
+                <select class="form-select form-select-sm" id="sel-language">
                     <?php foreach ($languages as $lng): ?>
                         <option value="<?= esc($lng) ?>" <?= $locale === $lng ? 'selected' : '' ?>><?= esc(strtoupper($lng)) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="btn-row">
-                <button class="btn btn-primary" id="btn-settings-save"><?= tr('Save') ?></button>
-            </div>
-            <div id="settings-msg" style="font-size:.85rem;opacity:.7;"></div>
+            <button class="btn btn-warning btn-sm" id="btn-settings-save"><?= tr('Save') ?></button>
         </div>
     </section>
 
-    <!-- History section -->
+    <!-- Global history section -->
     <section class="section-page" id="panel-history">
-        <h2><?= tr('History') ?></h2>
-        <div id="history-content"><em class="history-empty"></em></div>
+        <h4 class="mb-3" style="color:#f90"><?= tr('History') ?></h4>
+        <div id="history-content" class="history-light"><em class="history-empty"></em></div>
     </section>
 
     <!-- About section -->
     <section class="section-page" id="panel-about">
-        <h2><?= tr('About') ?></h2>
+        <h4 class="mb-3" style="color:#f90"><?= tr('About') ?></h4>
         <div id="about-content">
             <?php
             foreach ($credits as $line) {
                 if (!$line) { echo '<br>'; continue; }
-                // Strip "fontSize=N@" metadata prefix
                 $text = preg_replace('/^[^@]*@/', '', $line);
-                // Split on <...> tokens, process links before HTML-escaping
                 $parts = preg_split('/(<[^>]+>)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
                 $html = '';
                 foreach ($parts as $part) {
                     if (preg_match('/^<([^|>]+)\|([^>]+)>$/', $part, $m)) {
-                        // <url|title>
-                        $html .= '<a href="' . esc($m[1]) . '" target="_blank">' . esc($m[2]) . '</a>';
+                        $html .= '<a href="' . esc($m[1]) . '" target="_blank" class="link-warning">' . esc($m[2]) . '</a>';
                     } elseif (preg_match('/^<(https?:\/\/[^>]+)>$/', $part, $m)) {
-                        // bare <url>
-                        $html .= '<a href="' . esc($m[1]) . '" target="_blank">' . esc($m[1]) . '</a>';
+                        $html .= '<a href="' . esc($m[1]) . '" target="_blank" class="link-warning">' . esc($m[1]) . '</a>';
                     } else {
                         $html .= htmlspecialchars($part, ENT_QUOTES, 'UTF-8');
                     }
                 }
-                echo '<p class="credits-line">' . $html . '</p>';
+                echo '<p class="credits-line text-light">' . $html . '</p>';
             }
             ?>
         </div>
     </section>
 
     <!-- App grid -->
-    <div class="app-grid" id="app-grid">
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3" id="app-grid">
         <?php foreach ($apps as $app): ?>
-        <a class="app-card" href="#"
-           data-app="<?= esc($app['name']) ?>"
-           data-gamepack="<?= esc($app['gamepackName']) ?>">
-            <?php if ($app['preview']): ?>
-                <img class="app-card-preview"
-                     src="<?= esc($app['preview']) ?>"
-                     alt="<?= esc($app['title']) ?>"
-                     loading="lazy">
-            <?php else: ?>
-                <div class="app-card-preview-placeholder">🎮</div>
-            <?php endif; ?>
-            <div class="app-card-body">
-                <div class="app-card-title"><?= esc($app['title']) ?></div>
-                <?php if ($app['subtitle']): ?>
-                    <div class="app-card-subtitle"><?= esc($app['subtitle']) ?></div>
+        <div class="col">
+            <a class="app-card card bg-dark border-secondary h-100" href="#"
+               data-app="<?= esc($app['name']) ?>"
+               data-gamepack="<?= esc($app['gamepackName']) ?>">
+                <?php if ($app['preview']): ?>
+                    <img class="app-card-preview card-img-top"
+                         src="<?= esc($app['preview']) ?>"
+                         alt="<?= esc($app['title']) ?>"
+                         loading="lazy">
+                <?php else: ?>
+                    <div class="app-card-preview-placeholder card-img-top">&#127918;</div>
                 <?php endif; ?>
-            </div>
-            <?php if ($app['tags']): ?>
-                <div class="app-card-tags">
-                    <?php foreach ($app['tags'] as $tag): ?>
-                        <span class="app-card-tag"><?= esc($tag) ?></span>
-                    <?php endforeach; ?>
+                <div class="card-body p-2">
+                    <div class="card-title fw-semibold small mb-1"><?= esc($app['title']) ?></div>
+                    <?php if ($app['subtitle']): ?>
+                        <div class="card-text text-secondary" style="font-size:.75rem"><?= esc($app['subtitle']) ?></div>
+                    <?php endif; ?>
                 </div>
-            <?php endif; ?>
-        </a>
+                <?php if ($app['tags']): ?>
+                    <div class="card-footer p-2 d-flex flex-wrap gap-1 border-secondary">
+                        <?php foreach ($app['tags'] as $tag): ?>
+                            <span class="badge rounded-pill" style="background:rgba(255,153,0,.2);color:#f90;font-size:.65rem"><?= esc($tag) ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </a>
+        </div>
         <?php endforeach; ?>
     </div>
 
 </main>
 
+<script src="js/bootstrap/bootstrap.bundle.min.js"></script>
 <script>
 (function() {
     var PROFILE      = <?= json_encode($profile,      JSON_UNESCAPED_UNICODE) ?>;
@@ -639,14 +354,11 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
     }
 
     // ------------------------------------------------------------------
-    // Section navigation (full-page replace)
+    // Section navigation
     // ------------------------------------------------------------------
     var currentSection = null;
     var SECTION_TITLES = {
-        game:     '',   // filled dynamically
-        settings: t('Settings'),
-        history:  t('History'),
-        about:    t('About')
+        game: '', settings: t('Settings'), history: t('History'), about: t('About')
     };
     var appTitleText = document.getElementById('topbar-title').textContent;
 
@@ -669,7 +381,6 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
         }
         document.body.classList.remove('in-section');
         document.getElementById('topbar-title').textContent = appTitleText;
-        // Reset game tab content so it reloads fresh next time
         document.getElementById('game-tab-content').innerHTML = '';
         document.getElementById('game-tab-content').dataset.tab = '';
     }
@@ -688,14 +399,13 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
     document.querySelectorAll('.app-card[data-app]').forEach(function(card) {
         card.addEventListener('click', function(e) {
             e.preventDefault();
-            var appName     = card.dataset.app;
-            var gamepackName= card.dataset.gamepack;
-            var app = APPS_DATA.find(function(a) { return a.name === appName && a.gamepackName === gamepackName; });
+            var app = APPS_DATA.find(function(a) {
+                return a.name === card.dataset.app && a.gamepackName === card.dataset.gamepack;
+            });
             if (app) openGameLauncher(app);
         });
     });
 
-    // Auto-open game launcher from ?game= query param
     if (INIT_GAME) {
         var initApp = APPS_DATA.find(function(a) { return a.name === INIT_GAME && a.gamepackName === INIT_GAMEPACK; });
         if (initApp) openGameLauncher(initApp);
@@ -704,12 +414,7 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
     // ------------------------------------------------------------------
     // Game launcher
     // ------------------------------------------------------------------
-    var currentGame = null;
-
     function openGameLauncher(app) {
-        currentGame = app;
-
-        // Preview
         var img  = document.getElementById('game-preview-img');
         var ph   = document.getElementById('game-preview-placeholder');
         var wrap = document.getElementById('game-preview-wrap');
@@ -721,32 +426,29 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
         }
         wrap.onclick = function() { launchGame(app); };
 
-        // Title
-        document.getElementById('game-title').textContent   = app.title;
+        document.getElementById('game-title').textContent    = app.title;
         document.getElementById('game-subtitle').textContent = app.subtitle || '';
 
-        // Buttons
         var btns = document.getElementById('game-action-btns');
         btns.innerHTML = '';
 
         function makeBtn(label, cls, cb) {
             var b = document.createElement('button');
-            b.className = 'btn ' + cls;
+            b.className = 'btn btn-sm ' + cls;
             b.textContent = label;
             b.addEventListener('click', cb);
             return b;
         }
 
-        btns.appendChild(makeBtn(t('Start'), 'btn-primary btn-launch', function() { launchGame(app); }));
+        btns.appendChild(makeBtn(t('Start'), 'btn-warning', function() { launchGame(app); }));
         if (app.hasConfig) {
-            btns.appendChild(makeBtn(t('Settings'), '', function() { toggleGameTab('settings', app); }));
+            btns.appendChild(makeBtn(t('Settings'), 'btn-outline-secondary', function() { toggleGameTab('settings', app); }));
         }
         if (app.instructions) {
-            btns.appendChild(makeBtn(t('Instructions'), '', function() { toggleGameTab('instructions', app); }));
+            btns.appendChild(makeBtn(t('Instructions'), 'btn-outline-secondary', function() { toggleGameTab('instructions', app); }));
         }
-        btns.appendChild(makeBtn(t('History'), '', function() { toggleGameTab('history', app); }));
+        btns.appendChild(makeBtn(t('History'), 'btn-outline-secondary', function() { toggleGameTab('history', app); }));
 
-        // Reset tab
         var tc = document.getElementById('game-tab-content');
         tc.innerHTML = ''; tc.dataset.tab = '';
 
@@ -770,8 +472,9 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
         }
         tc.dataset.tab = tabName;
         if (tabName === 'instructions') {
-            tc.innerHTML = '<div class="game-tab-box"><h3>' + esc(t('Instructions')) + '</h3>'
-                + '<p class="instructions-text">' + esc(app.instructions) + '</p></div>';
+            tc.innerHTML = '<div class="card bg-dark border-secondary mt-3 p-3">'
+                + '<h6 class="text-warning mb-2">' + esc(t('Instructions')) + '</h6>'
+                + '<p class="instructions-text mb-0 text-light">' + esc(app.instructions) + '</p></div>';
         } else if (tabName === 'settings') {
             renderGameSettings(tc, app);
         } else if (tabName === 'history') {
@@ -783,35 +486,34 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
     // Game settings form
     // ------------------------------------------------------------------
     function renderGameSettings(container, app) {
-        container.innerHTML = '<div class="game-tab-box"><em>' + esc(t('Loading…')) + '</em></div>';
+        container.innerHTML = '<div class="card bg-dark border-secondary mt-3 p-3"><em class="text-secondary">' + esc(t('Loading…')) + '</em></div>';
         fetch(API + '?_id=' + encodeURIComponent(app.settingsKey))
         .then(function(r) { return r.ok ? r.json() : null; })
         .then(function(data) {
             var saved = (data && data.settings) ? data.settings : {};
-            var box = document.createElement('div');
-            box.className = 'game-tab-box';
-            var h = '<h3>' + esc(t('Settings')) + '</h3><form id="game-settings-form">';
+            var h = '<div class="card bg-dark border-secondary mt-3 p-3">'
+                  + '<h6 class="text-warning mb-3">' + esc(t('Settings')) + '</h6>'
+                  + '<form id="game-settings-form" style="max-width:360px">';
             app.config.forEach(function(field) {
                 var val = saved[field.name] !== undefined ? saved[field.name] : field.default;
-                h += '<div class="settings-field"><label>' + esc(field.title || field.name) + '</label>';
+                h += '<div class="mb-3"><label class="form-label small">' + esc(field.title || field.name) + '</label>';
                 if (field.type === 'string' && field.values) {
-                    h += '<select name="' + esc(field.name) + '">';
+                    h += '<select class="form-select form-select-sm" name="' + esc(field.name) + '">';
                     field.values.forEach(function(v, i) {
                         var lbl = (field.valueLabels && field.valueLabels[i]) ? field.valueLabels[i] : v;
                         h += '<option value="' + esc(v) + '"' + (String(val) === String(v) ? ' selected' : '') + '>' + esc(lbl) + '</option>';
                     });
                     h += '</select>';
                 } else {
-                    h += '<input type="number" name="' + esc(field.name) + '" value="' + esc(val) + '"'
+                    h += '<input type="number" class="form-control form-control-sm" name="' + esc(field.name) + '" value="' + esc(val) + '"'
                        + (field.minValue !== undefined ? ' min="' + esc(field.minValue) + '"' : '')
                        + (field.maxValue !== undefined ? ' max="' + esc(field.maxValue) + '"' : '') + '>';
                 }
                 h += '</div>';
             });
-            h += '<div class="btn-row"><button type="button" class="btn btn-primary" id="btn-save-game-settings">' + esc(t('Save')) + '</button></div></form>';
-            box.innerHTML = h;
-            container.innerHTML = '';
-            container.appendChild(box);
+            h += '<button type="button" class="btn btn-warning btn-sm" id="btn-save-game-settings">' + esc(t('Save')) + '</button>'
+               + '</form></div>';
+            container.innerHTML = h;
 
             document.getElementById('btn-save-game-settings').addEventListener('click', function() {
                 var form = document.getElementById('game-settings-form');
@@ -826,7 +528,7 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
                     body: JSON.stringify({ _id: app.settingsKey, profile: PROFILE, settings: settings })
                 }).then(function() {
                     var msg = document.createElement('p');
-                    msg.style.cssText = 'color:#6d6;margin-top:.5rem;font-size:.85rem;';
+                    msg.className = 'text-success mt-2 small';
                     msg.textContent = t('Saved');
                     form.appendChild(msg);
                     setTimeout(function() { if (msg.parentNode) msg.parentNode.removeChild(msg); }, 2000);
@@ -839,7 +541,7 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
     // Game history (filtered)
     // ------------------------------------------------------------------
     function renderGameHistory(container, app) {
-        container.innerHTML = '<div class="game-tab-box"><em>' + esc(t('Loading…')) + '</em></div>';
+        container.innerHTML = '<div class="card bg-dark border-secondary mt-3 p-3"><em class="text-secondary">' + esc(t('Loading…')) + '</em></div>';
         fetch(API + '?profile=' + encodeURIComponent(PROFILE)
                   + '&eventType=gameFinished'
                   + '&game='     + encodeURIComponent(app.name)
@@ -847,19 +549,22 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
         .then(function(r) { return r.json(); })
         .then(function(data) {
             var docs = data.docs || [];
-            var box = document.createElement('div');
-            box.className = 'game-tab-box';
-            box.innerHTML = '<h3>' + esc(t('History')) + '</h3>';
+            var wrap = document.createElement('div');
+            wrap.className = 'card bg-dark border-secondary mt-3 p-3';
+            wrap.innerHTML = '<h6 class="text-warning mb-3">' + esc(t('History')) + '</h6>';
+            var inner = document.createElement('div');
+            inner.className = 'history-light';
             if (!docs.length) {
-                box.innerHTML += '<em class="history-empty">' + esc(t('History is empty')) + '</em>';
+                inner.innerHTML = '<em class="history-empty">' + esc(t('History is empty')) + '</em>';
             } else {
-                buildHistoryDocs(docs, box);
+                buildHistoryDocs(docs, inner);
             }
+            wrap.appendChild(inner);
             container.innerHTML = '';
-            container.appendChild(box);
+            container.appendChild(wrap);
         })
         .catch(function() {
-            container.innerHTML = '<div class="game-tab-box"><em>Error loading history.</em></div>';
+            container.innerHTML = '<div class="card bg-dark border-secondary mt-3 p-3"><em class="text-danger">Error loading history.</em></div>';
         });
     }
 
@@ -880,12 +585,11 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
             buildHistoryDocs(docs, el);
         })
         .catch(function() {
-            el.innerHTML = '<em class="history-empty">Error loading history.</em>';
+            el.innerHTML = '<em class="text-danger">Error loading history.</em>';
         });
     }
 
     function buildHistoryDocs(docs, container) {
-        // Group by ident
         var idents = [], map = {};
         docs.forEach(function(r) {
             var ident = r.ident || r.game;
@@ -897,7 +601,7 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
             var tb = document.createElement('div'); tb.className = 'gametitlebar';
             tb.innerHTML = '<span class="gametitle">' + esc(first.game || '') + '</span>'
                 + '<span class="gamepacktitle">' + esc(first.gamepack || '') + '</span>'
-                + '<span>' + esc(first.locale || '') + '</span>';
+                + '<span class="small">' + esc(first.locale || '') + '</span>';
             gi.appendChild(tb);
             if (first.settings && Object.keys(first.settings).length) {
                 var sr = document.createElement('div'); sr.className = 'gamesettings';
@@ -905,10 +609,10 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
                 gi.appendChild(sr);
             }
             recs.forEach(function(r) {
-                var dt   = new Date(r.timestamp);
-                var jsFmt= LOCALE === 'cz' ? 'cs-CZ' : 'en-US';
-                var rec  = document.createElement('div'); rec.className = 'gamerecord';
-                var dtEl = document.createElement('div'); dtEl.className = 'datetime';
+                var dt    = new Date(r.timestamp);
+                var jsFmt = LOCALE === 'cz' ? 'cs-CZ' : 'en-US';
+                var rec   = document.createElement('div'); rec.className = 'gamerecord';
+                var dtEl  = document.createElement('div'); dtEl.className = 'datetime';
                 dtEl.innerHTML = '<div>' + esc(dt.toLocaleDateString(jsFmt)) + '</div>'
                                + '<div>' + esc(dt.toLocaleTimeString(jsFmt, {hour:'2-digit',minute:'2-digit',second:'2-digit'})) + '</div>';
                 rec.appendChild(dtEl);
