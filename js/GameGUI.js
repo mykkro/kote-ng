@@ -366,7 +366,11 @@ class GameGUI extends Base {
         });
 
         backBtn.onClick(function() {
-            self.showGameLauncherPage();
+            if (self.options.directStart) {
+                self.showGameSelectionPage();
+            } else {
+                self.showGameLauncherPage();
+            }
         });
 
         return [againBtn, backBtn];
@@ -411,7 +415,11 @@ class GameGUI extends Base {
             var abortBtn = this.createAbortButton();
             abortBtn.onClick(function() {
                 game.abort();
-                self.showGameLauncherPage();
+                if (self.options.directStart) {
+                    self.showGameSelectionPage();
+                } else {
+                    self.showGameLauncherPage();
+                }
             });
         }
 
@@ -421,7 +429,11 @@ class GameGUI extends Base {
         });
         game.onAbort(function() {
             console.log("Aborted!");
-            self.showGameLauncherPage();
+            if (self.options.directStart) {
+                self.showGameSelectionPage();
+            } else {
+                self.showGameLauncherPage();
+            }
         });
         game.start();
     }
@@ -465,10 +477,14 @@ class GameGUI extends Base {
 
     doStart(settings) {
         var self = this;
-        self.gameSettings = settings
+        self.gameSettings = settings;
         self.form.val(settings);
         console.log("Using settings:", self.gameSettings);
-        self.showGameLauncherPage();
+        if (self.options.directStart) {
+            self.startGame();
+        } else {
+            self.showGameLauncherPage();
+        }
     }
 
     static buttonStyle = {

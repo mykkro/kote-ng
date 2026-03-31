@@ -511,7 +511,7 @@ class HitMissScalarTask extends BinaryTask {
     calculateDistance(reg, ans) {
         var cx = reg[0];
         var cy = reg[1];
-        var rx = ry = reg[2];
+        var rx = reg[2], ry = reg[2];
         var angle = 0;
         if(reg.length>3) {
             ry = reg[3];

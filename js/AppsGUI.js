@@ -380,7 +380,7 @@ class AppsGUI extends Base {
             console.error('launchSpecificApp: app not found', appName, gamepackName);
             return;
         }
-        var engine = new GameGUI(this, instance);
+        var engine = new GameGUI(this, instance, { directStart: true });
         engine.start();
     }
 

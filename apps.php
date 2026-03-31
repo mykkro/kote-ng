@@ -17,7 +17,10 @@ $profile = preg_replace('/[^a-zA-Z0-9_\-]/', '', $raw) ?: 'default';
 $langParam = preg_replace('/[^a-zA-Z0-9_\-]/', '', $_GET['lang'] ?? '') ?: '';
 
 $section = preg_replace('/[^a-z]/', '', $_GET['section'] ?? '');
-if (!in_array($section, ['history', 'about', 'settings'])) $section = '';
+if (!in_array($section, ['history', 'about', 'settings', 'game'])) $section = '';
+
+$gameParam     = preg_replace('/[^a-zA-Z0-9_\-]/', '', $_GET['game']     ?? '');
+$gamepackParam = preg_replace('/[^a-zA-Z0-9_\-]/', '', $_GET['gamepack'] ?? '') ?: 'default';
 
 // ---------------------------------------------------------------------------
 // Load index.json
@@ -80,10 +83,18 @@ foreach ($indexData['apps'] as $app) {
     }
     if (!$gpLocale) continue;
 
-    // Title / subtitle — gamepack locale wins over app locale
-    $title    = $gpLocale['metadata']['title']    ?? $appLocale['metadata']['title']    ?? $app['name'];
-    $subtitle = $gpLocale['metadata']['subtitle'] ?? $appLocale['metadata']['subtitle'] ?? '';
-    $subtitle = trim($subtitle);
+    // Title / subtitle / description / instructions — gamepack locale wins over app locale
+    $title        = $gpLocale['metadata']['title']        ?? $appLocale['metadata']['title']        ?? $app['name'];
+    $subtitle     = $gpLocale['metadata']['subtitle']     ?? $appLocale['metadata']['subtitle']     ?? '';
+    $description  = $gpLocale['metadata']['description']  ?? $appLocale['metadata']['description']  ?? '';
+    $instructions = $gpLocale['metadata']['instructions'] ?? $appLocale['metadata']['instructions'] ?? '';
+    $subtitle     = trim($subtitle);
+    $description  = trim($description);
+    $instructions = trim($instructions);
+
+    // Config fields: gamepack-level config overrides app-level config (null = inherit)
+    $config = $app['config'] ?? [];
+    if (!empty($gamepack['config'])) $config = $gamepack['config'];
 
     // Tags
     $tags = [];
@@ -103,8 +114,13 @@ foreach ($indexData['apps'] as $app) {
         'gamepackName' => $gamepackName,
         'title'        => $title,
         'subtitle'     => $subtitle,
+        'description'  => $description,
+        'instructions' => $instructions,
         'preview'      => $previewUrl,
         'tags'         => $tags,
+        'config'       => $config ?: [],
+        'hasConfig'    => !empty($config),
+        'settingsKey'  => 'settings-' . $profile . '-' . $app['name'] . '-' . $locale,
     ];
 }
 
@@ -315,7 +331,32 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
             padding: 1.25rem;
         }
         #panel-history h2 { color: #c70; }
+        #panel-history .history-empty { color: #555; }
+        #panel-history .gametopitem { border-color: #ccc; }
+        #panel-history .gametitlebar { background: rgba(200,120,0,.15); }
+        #panel-history .gametitle    { color: #222; }
+        #panel-history .gamepacktitle{ color: #555; }
+        #panel-history .gamesettings { color: #444; }
+        #panel-history .datetime     { color: #555; }
+        #panel-history .gamerecord   { border-color: #e0e0e0; }
+        #panel-history .gameresult   { background: rgba(0,0,0,.06); color: #222; }
+        #panel-history .gamesettings { color: #333; }
+        #panel-history .gamelabel    { color: #333; }
+        #panel-history .gamevalue    { color: #111; }
         .history-empty { opacity: .6; font-style: italic; }
+
+        /* History inside game launcher tab — same dark-text treatment */
+        .game-tab-box .gametopitem   { border-color: #ccc; background: #fff; border-radius: 6px; }
+        .game-tab-box .gametitlebar  { background: rgba(200,120,0,.15); }
+        .game-tab-box .gametitle     { color: #222; }
+        .game-tab-box .gamepacktitle { color: #555; }
+        .game-tab-box .gamesettings  { color: #333; }
+        .game-tab-box .gamerecord    { border-color: #e0e0e0; }
+        .game-tab-box .datetime      { color: #555; }
+        .game-tab-box .gameresult    { background: rgba(0,0,0,.06); color: #222; }
+        .game-tab-box .gamelabel     { color: #333; }
+        .game-tab-box .gamevalue     { color: #111; }
+        .game-tab-box .history-empty { color: #555; }
         .gametopitem {
             border: 1px solid rgba(255,255,255,.1);
             border-radius: 8px;
@@ -352,6 +393,63 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
         .gamelabel { display: inline; opacity: .7; }
         .gamelabel::after { content: ': '; }
         .gamevalue { display: inline; font-weight: 600; }
+
+        /* Game launcher panel */
+        #panel-game { color: #e8e8e8; }
+        .game-launcher { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+        .game-preview-wrap {
+            width: 100%; max-width: 420px;
+            border-radius: 12px; overflow: hidden;
+            cursor: pointer; position: relative;
+        }
+        .game-preview-wrap img {
+            width: 100%; display: block;
+            transition: opacity .15s;
+        }
+        .game-preview-wrap:hover img { opacity: .85; }
+        .game-preview-placeholder {
+            width: 100%; aspect-ratio: 1;
+            background: rgba(255,153,0,.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 5rem; color: #f90;
+            cursor: pointer;
+        }
+        .game-preview-wrap .play-overlay {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity .2s;
+        }
+        .game-preview-wrap:hover .play-overlay { opacity: 1; }
+        .play-overlay-circle {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: rgba(0,0,0,.55);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: #fff;
+        }
+        .game-title-block { text-align: center; }
+        .game-title-block h2 { font-size: 1.5rem; font-weight: 700; color: #f90; margin-bottom: .25rem; }
+        .game-title-block p  { font-size: .9rem; opacity: .7; }
+        .game-action-btns {
+            display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center;
+        }
+        .game-action-btns .btn-launch {
+            font-size: 1.1rem; padding: .65rem 2rem;
+        }
+        .game-tab-content { width: 100%; max-width: 640px; }
+        .game-tab-box {
+            background: rgba(255,255,255,.07);
+            border-radius: 10px; padding: 1.25rem;
+            margin-top: .5rem;
+        }
+        .game-tab-box h3 { font-size: 1rem; font-weight: 700; color: #f90; margin-bottom: .85rem; }
+        .instructions-text { line-height: 1.7; font-size: .92rem; white-space: pre-wrap; }
+        .settings-field { margin-bottom: .85rem; }
+        .settings-field label { display: block; font-size: .85rem; opacity: .75; margin-bottom: .3rem; }
+        .settings-field select, .settings-field input[type=number] {
+            width: 100%; padding: .4rem .6rem;
+            border-radius: 6px; border: 1px solid rgba(255,255,255,.2);
+            background: rgba(255,255,255,.08); color: inherit; font-size: .9rem;
+        }
 
         /* Settings panel */
         .settings-form { display: flex; flex-direction: column; gap: 1rem; max-width: 360px; }
@@ -417,6 +515,23 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
 
 <main>
 
+    <!-- Game launcher section -->
+    <section class="section-page" id="panel-game">
+        <div class="game-launcher" id="game-launcher">
+            <div class="game-preview-wrap" id="game-preview-wrap">
+                <img id="game-preview-img" src="" alt="" style="display:none">
+                <div class="game-preview-placeholder" id="game-preview-placeholder" style="display:none">&#127918;</div>
+                <div class="play-overlay"><div class="play-overlay-circle">&#9654;</div></div>
+            </div>
+            <div class="game-title-block">
+                <h2 id="game-title"></h2>
+                <p id="game-subtitle"></p>
+            </div>
+            <div class="game-action-btns" id="game-action-btns"></div>
+            <div class="game-tab-content" id="game-tab-content"></div>
+        </div>
+    </section>
+
     <!-- Settings section -->
     <section class="section-page" id="panel-settings">
         <h2><?= tr('Settings') ?></h2>
@@ -473,14 +588,10 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
 
     <!-- App grid -->
     <div class="app-grid" id="app-grid">
-        <?php foreach ($apps as $app):
-            $gameUrl = 'index.php?profile=' . urlencode($profile)
-                     . '&lang=' . urlencode($langParam ?: $locale)
-                     . '&app=' . urlencode($app['name'])
-                     . '&gamepack=' . urlencode($app['gamepackName'])
-                     . '&back=' . urlencode($backUrl);
-        ?>
-        <a class="app-card" href="<?= esc($gameUrl) ?>">
+        <?php foreach ($apps as $app): ?>
+        <a class="app-card" href="#"
+           data-app="<?= esc($app['name']) ?>"
+           data-gamepack="<?= esc($app['gamepackName']) ?>">
             <?php if ($app['preview']): ?>
                 <img class="app-card-preview"
                      src="<?= esc($app['preview']) ?>"
@@ -510,37 +621,45 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
 
 <script>
 (function() {
-    var PROFILE  = <?= json_encode($profile, JSON_UNESCAPED_UNICODE) ?>;
-    var LOCALE   = <?= json_encode($locale,  JSON_UNESCAPED_UNICODE) ?>;
-    var API      = 'api/index.php';
+    var PROFILE      = <?= json_encode($profile,      JSON_UNESCAPED_UNICODE) ?>;
+    var LOCALE       = <?= json_encode($locale,       JSON_UNESCAPED_UNICODE) ?>;
+    var LOCALE_PARAM = <?= json_encode($langParam,    JSON_UNESCAPED_UNICODE) ?>;
+    var INIT_GAME    = <?= json_encode($gameParam,    JSON_UNESCAPED_UNICODE) ?>;
+    var INIT_GAMEPACK= <?= json_encode($gamepackParam,JSON_UNESCAPED_UNICODE) ?>;
+    var API          = 'api/index.php';
     var SETTINGS_KEY = 'settings-' + PROFILE + '-global';
-    var TR = <?= json_encode($tr, JSON_UNESCAPED_UNICODE) ?>;
+    var TR           = <?= json_encode($tr, JSON_UNESCAPED_UNICODE) ?>;
+    var APPS_DATA    = <?= json_encode($apps, JSON_UNESCAPED_UNICODE) ?>;
+    var selfBase     = 'apps.php?profile=' + encodeURIComponent(PROFILE) + (LOCALE_PARAM ? '&lang=' + encodeURIComponent(LOCALE_PARAM) : '');
 
     function t(k) { return TR[k] || k; }
+    function esc(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
 
     // ------------------------------------------------------------------
     // Section navigation (full-page replace)
     // ------------------------------------------------------------------
     var currentSection = null;
     var SECTION_TITLES = {
+        game:     '',   // filled dynamically
         settings: t('Settings'),
         history:  t('History'),
         about:    t('About')
     };
-    var appTitle = document.getElementById('topbar-title').textContent;
+    var appTitleText = document.getElementById('topbar-title').textContent;
 
-    function openSection(name) {
-        // Close any open section first
+    function openSection(name, title) {
         if (currentSection) {
             document.getElementById('panel-' + currentSection).classList.remove('open');
         }
         currentSection = name;
         document.getElementById('panel-' + name).classList.add('open');
-        document.getElementById('topbar-title').textContent = SECTION_TITLES[name] || name;
+        document.getElementById('topbar-title').textContent = title || SECTION_TITLES[name] || name;
         document.body.classList.add('in-section');
-
         if (name === 'history')  loadHistory();
-        if (name === 'settings') loadSettings();
+        if (name === 'settings') loadGlobalSettings();
     }
 
     function closeSection() {
@@ -549,7 +668,10 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
             currentSection = null;
         }
         document.body.classList.remove('in-section');
-        document.getElementById('topbar-title').textContent = appTitle;
+        document.getElementById('topbar-title').textContent = appTitleText;
+        // Reset game tab content so it reloads fresh next time
+        document.getElementById('game-tab-content').innerHTML = '';
+        document.getElementById('game-tab-content').dataset.tab = '';
     }
 
     document.getElementById('btn-back').addEventListener('click', closeSection);
@@ -557,140 +679,282 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
     document.getElementById('btn-history').addEventListener('click',  function() { openSection('history');  });
     document.getElementById('btn-about').addEventListener('click',    function() { openSection('about');    });
 
-    // Open section from query string
     var initSection = <?= json_encode($section) ?>;
     if (initSection) openSection(initSection);
 
     // ------------------------------------------------------------------
-    // History
+    // App card clicks → game launcher
+    // ------------------------------------------------------------------
+    document.querySelectorAll('.app-card[data-app]').forEach(function(card) {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            var appName     = card.dataset.app;
+            var gamepackName= card.dataset.gamepack;
+            var app = APPS_DATA.find(function(a) { return a.name === appName && a.gamepackName === gamepackName; });
+            if (app) openGameLauncher(app);
+        });
+    });
+
+    // Auto-open game launcher from ?game= query param
+    if (INIT_GAME) {
+        var initApp = APPS_DATA.find(function(a) { return a.name === INIT_GAME && a.gamepackName === INIT_GAMEPACK; });
+        if (initApp) openGameLauncher(initApp);
+    }
+
+    // ------------------------------------------------------------------
+    // Game launcher
+    // ------------------------------------------------------------------
+    var currentGame = null;
+
+    function openGameLauncher(app) {
+        currentGame = app;
+
+        // Preview
+        var img  = document.getElementById('game-preview-img');
+        var ph   = document.getElementById('game-preview-placeholder');
+        var wrap = document.getElementById('game-preview-wrap');
+        if (app.preview) {
+            img.src = app.preview; img.alt = app.title;
+            img.style.display = 'block'; ph.style.display = 'none';
+        } else {
+            img.style.display = 'none'; ph.style.display = 'flex';
+        }
+        wrap.onclick = function() { launchGame(app); };
+
+        // Title
+        document.getElementById('game-title').textContent   = app.title;
+        document.getElementById('game-subtitle').textContent = app.subtitle || '';
+
+        // Buttons
+        var btns = document.getElementById('game-action-btns');
+        btns.innerHTML = '';
+
+        function makeBtn(label, cls, cb) {
+            var b = document.createElement('button');
+            b.className = 'btn ' + cls;
+            b.textContent = label;
+            b.addEventListener('click', cb);
+            return b;
+        }
+
+        btns.appendChild(makeBtn(t('Start'), 'btn-primary btn-launch', function() { launchGame(app); }));
+        if (app.hasConfig) {
+            btns.appendChild(makeBtn(t('Settings'), '', function() { toggleGameTab('settings', app); }));
+        }
+        if (app.instructions) {
+            btns.appendChild(makeBtn(t('Instructions'), '', function() { toggleGameTab('instructions', app); }));
+        }
+        btns.appendChild(makeBtn(t('History'), '', function() { toggleGameTab('history', app); }));
+
+        // Reset tab
+        var tc = document.getElementById('game-tab-content');
+        tc.innerHTML = ''; tc.dataset.tab = '';
+
+        openSection('game', app.title);
+    }
+
+    function launchGame(app) {
+        var backUrl = selfBase + '&game=' + encodeURIComponent(app.name) + '&gamepack=' + encodeURIComponent(app.gamepackName);
+        window.location.href = 'index.php'
+            + '?profile='  + encodeURIComponent(PROFILE)
+            + '&lang='     + encodeURIComponent(LOCALE_PARAM || LOCALE)
+            + '&app='      + encodeURIComponent(app.name)
+            + '&gamepack=' + encodeURIComponent(app.gamepackName)
+            + '&back='     + encodeURIComponent(backUrl);
+    }
+
+    function toggleGameTab(tabName, app) {
+        var tc = document.getElementById('game-tab-content');
+        if (tc.dataset.tab === tabName) {
+            tc.innerHTML = ''; tc.dataset.tab = ''; return;
+        }
+        tc.dataset.tab = tabName;
+        if (tabName === 'instructions') {
+            tc.innerHTML = '<div class="game-tab-box"><h3>' + esc(t('Instructions')) + '</h3>'
+                + '<p class="instructions-text">' + esc(app.instructions) + '</p></div>';
+        } else if (tabName === 'settings') {
+            renderGameSettings(tc, app);
+        } else if (tabName === 'history') {
+            renderGameHistory(tc, app);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Game settings form
+    // ------------------------------------------------------------------
+    function renderGameSettings(container, app) {
+        container.innerHTML = '<div class="game-tab-box"><em>' + esc(t('Loading…')) + '</em></div>';
+        fetch(API + '?_id=' + encodeURIComponent(app.settingsKey))
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+            var saved = (data && data.settings) ? data.settings : {};
+            var box = document.createElement('div');
+            box.className = 'game-tab-box';
+            var h = '<h3>' + esc(t('Settings')) + '</h3><form id="game-settings-form">';
+            app.config.forEach(function(field) {
+                var val = saved[field.name] !== undefined ? saved[field.name] : field.default;
+                h += '<div class="settings-field"><label>' + esc(field.title || field.name) + '</label>';
+                if (field.type === 'string' && field.values) {
+                    h += '<select name="' + esc(field.name) + '">';
+                    field.values.forEach(function(v, i) {
+                        var lbl = (field.valueLabels && field.valueLabels[i]) ? field.valueLabels[i] : v;
+                        h += '<option value="' + esc(v) + '"' + (String(val) === String(v) ? ' selected' : '') + '>' + esc(lbl) + '</option>';
+                    });
+                    h += '</select>';
+                } else {
+                    h += '<input type="number" name="' + esc(field.name) + '" value="' + esc(val) + '"'
+                       + (field.minValue !== undefined ? ' min="' + esc(field.minValue) + '"' : '')
+                       + (field.maxValue !== undefined ? ' max="' + esc(field.maxValue) + '"' : '') + '>';
+                }
+                h += '</div>';
+            });
+            h += '<div class="btn-row"><button type="button" class="btn btn-primary" id="btn-save-game-settings">' + esc(t('Save')) + '</button></div></form>';
+            box.innerHTML = h;
+            container.innerHTML = '';
+            container.appendChild(box);
+
+            document.getElementById('btn-save-game-settings').addEventListener('click', function() {
+                var form = document.getElementById('game-settings-form');
+                var settings = {};
+                app.config.forEach(function(field) {
+                    var el = form.elements[field.name];
+                    if (el) settings[field.name] = field.type === 'int' ? parseInt(el.value, 10) : el.value;
+                });
+                fetch(API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ _id: app.settingsKey, profile: PROFILE, settings: settings })
+                }).then(function() {
+                    var msg = document.createElement('p');
+                    msg.style.cssText = 'color:#6d6;margin-top:.5rem;font-size:.85rem;';
+                    msg.textContent = t('Saved');
+                    form.appendChild(msg);
+                    setTimeout(function() { if (msg.parentNode) msg.parentNode.removeChild(msg); }, 2000);
+                });
+            });
+        });
+    }
+
+    // ------------------------------------------------------------------
+    // Game history (filtered)
+    // ------------------------------------------------------------------
+    function renderGameHistory(container, app) {
+        container.innerHTML = '<div class="game-tab-box"><em>' + esc(t('Loading…')) + '</em></div>';
+        fetch(API + '?profile=' + encodeURIComponent(PROFILE)
+                  + '&eventType=gameFinished'
+                  + '&game='     + encodeURIComponent(app.name)
+                  + '&gamepack=' + encodeURIComponent(app.gamepackName))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var docs = data.docs || [];
+            var box = document.createElement('div');
+            box.className = 'game-tab-box';
+            box.innerHTML = '<h3>' + esc(t('History')) + '</h3>';
+            if (!docs.length) {
+                box.innerHTML += '<em class="history-empty">' + esc(t('History is empty')) + '</em>';
+            } else {
+                buildHistoryDocs(docs, box);
+            }
+            container.innerHTML = '';
+            container.appendChild(box);
+        })
+        .catch(function() {
+            container.innerHTML = '<div class="game-tab-box"><em>Error loading history.</em></div>';
+        });
+    }
+
+    // ------------------------------------------------------------------
+    // Global history (all games)
     // ------------------------------------------------------------------
     function loadHistory() {
         var el = document.getElementById('history-content');
         el.innerHTML = '<em class="history-empty">' + t('Loading…') + '</em>';
-
         fetch(API + '?profile=' + encodeURIComponent(PROFILE) + '&eventType=gameFinished')
         .then(function(r) { return r.json(); })
         .then(function(data) {
             var docs = data.docs || [];
             if (!docs.length) {
-                el.innerHTML = '<em class="history-empty">' + t('History is empty') + '</em>';
-                return;
+                el.innerHTML = '<em class="history-empty">' + t('History is empty') + '</em>'; return;
             }
-
-            // Group by ident
-            var idents = [], map = {};
-            docs.forEach(function(r) {
-                var ident = r.ident || r.game;
-                if (map[ident]) { map[ident].push(r); } else { idents.push(ident); map[ident] = [r]; }
-            });
-
-            var out = document.createElement('div');
-            idents.forEach(function(ident) {
-                var recs  = map[ident];
-                var first = recs[0];
-                var gi = document.createElement('div');
-                gi.className = 'gametopitem';
-
-                // Title bar
-                var tb = document.createElement('div');
-                tb.className = 'gametitlebar';
-                tb.innerHTML =
-                    '<span class="gametitle">'     + esc(first.game     || '') + '</span>' +
-                    '<span class="gamepacktitle">' + esc(first.gamepack || '') + '</span>' +
-                    '<span>'                       + esc(first.locale   || '') + '</span>';
-                gi.appendChild(tb);
-
-                // Settings row
-                if (first.settings && Object.keys(first.settings).length) {
-                    var sr = document.createElement('div');
-                    sr.className = 'gamesettings';
-                    sr.textContent = Object.entries(first.settings).map(function(kv) { return kv[0]+'='+kv[1]; }).join(', ');
-                    gi.appendChild(sr);
-                }
-
-                recs.forEach(function(r) {
-                    var dt   = new Date(r.timestamp);
-                    var date = dt.toLocaleDateString(LOCALE === 'cz' ? 'cs-CZ' : 'en-US');
-                    var time = dt.toLocaleTimeString(LOCALE === 'cz' ? 'cs-CZ' : 'en-US',
-                                   { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-                    var rec = document.createElement('div');
-                    rec.className = 'gamerecord';
-
-                    var dtEl = document.createElement('div');
-                    dtEl.className = 'datetime';
-                    dtEl.innerHTML = '<div>' + esc(date) + '</div><div>' + esc(time) + '</div>';
-                    rec.appendChild(dtEl);
-
-                    var results = r.eventData3 || [];
-                    if (results.length) {
-                        var resEl = document.createElement('div');
-                        resEl.className = 'gameresults';
-                        results.forEach(function(s) {
-                            if (typeof s !== 'string') return;
-                            var idx = s.indexOf(':');
-                            if (idx < 0) return;
-                            var label = s.substring(0, idx).trim();
-                            var value = s.substring(idx + 1).trim();
-                            resEl.innerHTML +=
-                                '<div class="gameresult">' +
-                                '<span class="gamelabel">' + esc(label) + '</span>' +
-                                '<span class="gamevalue">' + esc(value) + '</span></div>';
-                        });
-                        rec.appendChild(resEl);
-                    }
-                    gi.appendChild(rec);
-                });
-                out.appendChild(gi);
-            });
             el.innerHTML = '';
-            el.appendChild(out);
+            buildHistoryDocs(docs, el);
         })
         .catch(function() {
             el.innerHTML = '<em class="history-empty">Error loading history.</em>';
         });
     }
 
+    function buildHistoryDocs(docs, container) {
+        // Group by ident
+        var idents = [], map = {};
+        docs.forEach(function(r) {
+            var ident = r.ident || r.game;
+            if (map[ident]) { map[ident].push(r); } else { idents.push(ident); map[ident] = [r]; }
+        });
+        idents.forEach(function(ident) {
+            var recs = map[ident], first = recs[0];
+            var gi = document.createElement('div'); gi.className = 'gametopitem';
+            var tb = document.createElement('div'); tb.className = 'gametitlebar';
+            tb.innerHTML = '<span class="gametitle">' + esc(first.game || '') + '</span>'
+                + '<span class="gamepacktitle">' + esc(first.gamepack || '') + '</span>'
+                + '<span>' + esc(first.locale || '') + '</span>';
+            gi.appendChild(tb);
+            if (first.settings && Object.keys(first.settings).length) {
+                var sr = document.createElement('div'); sr.className = 'gamesettings';
+                sr.textContent = Object.entries(first.settings).map(function(kv){ return kv[0]+'='+kv[1]; }).join(', ');
+                gi.appendChild(sr);
+            }
+            recs.forEach(function(r) {
+                var dt   = new Date(r.timestamp);
+                var jsFmt= LOCALE === 'cz' ? 'cs-CZ' : 'en-US';
+                var rec  = document.createElement('div'); rec.className = 'gamerecord';
+                var dtEl = document.createElement('div'); dtEl.className = 'datetime';
+                dtEl.innerHTML = '<div>' + esc(dt.toLocaleDateString(jsFmt)) + '</div>'
+                               + '<div>' + esc(dt.toLocaleTimeString(jsFmt, {hour:'2-digit',minute:'2-digit',second:'2-digit'})) + '</div>';
+                rec.appendChild(dtEl);
+                var results = r.eventData3 || [];
+                if (results.length) {
+                    var resEl = document.createElement('div'); resEl.className = 'gameresults';
+                    results.forEach(function(s) {
+                        if (typeof s !== 'string') return;
+                        var idx = s.indexOf(':'); if (idx < 0) return;
+                        resEl.innerHTML += '<div class="gameresult">'
+                            + '<span class="gamelabel">' + esc(s.substring(0,idx).trim()) + '</span>'
+                            + '<span class="gamevalue">' + esc(s.substring(idx+1).trim()) + '</span></div>';
+                    });
+                    rec.appendChild(resEl);
+                }
+                gi.appendChild(rec);
+            });
+            container.appendChild(gi);
+        });
+    }
+
     // ------------------------------------------------------------------
-    // Settings — load from DB, save language change as page redirect
+    // Global settings (language)
     // ------------------------------------------------------------------
-    function loadSettings() {
+    function loadGlobalSettings() {
         fetch(API + '?_id=' + encodeURIComponent(SETTINGS_KEY))
         .then(function(r) { return r.ok ? r.json() : null; })
         .then(function(data) {
-            if (data && data.settings && data.settings.language) {
+            if (data && data.settings && data.settings.language)
                 document.getElementById('sel-language').value = data.settings.language;
-            }
-        })
-        .catch(function() {});
+        }).catch(function() {});
     }
 
     document.getElementById('btn-settings-save').addEventListener('click', function() {
         var lang = document.getElementById('sel-language').value;
-        var doc = {
-            _id: SETTINGS_KEY,
-            profile: PROFILE,
-            settings: { language: lang }
-        };
         fetch(API, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(doc)
-        })
-        .then(function() {
-            // Reload page with the new language so titles update
+            body: JSON.stringify({ _id: SETTINGS_KEY, profile: PROFILE, settings: { language: lang } })
+        }).then(function() {
             var url = new URL(window.location.href);
             url.searchParams.set('lang', lang);
             window.location.href = url.toString();
         });
     });
 
-    // ------------------------------------------------------------------
-    // Tiny HTML escaping helper (used in JS-built history)
-    // ------------------------------------------------------------------
-    function esc(s) {
-        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
-                        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
 })();
 </script>
 </body>
