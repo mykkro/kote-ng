@@ -250,17 +250,17 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
             color: #f90;
         }
 
-        /* Bottom action bar */
+        /* Action bar — second row of topbar */
         .action-bar {
             display: flex;
             gap: .75rem;
             flex-wrap: wrap;
-            padding: 1rem 1.5rem;
-            background: rgba(255,255,255,.04);
-            border-top: 1px solid rgba(255,255,255,.08);
+            padding: .5rem 1.5rem;
+            background: rgba(255,255,255,.03);
+            border-bottom: 1px solid rgba(255,255,255,.08);
         }
         .action-bar button {
-            padding: .55rem 1.2rem;
+            padding: .4rem 1.1rem;
             border-radius: 8px;
             border: 1px solid rgba(255,255,255,.2);
             background: rgba(255,255,255,.08);
@@ -307,7 +307,14 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
         .in-section .action-bar { display: none; }
         .in-section .app-grid   { display: none; }
 
-        /* History panel */
+        /* History panel — light background, dark text */
+        #panel-history {
+            background: #fff;
+            color: #111;
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+        #panel-history h2 { color: #c70; }
         .history-empty { opacity: .6; font-style: italic; }
         .gametopitem {
             border: 1px solid rgba(255,255,255,.1);
@@ -379,6 +386,9 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
         .btn:hover { background: rgba(255,255,255,.18); }
 
         /* About panel */
+        #panel-about { color: #e8e8e8; }
+        #panel-about p { color: #e8e8e8; }
+        #panel-about h2 { color: #f90; }
         .credits-line { margin-bottom: .6rem; line-height: 1.6; }
         .credits-line a { color: #f90; }
     </style>
@@ -397,6 +407,13 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
         <?php endforeach; ?>
     </nav>
 </header>
+
+<!-- Action bar — sits just below the topbar -->
+<nav class="action-bar">
+    <button id="btn-settings"><?= tr('Settings') ?></button>
+    <button id="btn-history"><?= tr('History') ?></button>
+    <button id="btn-about"><?= tr('About') ?></button>
+</nav>
 
 <main>
 
@@ -434,10 +451,20 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
                 if (!$line) { echo '<br>'; continue; }
                 // Strip "fontSize=N@" metadata prefix
                 $text = preg_replace('/^[^@]*@/', '', $line);
-                // Render <url|title> links
-                $html = preg_replace_callback('/<([^|>]+)\|([^>]+)>/', function($m) {
-                    return '<a href="' . esc($m[1]) . '" target="_blank">' . esc($m[2]) . '</a>';
-                }, htmlspecialchars($text, ENT_QUOTES, 'UTF-8'));
+                // Split on <...> tokens, process links before HTML-escaping
+                $parts = preg_split('/(<[^>]+>)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+                $html = '';
+                foreach ($parts as $part) {
+                    if (preg_match('/^<([^|>]+)\|([^>]+)>$/', $part, $m)) {
+                        // <url|title>
+                        $html .= '<a href="' . esc($m[1]) . '" target="_blank">' . esc($m[2]) . '</a>';
+                    } elseif (preg_match('/^<(https?:\/\/[^>]+)>$/', $part, $m)) {
+                        // bare <url>
+                        $html .= '<a href="' . esc($m[1]) . '" target="_blank">' . esc($m[1]) . '</a>';
+                    } else {
+                        $html .= htmlspecialchars($part, ENT_QUOTES, 'UTF-8');
+                    }
+                }
                 echo '<p class="credits-line">' . $html . '</p>';
             }
             ?>
@@ -481,13 +508,6 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
 
 </main>
 
-<!-- Action bar -->
-<footer class="action-bar">
-    <button id="btn-settings" data-panel="settings"><?= tr('Settings') ?></button>
-    <button id="btn-history"  data-panel="history"><?= tr('History') ?></button>
-    <button id="btn-about"    data-panel="about"><?= tr('About') ?></button>
-</footer>
-
 <script>
 (function() {
     var PROFILE  = <?= json_encode($profile, JSON_UNESCAPED_UNICODE) ?>;
@@ -499,34 +519,47 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
     function t(k) { return TR[k] || k; }
 
     // ------------------------------------------------------------------
-    // Panel toggle
+    // Section navigation (full-page replace)
     // ------------------------------------------------------------------
-    var currentPanel = null;
+    var currentSection = null;
+    var SECTION_TITLES = {
+        settings: t('Settings'),
+        history:  t('History'),
+        about:    t('About')
+    };
+    var appTitle = document.getElementById('topbar-title').textContent;
 
-    function openPanel(name) {
-        if (currentPanel) {
-            document.getElementById('panel-' + currentPanel).classList.remove('open');
-            document.querySelector('[data-panel="' + currentPanel + '"]').classList.remove('active');
+    function openSection(name) {
+        // Close any open section first
+        if (currentSection) {
+            document.getElementById('panel-' + currentSection).classList.remove('open');
         }
-        if (currentPanel === name) {
-            currentPanel = null;
-            return;
-        }
-        currentPanel = name;
+        currentSection = name;
         document.getElementById('panel-' + name).classList.add('open');
-        document.querySelector('[data-panel="' + name + '"]').classList.add('active');
+        document.getElementById('topbar-title').textContent = SECTION_TITLES[name] || name;
+        document.body.classList.add('in-section');
 
-        if (name === 'history') loadHistory();
+        if (name === 'history')  loadHistory();
         if (name === 'settings') loadSettings();
     }
 
-    document.getElementById('btn-settings').addEventListener('click', function() { openPanel('settings'); });
-    document.getElementById('btn-history').addEventListener('click',  function() { openPanel('history');  });
-    document.getElementById('btn-about').addEventListener('click',    function() { openPanel('about');    });
+    function closeSection() {
+        if (currentSection) {
+            document.getElementById('panel-' + currentSection).classList.remove('open');
+            currentSection = null;
+        }
+        document.body.classList.remove('in-section');
+        document.getElementById('topbar-title').textContent = appTitle;
+    }
+
+    document.getElementById('btn-back').addEventListener('click', closeSection);
+    document.getElementById('btn-settings').addEventListener('click', function() { openSection('settings'); });
+    document.getElementById('btn-history').addEventListener('click',  function() { openSection('history');  });
+    document.getElementById('btn-about').addEventListener('click',    function() { openSection('about');    });
 
     // Open section from query string
     var initSection = <?= json_encode($section) ?>;
-    if (initSection) openPanel(initSection);
+    if (initSection) openSection(initSection);
 
     // ------------------------------------------------------------------
     // History
@@ -649,10 +682,6 @@ $appTitle = $fwMeta['title'] ?? 'KoTe';
             url.searchParams.set('lang', lang);
             window.location.href = url.toString();
         });
-    });
-
-    document.getElementById('btn-settings-cancel').addEventListener('click', function() {
-        openPanel('settings');
     });
 
     // ------------------------------------------------------------------
