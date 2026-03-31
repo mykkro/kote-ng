@@ -1,16 +1,16 @@
-var Minefield = TimedGame.extend({
+class Minefield extends TimedGame {
 
-    constructor: function(config) {
-        this.base(config);
+    constructor(config) {
+        super(config);
         this.gridRows = config.gridRows || 10;
         this.gridCols = config.gridCols || 10;
         this.gridMines = config.gridMines || 25;
-    },
+    }
 
     /**
      *  Creates a matrix filled by a value.
      */
-    createMatrix: function(rows, cols, value) {
+    createMatrix(rows, cols, value) {
         var mat = [];
         var filler = value || 0;
         if(typeof(value) != "function") {
@@ -26,22 +26,24 @@ var Minefield = TimedGame.extend({
             mat.push(row);
         }
         return mat;
-    },
-    forEachInMatrix: function(matrix, fun) {
+    }
+
+    forEachInMatrix(matrix, fun) {
         for(var i=0; i<matrix.length; i++) {
             for(var j=0; j<matrix[0].length; j++) {
                 fun(matrix[i][j], i, j);
             }
         }
-    },
-    swapMatrixValues: function(matrix, row1, col1, row2, col2) {
+    }
+
+    swapMatrixValues(matrix, row1, col1, row2, col2) {
         var val1 = matrix[row1][col1];
         var val2 = matrix[row2][col2];
         matrix[row1][col1] = val2;
         matrix[row2][col2] = val1;
-    },
+    }
 
-    renderBoard: function() {
+    renderBoard() {
         console.log("Minefield.renderBoard");
         var self = this;
 
@@ -90,7 +92,7 @@ var Minefield = TimedGame.extend({
         var uncoverTile = function(mat, i,j) {
           if(i<0 || i>gridHeight-1 || j<0 || j>gridWidth-1) {
             return false;
-          } 
+          }
           if(!cover.getValue(i,j)) {
             return false;
           }
@@ -133,7 +135,7 @@ var Minefield = TimedGame.extend({
         background = new Grid(gridHeight, gridWidth, true);
         minefield = new Grid(gridHeight, gridWidth, false).filledRandomlyBy("mine", mineCount);
         numbers = new Grid(gridHeight, gridWidth, function(i,j) {
-            var num = 
+            var num =
                 ((j>0           && i>0            && minefield.grid[i-1][j-1]) ? 1 : 0) +
                 ((                 i>0            && minefield.grid[i-1][j  ]) ? 1 : 0) +
                 ((j<gridWidth-1 && i>0            && minefield.grid[i-1][j+1]) ? 1 : 0) +
@@ -154,7 +156,7 @@ var Minefield = TimedGame.extend({
                 turnTile(mat, i, j);
             } else {
                 flagTile(mat, i, j);
-            }                            
+            }
         }
 
         var turnTile = function(mat, i, j) {
@@ -206,7 +208,7 @@ var Minefield = TimedGame.extend({
                     mat[i][j].flag.setBlank();
                 }
             }
-        }                            
+        }
 
         /* Create view */
         var createView = function() {
@@ -229,7 +231,7 @@ var Minefield = TimedGame.extend({
                         tile.clickable.onClick(function() {
                             if(!finished) {
                                 hitTile(mat, i, j, modeUncover);
-                            } 
+                            }
                         })
                     })(i,j);
                     row.push(tile);
@@ -275,26 +277,30 @@ var Minefield = TimedGame.extend({
         self.button1.setHighlighted(true);
         self.button2.setHighlighted(false);
 
-    },
+    }
 
     // set default embedding options for this Game
-    getEmbeddingOptions: function() {
+    getEmbeddingOptions() {
         return {
             renderTitle: false,
             renderAbortButton: true
         };
-    },
-    createGUI: function(r) {
+    }
+
+    createGUI(r) {
         var self = this;
         this.body = new GroupWidget();
-    },
-    generateTaskData: function(options) {
+    }
+
+    generateTaskData(options) {
         return null;
-    },            
-    renderFrame: function() {
+    }
+
+    renderFrame() {
         this.renderBoard();
-    },    
-    loadGamepackData: function() {
+    }
+
+    loadGamepackData() {
         var self = this;
         var name = self.meta.gamepackName;
         var gamepackUrl = self.meta.appBaseUrl + "/gamepacks/" + name;
@@ -303,21 +309,25 @@ var Minefield = TimedGame.extend({
             console.log("Data loaded:", tileset, tilesetUrl);
             return {name:name, url:gamepackUrl, tilesetUrl: tilesetUrl, tileset:tileset};
         });
-    },
-    initializeTask: function() {
+    }
+
+    initializeTask() {
         this.task = new NullTask();
         this.answer = null;
         this.tilesetBaseUrl = dirname(this.gamepack.tilesetUrl);
         console.log("Fifteen.initializeTask", this.tilesetBaseUrl);
-    },
-    generateReport: function(evalResult) {
+    }
+
+    generateReport(evalResult) {
         return [
             //this.loc("Number of moves") + ": " + this.numberOfMoves,
             this.loc("Total time") + ": " + (this.currentTime / 1000) + " s"
         ];
-    },
-    update: function(elapsedMillis) {
+    }
+
+    update(elapsedMillis) {
        //console.log(elapsedMillis);
     }
-},{
-});
+}
+
+window.Minefield = Minefield;

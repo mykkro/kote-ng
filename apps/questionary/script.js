@@ -1,36 +1,36 @@
-var QuestionaryTask = Task.extend({
-    validate: function(answer) {
+class QuestionaryTask extends Task {
+    validate(answer) {
         return (answer.length > 0);
-    },
-    evaluate: function(answer) {
+    }
+    evaluate(answer) {
         var questionsTotal = answer.length;
         return {
             questionsTotal: questionsTotal
         }
     }
-});
+}
 
 
 
-var Questionary = Game.extend({
-    constructor: function(config) {
-        this.base(config);
-    },
+class Questionary extends Game {
+    constructor(config) {
+        super(config);
+    }
     // set default embedding options for this Game
-    getEmbeddingOptions: function() {
+    getEmbeddingOptions() {
         return {
             renderTitle: false,
             renderAbortButton: true
         };
-    },
-    createGUI: function(r) {
+    }
+    createGUI(r) {
         var self = this;
-        this.body = new GroupWidget();         
-    },
-    generateTaskData: function(options) {
+        this.body = new GroupWidget();
+    }
+    generateTaskData(options) {
         return null;
-    },            
-    renderQuestion: function(q, moreQuestions) {
+    }
+    renderQuestion(q, moreQuestions) {
         var self = this;
         console.log("Questionary.renderQuestion", q, moreQuestions);
         this.body.clearContents();
@@ -50,11 +50,11 @@ var Questionary = Game.extend({
         } else {
             this.renderFinishButton(q);
         }
-    },
-    evaluateTest: function(answers) {
+    }
+    evaluateTest(answers) {
         console.log("Questionary.evaluate");
         console.log("Answers:", answers);
-        this.timer.stop(); 
+        this.timer.stop();
         var scoring = this.questionary.scoring;
         var questions = this.questionary.questions;
         var score = 0;
@@ -81,8 +81,8 @@ var Questionary = Game.extend({
         console.log("Result:", verdict);
         this.body.clearContents();
         this.renderResultsPage(this.questionary, score, ndx, verdict);
-    },
-    renderFrame: function() {
+    }
+    renderFrame() {
         var self = this;
         this.body.clearContents();
         if(this.currentFrame >= this.totalFrames) {
@@ -100,22 +100,22 @@ var Questionary = Game.extend({
                 console.error("Unsupported slide type: "+slide.type);
             }
         }
-    },
-    renderSlideBackground: function(slide) {
+    }
+    renderSlideBackground(slide) {
         if(slide.backgroundUrl) {
             var img = new ImageWidget(this.gamepack.questionaryBaseUrl + "/" + slide.backgroundUrl, 1000, 1000);
             this.body.addChild(img);
         }
-    },
-    renderQuestionTitle: function(slide) {
+    }
+    renderQuestionTitle(slide) {
         if(slide.question) {
             var labelSvg = new TextWidget(600, 40, "middle", slide.question);
             labelSvg.setPosition(200, 30)
             labelSvg.setStyle({"fill": "orange"})
             this.body.addChild(labelSvg);
         }
-    },
-    renderQuestionAnswer: function(ans, ndx, yy) {
+    }
+    renderQuestionAnswer(ans, ndx, yy) {
         var self = this;
         if(ans.answer) {
             var labelSvg = new TextWidget(700, 40, "start", ans.answer);
@@ -143,40 +143,40 @@ var Questionary = Game.extend({
             this.body.addChild(clk);
         }
         return { "y": yy, "btn": circ };
-    },
-    renderPageTitle: function(slide) {
+    }
+    renderPageTitle(slide) {
         if(slide.title) {
             var labelSvg = new TextWidget(600, 40, "middle", slide.title);
             labelSvg.setPosition(200, 30)
             labelSvg.setStyle({"fill": "orange"})
             this.body.addChild(labelSvg);
         }
-    },
-    renderPageSubtitle: function(slide) {
+    }
+    renderPageSubtitle(slide) {
         if(slide.subtitle) {
             var tw = new TextWidget(600, 30, "middle", slide.subtitle);
             tw.setStyle({"fill": "#ddd"})
             tw.setPosition(200, 130);
             this.body.addChild(tw);
         }
-    },
-    renderPageDescription: function(slide) {
+    }
+    renderPageDescription(slide) {
         if(slide.description) {
             var tw = new TextWidget(800, 20, "start", slide.description);
             tw.setStyle({"fill": "white"})
             tw.setPosition(100, 200);
             this.body.addChild(tw);
         }
-    },
-    renderPageInstructions: function(slide) {
+    }
+    renderPageInstructions(slide) {
         if(slide.instructions) {
             var tw = new TextWidget(800, 20, "start", slide.instructions);
             tw.setStyle({"fill": "white"})
             tw.setPosition(100, 300);
             this.body.addChild(tw);
         }
-    },
-    renderStartButton: function(slide) {
+    }
+    renderStartButton(slide) {
         var self = this;
         btn1 = new ButtonWidget(this.loc("Start"), {fontSize: 35, border: 20, anchor: "middle", radius: 30});
         btn1.setPosition(500-btn1.w/2, 900);
@@ -184,8 +184,8 @@ var Questionary = Game.extend({
             self.startSurvey();
         });
         this.body.addChild(btn1);
-    },
-    renderNextButton: function(slide) {
+    }
+    renderNextButton(slide) {
         var self = this;
         btn1 = new ButtonWidget(this.loc("Next"), {fontSize: 35, border: 20, anchor: "middle", radius: 30});
         btn1.setPosition(500-btn1.w/2, 900);
@@ -196,8 +196,8 @@ var Questionary = Game.extend({
         });
         this.nextButton = btn1;
         this.body.addChild(btn1);
-    },
-    renderFinishButton: function(slide) {
+    }
+    renderFinishButton(slide) {
         var self = this;
         btn1 = new ButtonWidget(this.loc("Finish"), {fontSize: 35, border: 20, anchor: "middle", radius: 30});
         btn1.setPosition(500-btn1.w/2, 900);
@@ -207,8 +207,8 @@ var Questionary = Game.extend({
         });
         this.nextButton = btn1;
         this.body.addChild(btn1);
-    },
-    renderResultsButton: function(slide) {
+    }
+    renderResultsButton(slide) {
         var self = this;
         btn1 = new ButtonWidget(this.loc("OK"), {fontSize: 35, border: 20, anchor: "middle", radius: 30});
         btn1.setPosition(500-btn1.w/2, 900);
@@ -216,15 +216,15 @@ var Questionary = Game.extend({
             self.finish(self.answer);
         });
         this.body.addChild(btn1);
-    },
-    renderIntroPage: function(questionary) {
+    }
+    renderIntroPage(questionary) {
         this.renderStartButton(questionary);
         this.renderPageTitle(questionary);
         this.renderPageSubtitle(questionary);
         this.renderPageDescription(questionary);
         this.renderPageInstructions(questionary);
-    },
-    renderResultsPage: function(questionary, score, ndx, verdict) {
+    }
+    renderResultsPage(questionary, score, ndx, verdict) {
         this.renderPageTitle(questionary);
         this.renderResultsButton(questionary);
         var tw = new TextWidget(600, 30, "middle", this.loc("Score"));
@@ -243,8 +243,8 @@ var Questionary = Game.extend({
         this.body.addChild(tw2);
         this.body.addChild(tw3);
         this.body.addChild(tw4);
-    },
-    loadGamepackData: function() {
+    }
+    loadGamepackData() {
         var self = this;
         var name = self.meta.gamepackName;
         console.log("Questionary.loadGamepack", name);
@@ -258,9 +258,9 @@ var Questionary = Game.extend({
                 return {name:name, url:gamepackUrl, questionaryUrl: questionaryUrl, questionaryBaseUrl: dirname(questionaryUrl), questionary:questionary};
             })
             .catch(function(err) { console.error(err); });
-    },
-    start: function(gamedata) {
-        this.base(gamedata);
+    }
+    start(gamedata) {
+        super.start(gamedata);
         var self = this;
         console.log("Questionary:start", self.meta);
 
@@ -271,8 +271,8 @@ var Questionary = Game.extend({
             self.questionary = gamepack.questionary;
             self.renderIntroPage(self.questionary);
         });
-    },
-    startSurvey: function() {
+    }
+    startSurvey() {
         var self = this;
         console.log("Questionary.startSurvey", self.questionary);
         self.currentFrame = 0;
@@ -281,8 +281,8 @@ var Questionary = Game.extend({
         self.task = new QuestionaryTask();
         self.startTimer();
         self.showQuestion();
-    },
-    showQuestion: function() {
+    }
+    showQuestion() {
         // gets next question and displays it...
         if(this.currentFrame < this.totalFrames) {
             var question = this.questionary.questions[this.currentFrame];
@@ -291,8 +291,8 @@ var Questionary = Game.extend({
         } else {
             console.error("No more questions!");
         }
-    },
-    generateReport: function(evalResult) {
+    }
+    generateReport(evalResult) {
         var qa = this.questionary.questions;
         var totalScore = 0;
         for(var i=0; i<qa.length; i++) {
@@ -316,8 +316,8 @@ var Questionary = Game.extend({
             ]});
         }
         return out;
-    },
-    startTimer: function() {
+    }
+    startTimer() {
         var self = this;
         self.currentTime = 0;
         var timer = new Timer();
@@ -327,16 +327,18 @@ var Questionary = Game.extend({
             self.currentTime = elapsedMillis;
             // console.log("Time", self.currentTime);
         }});
-    },
-    abort: function() {
-        this.base();       
+    }
+    abort() {
+        super.abort();
         if(this.timer) {
             this.timer.stop();
         }
-    },
-    finish: function(result) {
-        this.timer.stop(); 
-        this.base(result);       
     }
-},{
-});
+    finish(result) {
+        this.timer.stop();
+        super.finish(result);
+    }
+}
+
+window.QuestionaryTask = QuestionaryTask;
+window.Questionary = Questionary;

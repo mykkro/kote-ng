@@ -1,16 +1,18 @@
 
 
 
-var DifferencesGame = Game.extend({
-    constructor: function(config) {
-        this.base(config);
+class DifferencesGame extends Game {
+    constructor(config) {
+        super(config);
         this.currentFrame = 0;
         this.lastFrame = null;
-    },
-    pointInEllipse: function(x, y, cx, cy, rx, ry) {
+    }
+
+    pointInEllipse(x, y, cx, cy, rx, ry) {
         return ((x-cx)*(x-cx)/(rx*rx) + (y-cy)*(y-cy)/(ry*ry)) <= 1;
-    },
-    pointInRegion: function(x, y) {
+    }
+
+    pointInRegion(x, y) {
         for(var i=0; i<this.positions.length; i++) {
             var pp = this.positions[i];
             if(this.pointInEllipse(x, y, pp.x, pp.y, pp.rx, pp.ry)) {
@@ -18,27 +20,30 @@ var DifferencesGame = Game.extend({
             }
         }
         return -1;
-    },
-    createGUI: function(r) {
+    }
+
+    createGUI(r) {
         // create grid
         var self = this;
         //var btn = new HtmlButtonWidget(200, 100, {"class":"btn3"}, "OK");
-        var btn = new ButtonWidget("OK", {fontSize: 40, border: 20, anchor: "middle", radius: 30});        
+        var btn = new ButtonWidget("OK", {fontSize: 40, border: 20, anchor: "middle", radius: 30});
         btn.setDisabled(true);
         btn.setPosition(500-btn.w/2, 800);
         btn.onClick(function() {
             // evaluate the result...
             self.finish(self.answer);
-        })        
+        })
         this.okButton = btn;
 
-        var img = new ImageWidget(self.baseUrl + "/assets/image.jpg", 1000, 562); 
+        var img = new ImageWidget(self.baseUrl + "/assets/image.jpg", 1000, 562);
         img.setPosition(0, 200);
-    },
-    generateTaskData: function(options) {
+    }
+
+    generateTaskData(options) {
         return DifferencesGame.regions;
-    },            
-    putMarker: function(x, y) {
+    }
+
+    putMarker(x, y) {
         var self = this;
         var marker = r.circle(x, y, 30).attr({fill:"red", opacity: 0.5, stroke: "blue"});
         var touchMarkerHandler = function(e) {
@@ -55,8 +60,9 @@ var DifferencesGame = Game.extend({
         }
         self.circles.push(marker);
         self.updateBar(self.grp, self.circles.items.length);
-    },
-    updateBar: function(grp, n) {
+    }
+
+    updateBar(grp, n) {
         for(var i=0; i<grp.items.length; i++) {
             var rect = grp.items[i];
             if(i<n) {
@@ -65,22 +71,24 @@ var DifferencesGame = Game.extend({
                 rect.hide();
             }
         }
-    },
-    clearBar: function(grp) {
+    }
+
+    clearBar(grp) {
         for(var i=0;i<this.circles.items.length; i++) {
-            this.circles.items[i].remove();                        
+            this.circles.items[i].remove();
         }
         this.circles = r.set();
         this.updateBar(grp,0);
-    },
-    renderFrame: function() {
+    }
+
+    renderFrame() {
         var self = this;
         /*
         for(var i=0; i<this.positions.length; i++) {
             var pp = this.positions[i];
             r.ellipse(pp.x, pp.y, pp.rx, pp.ry).attr({fill: "cyan", "fill-opacity": 0.5});
-        } 
-        */   
+        }
+        */
 
         var circles = r.set();
         this.circles = circles;
@@ -125,18 +133,19 @@ var DifferencesGame = Game.extend({
             cursor: 'pointer',
         });
         if(MOBILE) {
-            overlay.touchstart(touchHandler); 
+            overlay.touchstart(touchHandler);
         } else {
-            overlay.mousedown(touchHandler); 
+            overlay.mousedown(touchHandler);
         }
 
-    },
-    start: function(gamedata) {
+    }
+
+    start(gamedata) {
         // alert("Starting game!");
         gamedata = gamedata || this.generateTaskData();
-        this.base(gamedata);
+        super.start(gamedata);
         this.regions = gamedata;
-        positions = [];
+        var positions = [];
         this.answer = [];
         var self = this;
         this.regions.forEach(function(r) {
@@ -153,8 +162,8 @@ var DifferencesGame = Game.extend({
         this.renderFrame();
 
     }
-},{
-    regions: [ 
+
+    static regions = [
         [ 45, 553, 30, 30 ],
         [ 94, 636, 30, 30 ],
         [ 300, 605, 30, 30 ],
@@ -164,5 +173,7 @@ var DifferencesGame = Game.extend({
         [ 274, 298, 40, 20 ],
         [ 464, 312, 30, 30 ],
         [ 176, 216, 170, 60 ]
-    ]
-});
+    ];
+}
+
+window.DifferencesGame = DifferencesGame;

@@ -1,9 +1,9 @@
 
-var NBackSingleGame = NBackGame.extend({
-    constructor: function(config) {
-        this.base(config);
-    },
-    createGUI: function(r) {
+class NBackSingleGame extends NBackGame {
+    constructor(config) {
+        super(config);
+    }
+    createGUI(r) {
         // create grid
         var self = this;
         self.createBackground(r);
@@ -18,27 +18,27 @@ var NBackSingleGame = NBackGame.extend({
                 self.answer[self.currentFrame-self.N] = 1;
             }
         });
-    },
-    showObject: function() {
+    }
+    showObject() {
         var self = this;
         var data = self.gamedata[self.currentFrame];
         var p = self.indexAsPosition(data);
         self.lastBox = self.drawBox(r, p.x, p.y, "blue");
         player.playSound("new-box");
-    },
-    generateReport: function(evalResult) {
+    }
+    generateReport(evalResult) {
         console.log("Generate report", evalResult);
         return [
             this.loc("Correctness") + ": "+ sprintf("%.1f%%", evalResult.correctness * 100)
             // this.loc("Total time") + ": " + (this.currentTime / 1000) + " s"
         ];
-    },
-    generateTaskData: function(options) {
+    }
+    generateTaskData(options) {
         var sequence = this.generateNBackSequence(this.L, this.N, this.matchProbability, 9);
         console.log("NBackSingleGame.generateTaskData", sequence);
         return sequence;
-    },
-    initializeTask: function() {
+    }
+    initializeTask() {
         var gamedata = this.gamedata;
         this.task = new NBackScalarTask(gamedata, this.N);
         this.answer = [];
@@ -46,5 +46,7 @@ var NBackSingleGame = NBackGame.extend({
             this.answer.push(0);
         }
     }
-});
+}
 
+
+window.NBackSingleGame = NBackSingleGame;

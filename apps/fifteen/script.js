@@ -1,20 +1,20 @@
-var Fifteen = TimedGame.extend({
+class Fifteen extends TimedGame {
 
-	constructor: function(config) {
-        this.base(config);
-	},
+    constructor(config) {
+        super(config);
+    }
 
-	/**
-	 *  Creates a matrix filled by a value.
-	 */
-	createMatrix: function(rows, cols, value) {
-	    var mat = [];
-	    var filler = value || 0;
-	    if(typeof(value) != "function") {
-	        filler = function(row, col) {
-	            return value;
-	        }
-	    }
+    /**
+     *  Creates a matrix filled by a value.
+     */
+    createMatrix(rows, cols, value) {
+        var mat = [];
+        var filler = value || 0;
+        if(typeof(value) != "function") {
+            filler = function(row, col) {
+                return value;
+            }
+        }
         for(var i=0; i<rows; i++) {
             var row = [];
             for(var j=0; j<cols; j++) {
@@ -23,23 +23,25 @@ var Fifteen = TimedGame.extend({
             mat.push(row);
         }
         return mat;
-	},
-	forEachInMatrix: function(matrix, fun) {
+    }
+
+    forEachInMatrix(matrix, fun) {
         for(var i=0; i<matrix.length; i++) {
             for(var j=0; j<matrix[0].length; j++) {
                 fun(matrix[i][j], i, j);
             }
         }
-	},
-    swapMatrixValues: function(matrix, row1, col1, row2, col2) {
+    }
+
+    swapMatrixValues(matrix, row1, col1, row2, col2) {
         var val1 = matrix[row1][col1];
         var val2 = matrix[row2][col2];
         matrix[row1][col1] = val2;
         matrix[row2][col2] = val1;
-    },
+    }
 
-	renderBoard: function() {
-	    console.log("Fifteen.renderBoard");
+    renderBoard() {
+        console.log("Fifteen.renderBoard");
         var self = this;
 
         var gridRows = 4;
@@ -174,8 +176,8 @@ var Fifteen = TimedGame.extend({
                 var rr = r + self.dirMap[move][0];
                 var cc = c + self.dirMap[move][1];
                 // swap tiles at positions (r,c) and (rr,cc)
-                p1 = self.reversePermutation(r, c);
-                p2 = self.reversePermutation(rr, cc);
+                var p1 = self.reversePermutation(r, c);
+                var p2 = self.reversePermutation(rr, cc);
                 self.swapMatrixValues(self.permutationMatrix, p1.row, p1.column, p2.row, p2.column);
                 return move;
             } else {
@@ -230,26 +232,30 @@ var Fifteen = TimedGame.extend({
         this.randomizeTiles(this.config.randomMovesNo || 10);
         this.updateTileDisplay();
 
-	},
+    }
 
     // set default embedding options for this Game
-    getEmbeddingOptions: function() {
+    getEmbeddingOptions() {
         return {
             renderTitle: false,
             renderAbortButton: true
         };
-    },
-    createGUI: function(r) {
+    }
+
+    createGUI(r) {
         var self = this;
         this.body = new GroupWidget();
-    },
-    generateTaskData: function(options) {
+    }
+
+    generateTaskData(options) {
         return null;
-    },            
-    renderFrame: function() {
+    }
+
+    renderFrame() {
         this.renderBoard();
-    },    
-    loadGamepackData: function() {
+    }
+
+    loadGamepackData() {
         var self = this;
         var name = self.meta.gamepackName;
         var gamepackUrl = self.meta.appBaseUrl + "/gamepacks/" + name;
@@ -258,21 +264,25 @@ var Fifteen = TimedGame.extend({
             console.log("Data loaded:", tileset, tilesetUrl);
             return {name:name, url:gamepackUrl, tilesetUrl: tilesetUrl, tileset:tileset};
         });
-    },
-    initializeTask: function() {
+    }
+
+    initializeTask() {
         this.task = new NullTask();
         this.answer = null;
         this.tilesetBaseUrl = dirname(this.gamepack.tilesetUrl);
         console.log("Fifteen.initializeTask", this.tilesetBaseUrl);
-    },
-    generateReport: function(evalResult) {
+    }
+
+    generateReport(evalResult) {
         return [
             this.loc("Number of moves") + ": " + this.numberOfMoves,
             this.loc("Total time") + ": " + (this.currentTime / 1000) + " s"
         ];
-    },
-    update: function(elapsedMillis) {
+    }
+
+    update(elapsedMillis) {
        //console.log(elapsedMillis);
     }
-},{
-});
+}
+
+window.Fifteen = Fifteen;

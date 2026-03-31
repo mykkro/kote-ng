@@ -1,19 +1,21 @@
 
-var ReactionTimeGame = TimedGame.extend({
-    constructor: function(config) {
-        this.base(config);
+class ReactionTimeGame extends TimedGame {
+    constructor(config) {
+        super(config);
         this.totalFrames = 0;
         this.currentFrame = 0;
         this.targetClicked = false;
-    },
-    createGUI: function(r) {
+    }
+
+    createGUI(r) {
         var labelSvg = new TextWidget(600, 50, "middle", "");
         labelSvg.setPosition(200, 140)
         labelSvg.setStyle({"fill": "black"});
         this.label = labelSvg;
         this.body = new GroupWidget();
-    },
-    showTarget: function() {
+    }
+
+    showTarget() {
         var self = this;
         var img0 = new ImageWidget(self.baseUrl + "/assets/1.png", 200, 200);
         img0.setPosition(100+Math.random()*600, 300+Math.random()*400);
@@ -26,36 +28,42 @@ var ReactionTimeGame = TimedGame.extend({
             self.hideTarget();
         });
         this.body.addChild(clk);
-    },
-    hideTarget: function() {
+    }
+
+    hideTarget() {
         this.body.clearContents();
-    },
-    printTime: function(msecs) {
+    }
+
+    printTime(msecs) {
         if(msecs === null) {
             return this.loc("N/A");
         } else {
             return sprintf("%.2f s", msecs / 1000);
         }
-    },
-    generateReport: function(evalResult) {
+    }
+
+    generateReport(evalResult) {
         return [
             this.loc("Hit ratio") + ": "+ sprintf("%.1f %%", evalResult.hitRatio * 100),
             this.loc("Best reaction time") + ": "+ this.printTime(evalResult.bestReactionTime),
             this.loc("Average reaction time") + ": "+ this.printTime(evalResult.avgReactionTime),
         ];
-    },
-    initializeTask: function() {
+    }
+
+    initializeTask() {
         this.totalFrames = this.gamedata.length/2;
         this.task = new ReactionTimeTask();
         this.events = this.gamedata.slice(0);
         this.targetShowTime = -1;
         this.targetReactionTime = -1;
         this.answer = [];
-    },
-    renderFrame: function() {
+    }
+
+    renderFrame() {
         this.updateCounter();
-    },
-    update: function(elapsedMillis) {
+    }
+
+    update(elapsedMillis) {
         console.log("ReactionTimeGame.update", elapsedMillis, this.stopwatch.millis());
         this.currentTime = this.stopwatch.millis();
         if(this.events.length == 0) {
@@ -79,11 +87,13 @@ var ReactionTimeGame = TimedGame.extend({
                 }
             }
         }
-    },
-    updateCounter: function() {
+    }
+
+    updateCounter() {
         this.label.setText((this.currentFrame+1)+"/"+this.totalFrames);
-    },
-    generateTaskData: function(options) {
+    }
+
+    generateTaskData(options) {
         // generate event sequence
         // events:
         //   showtarget [time, type, x, y]
@@ -103,7 +113,6 @@ var ReactionTimeGame = TimedGame.extend({
         }
         return events;
     }
+}
 
-});
-
-
+window.ReactionTimeGame = ReactionTimeGame;

@@ -258,6 +258,7 @@ function _applyRectStyle(el, attr) {
         else if (key === 'stroke')       el.style.borderColor     = (v === 'none') ? 'transparent' : v;
         else if (key === 'stroke-width') el.style.borderWidth     = (parseInt(v) || 0) + 'px';
         else if (key === 'opacity')      el.style.opacity         = v;
+        else if (key === 'fill-opacity') el.style.opacity         = v;
     }
 }
 
@@ -272,8 +273,9 @@ function _measureTextWidth(text, fontFamily, fontSize, fontWeight) {
 
 // ─── Widget ──────────────────────────────────────────────────────────────────
 
-var Widget = Base.extend({
-    constructor: function() {
+class Widget extends Base {
+    constructor() {
+        super();
         this.x = 0;
         this.y = 0;
         this.el = document.createElement('div');
@@ -281,23 +283,22 @@ var Widget = Base.extend({
         this.el.style.left = '0px';
         this.el.style.top  = '0px';
         r.el.appendChild(this.el);
-    },
-    setPosition: function(x, y) {
+    }
+    setPosition(x, y) {
         this.x = x;
         this.y = y;
         this.el.style.left = x + 'px';
         this.el.style.top  = y + 'px';
-    },
-    setStyle: function(attr) {
+    }
+    setStyle(attr) {
         this.style = attr;
-    },
-    clear: function() {
+    }
+    clear() {
         if (this.el && this.el.parentNode) {
             this.el.parentNode.removeChild(this.el);
         }
     }
-}, {
-    layoutButtons: function(buttons, gap, y) {
+    static layoutButtons(buttons, gap, y) {
         var totalWidth = 0;
         buttons.forEach(function(b) {
             if (totalWidth) totalWidth += gap;
@@ -309,25 +310,25 @@ var Widget = Base.extend({
             xx += b.w + gap;
         });
     }
-});
+}
 
 
 // ─── SizedWidget ─────────────────────────────────────────────────────────────
 
-var SizedWidget = Widget.extend({
-    constructor: function(w, h) {
-        this.base();
+class SizedWidget extends Widget {
+    constructor(w, h) {
+        super();
         this.w = w;
         this.h = h;
     }
-});
+}
 
 
 // ─── ButtonWidget ─────────────────────────────────────────────────────────────
 
-var ButtonWidget = Widget.extend({
-    constructor: function(text, options) {
-        this.base();
+class ButtonWidget extends Widget {
+    constructor(text, options) {
+        super();
         var o = options || {};
         o.backgroundStyle          = Object.assign({}, ButtonWidget.backgroundStyle,          o.backgroundStyle);
         o.clickedBackgroundStyle   = Object.assign({}, ButtonWidget.clickedBackgroundStyle,   o.clickedBackgroundStyle);
@@ -341,8 +342,8 @@ var ButtonWidget = Widget.extend({
         this.o    = o;
         this.text = text;
         this._buildElement();
-    },
-    _buildElement: function() {
+    }
+    _buildElement() {
         var o = this.o;
         Object.assign(this.el.style, {
             display:         'inline-flex',
@@ -370,21 +371,21 @@ var ButtonWidget = Widget.extend({
         this.el.addEventListener(MOBILE ? 'touchstart' : 'mousedown', function() {
             if (!self.disabled) self.onClick();
         });
-    },
-    setEnabled:  function(flag) { this.setDisabled(!flag); },
-    setDisabled: function(flag) {
+    }
+    setEnabled(flag) { this.setDisabled(!flag); }
+    setDisabled(flag) {
         this.disabled = flag;
         var st = flag ? this.o.disabledBackgroundStyle : this.o.backgroundStyle;
         this.el.style.backgroundColor = st.fill;
-    },
-    setHighlighted: function(flag, style) {
+    }
+    setHighlighted(flag, style) {
         var st = this.o.backgroundStyle;
         if (flag) st = Object.assign({}, this.o.highlightedBackgroundStyle, style);
         this.highlighted = flag;
         this.el.style.backgroundColor = st.fill;
         if (st.stroke) this.el.style.borderColor = st.stroke;
-    },
-    onClick: function(val) {
+    }
+    onClick(val) {
         if (typeof val === 'function') {
             this._onClick = val;
         } else {
@@ -400,29 +401,28 @@ var ButtonWidget = Widget.extend({
                 }, 100);
             }, 100);
         }
-    },
-    onClickAnimationComplete: function(val) {
+    }
+    onClickAnimationComplete(val) {
         if (typeof val === 'function') {
             this._onClickAnimationComplete = val;
         } else {
             if (this._onClickAnimationComplete) this._onClickAnimationComplete(this);
         }
     }
-}, {
-    backgroundStyle:          { fill: '#aac', stroke: '#333', 'stroke-width': 2 },
-    clickedBackgroundStyle:   { fill: '#77a', stroke: '#333', 'stroke-width': 2 },
-    highlightedBackgroundStyle: { fill: '#c66', stroke: '#333', 'stroke-width': 2 },
-    disabledBackgroundStyle:  { fill: '#eee', stroke: '#333', 'stroke-width': 2 }
-});
+    static backgroundStyle          = { fill: '#aac', stroke: '#333', 'stroke-width': 2 };
+    static clickedBackgroundStyle   = { fill: '#77a', stroke: '#333', 'stroke-width': 2 };
+    static highlightedBackgroundStyle = { fill: '#c66', stroke: '#333', 'stroke-width': 2 };
+    static disabledBackgroundStyle  = { fill: '#eee', stroke: '#333', 'stroke-width': 2 };
+}
 
 
 // ─── RoundButtonWidget ────────────────────────────────────────────────────────
 
-var RoundButtonWidget = ButtonWidget.extend({
-    constructor: function(text, options) {
-        this.base(text, options);
-    },
-    _buildElement: function() {
+class RoundButtonWidget extends ButtonWidget {
+    constructor(text, options) {
+        super(text, options);
+    }
+    _buildElement() {
         var o = this.o;
         o.fontSize   = o.fontSize   || 50;
         o.fontWeight = o.fontWeight || 'bold';
@@ -458,72 +458,72 @@ var RoundButtonWidget = ButtonWidget.extend({
             if (!self.disabled) self.onClick();
         });
     }
-});
+}
 
 
 // ─── ResizableWidget ─────────────────────────────────────────────────────────
 
-var ResizableWidget = SizedWidget.extend({
-    constructor: function(w, h) {
-        this.base(w, h);
-    },
-    setSize: function(w, h) {
+class ResizableWidget extends SizedWidget {
+    constructor(w, h) {
+        super(w, h);
+    }
+    setSize(w, h) {
         this.w = w;
         this.h = h;
     }
-});
+}
 
 
 // ─── RectWidget ──────────────────────────────────────────────────────────────
 
-var RectWidget = ResizableWidget.extend({
-    constructor: function(w, h, radius) {
-        this.base(w, h);
+class RectWidget extends ResizableWidget {
+    constructor(w, h, radius) {
+        super(w, h);
         this.el.style.width      = w + 'px';
         this.el.style.height     = h + 'px';
         this.el.style.boxSizing  = 'border-box';
         if (radius) this.el.style.borderRadius = radius + 'px';
         this.setStyle({ stroke: 'red', fill: 'white' });
-    },
-    setStyle: function(attr) {
+    }
+    setStyle(attr) {
         this.style = Object.assign(this.style || {}, attr);
         _applyRectStyle(this.el, attr);
-    },
-    setSize: function(w, h) {
-        this.base(w, h);
+    }
+    setSize(w, h) {
+        super.setSize(w, h);
         this.el.style.width  = w + 'px';
         this.el.style.height = h + 'px';
     }
-});
+}
 
 
 // ─── CircleWidget ─────────────────────────────────────────────────────────────
 
-var CircleWidget = ResizableWidget.extend({
-    constructor: function(radius) {
+class CircleWidget extends ResizableWidget {
+    constructor(radius) {
+        super(2 * radius, 2 * radius);
         this.radius = radius;
-        this.base(2 * radius, 2 * radius);
         this.el.style.width        = (2 * radius) + 'px';
         this.el.style.height       = (2 * radius) + 'px';
         this.el.style.borderRadius = '50%';
         this.el.style.boxSizing    = 'border-box';
         this.setStyle({ stroke: 'red', fill: 'white' });
-    },
-    setStyle: function(attr) {
+    }
+    setStyle(attr) {
         this.style = Object.assign(this.style || {}, attr);
         _applyRectStyle(this.el, attr);
-    },
-    setRadius: function(newRadius) {
+    }
+    setRadius(newRadius) {
         this.radius = newRadius;
         this.w = 2 * newRadius;
         this.h = 2 * newRadius;
         this.el.style.width  = this.w + 'px';
         this.el.style.height = this.h + 'px';
-    },
-    setSize: function(w, h) {
-        this.base(w, h);
     }
-});
+    setSize(w, h) {
+        super.setSize(w, h);
+    }
+}
 
 
 // ─── PieWidget (sector via conic-gradient) ────────────────────────────────────
@@ -541,10 +541,10 @@ function sector(cx, cy, radius, startAngle, endAngle, params) {
     ).attr(params || {});
 }
 
-var PieWidget = ResizableWidget.extend({
-    constructor: function(radius, startAngle, endAngle) {
+class PieWidget extends ResizableWidget {
+    constructor(radius, startAngle, endAngle) {
+        super(2 * radius, 2 * radius);
         this.radius     = radius;
-        this.base(2 * radius, 2 * radius);
         this.startAngle = startAngle;
         this.endAngle   = endAngle;
         this._pieStyle  = { stroke: 'none', fill: 'white' };
@@ -552,8 +552,8 @@ var PieWidget = ResizableWidget.extend({
         this.el.style.height       = (2 * radius) + 'px';
         this.el.style.borderRadius = '50%';
         this._updatePie();
-    },
-    _updatePie: function() {
+    }
+    _updatePie() {
         var fill = this._pieStyle.fill || 'white';
         if (fill === 'none') fill = 'transparent';
         // CSS conic-gradient starts from north; Raphael angles start from east.
@@ -561,24 +561,24 @@ var PieWidget = ResizableWidget.extend({
         var e = this.endAngle   - 90;
         this.el.style.background =
             'conic-gradient(transparent ' + s + 'deg, ' + fill + ' ' + s + 'deg ' + e + 'deg, transparent ' + e + 'deg)';
-    },
-    setStyle: function(attr) {
+    }
+    setStyle(attr) {
         this._pieStyle = Object.assign(this._pieStyle, attr);
         this._updatePie();
-    },
-    setAngles: function(startAngle, endAngle) {
+    }
+    setAngles(startAngle, endAngle) {
         this.startAngle = startAngle;
         this.endAngle   = endAngle;
         this._updatePie();
     }
-});
+}
 
 
 // ─── TextWidget ───────────────────────────────────────────────────────────────
 
-var TextWidget = Widget.extend({
-    constructor: function(maxWidth, fontSize, anchor, text) {
-        this.base();
+class TextWidget extends Widget {
+    constructor(maxWidth, fontSize, anchor, text) {
+        super();
         this.maxWidth = maxWidth;
         this.fontSize = fontSize;
         this.anchor   = anchor;
@@ -596,12 +596,12 @@ var TextWidget = Widget.extend({
             pointerEvents:'none'     // let clicks pass through to Clickable beneath
         });
         this.setText(text || '');
-    },
-    setText: function(text) {
+    }
+    setText(text) {
         this.text = text || '';
         this.el.textContent = this.text;
-    },
-    setStyle: function(attr) {
+    }
+    setStyle(attr) {
         this.style = attr;
         for (var key in attr) {
             var v = attr[key];
@@ -610,21 +610,21 @@ var TextWidget = Widget.extend({
             else if (key === 'font-family') this.el.style.fontFamily = v;
             else if (key === 'font-weight') this.el.style.fontWeight = v;
         }
-    },
-    setCssClass: function(css) {
+    }
+    setCssClass(css) {
         this.el.className = css;
-    },
-    getTextboxSize: function() {
+    }
+    getTextboxSize() {
         return { width: this.el.offsetWidth, height: this.el.offsetHeight };
     }
-});
+}
 
 
 // ─── ImageWidget ──────────────────────────────────────────────────────────────
 
-var ImageWidget = ResizableWidget.extend({
-    constructor: function(url, width, height) {
-        this.base(width, height);
+class ImageWidget extends ResizableWidget {
+    constructor(url, width, height) {
+        super(width, height);
         this.el.style.width    = width  + 'px';
         this.el.style.height   = height + 'px';
         this.el.style.overflow = 'hidden';
@@ -646,18 +646,18 @@ var ImageWidget = ResizableWidget.extend({
             if (callback) setTimeout(function() { callback(); }, ms);
         };
         this.el.appendChild(this.image);
-    },
-    setSize: function(w, h) {
-        this.base(w, h);
+    }
+    setSize(w, h) {
+        super.setSize(w, h);
         this.el.style.width      = w + 'px';
         this.el.style.height     = h + 'px';
         this.image.style.width   = w + 'px';
         this.image.style.height  = h + 'px';
-    },
-    setSrc:   function(url) { this.image.src = url; },
-    getSrc:   function()    { return this.image.src; },
-    setBlank: function()    { this.setSrc('assets/blank.png'); }
-});
+    }
+    setSrc(url)  { this.image.src = url; }
+    getSrc()     { return this.image.src; }
+    setBlank()   { this.setSrc('assets/blank.png'); }
+}
 
 
 // ─── Clickable ────────────────────────────────────────────────────────────────
@@ -665,10 +665,10 @@ var ImageWidget = ResizableWidget.extend({
 // The child's el is re-parented inside this widget's el; child coordinates
 // are then relative to the Clickable's origin (matches Raphael set behaviour).
 
-var Clickable = SizedWidget.extend({
-    constructor: function(child) {
+class Clickable extends SizedWidget {
+    constructor(child) {
+        super(child.w, child.h);
         this.child = child;
-        this.base(child.w, child.h);
         this.el.style.width  = child.w + 'px';
         this.el.style.height = child.h + 'px';
         this.el.style.cursor = 'pointer';
@@ -687,55 +687,55 @@ var Clickable = SizedWidget.extend({
         this.el.addEventListener(MOBILE ? 'touchstart' : 'mousedown', function(e) {
             if (!self.disabled) self.onClick(e);
         });
-    },
-    _getMouseCoordinates: function(e) {
+    }
+    _getMouseCoordinates(e) {
         var bnds = e.currentTarget.getBoundingClientRect();
         var fx = (e.clientX - bnds.left) / bnds.width  * this.w;
         var fy = (e.clientY - bnds.top)  / bnds.height * this.h;
         return { x: fx, y: fy };
-    },
-    onClick: function(val) {
+    }
+    onClick(val) {
         if (typeof val === 'function') {
             this._onClick = val;
         } else {
             if (this._onClick) this._onClick(this, val);
         }
-    },
-    clear: function() {
-        this.child.clear();
-        this.base();
     }
-});
+    clear() {
+        this.child.clear();
+        super.clear();
+    }
+}
 
 
 // ─── GroupWidget ──────────────────────────────────────────────────────────────
 // Container widget.  addChild() re-parents the child's el inside the group's el
 // so child coordinates are relative to the group (mirrors Raphael set transforms).
 
-var GroupWidget = Widget.extend({
-    constructor: function(children) {
+class GroupWidget extends Widget {
+    constructor(children) {
+        super();
         this.children = [];
-        this.base();
         var self = this;
         (children || []).forEach(function(c) { self.addChild(c); });
-    },
-    addChild: function(widget) {
+    }
+    addChild(widget) {
         this.children.push(widget);
         if (widget.el && widget.el.parentNode) widget.el.parentNode.removeChild(widget.el);
         this.el.appendChild(widget.el);
-    },
-    clearContents: function() {
+    }
+    clearContents() {
         this.children.forEach(function(c) { c.clear(); });
         this.children = [];
     }
-});
+}
 
 
 // ─── AppPreviewWidget ─────────────────────────────────────────────────────────
 
-var AppPreviewWidget = Widget.extend({
-    constructor: function(previewUrl, title, _subtitle, tags, size) {
-        this.base();
+class AppPreviewWidget extends Widget {
+    constructor(previewUrl, title, _subtitle, tags, size) {
+        super();
         size = size || 250;
         var a    = size / 250;
         var imgS = Math.floor(150 * a);
@@ -781,14 +781,13 @@ var AppPreviewWidget = Widget.extend({
         this.el.addEventListener(MOBILE ? 'touchstart' : 'mousedown', function() {
             if (!self.disabled) self.onClick();
         });
-    },
-    onClick: function(val) {
+    }
+    onClick(val) {
         if (typeof val === 'function') {
             this._onClick = val;
         } else {
             if (this._onClick) this._onClick(this);
         }
     }
-}, {
-    backgroundStyle: { fill: 'white', stroke: 'none', opacity: 0.6 }
-});
+    static backgroundStyle = { fill: 'white', stroke: 'none', opacity: 0.6 };
+}

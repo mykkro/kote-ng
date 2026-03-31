@@ -4,10 +4,10 @@
 *
 * Copyright (c) 2010, David J. Rager
 * All rights reserved.
-* 
+*
 * Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met: 
-* 
+* modification, are permitted provided that the following conditions are met:
+*
 *     * Redistributions of source code must retain the above copyright notice,
 *       this list of conditions and the following disclaimer.
 *     * Redistributions in binary form must reproduce the above copyright
@@ -16,7 +16,7 @@
 *     * Neither the name of Fourth Woods Media nor the names of its
 *       contributors may be used to endorse or promote products derived from
 *       this software without specific prior written permission.
-* 
+*
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -58,7 +58,7 @@
 * solution.
 *
 * The enumSolutions() method is a modified version of the solver that will count
-* all possible solutions for 
+* all possible solutions for
 *
 * Have fun. Send any comments, bugs, contribs to rageratwork@gmail.com
 */
@@ -596,7 +596,7 @@ function Sudoku() {
 				// look at each cell in the same row as the
 				// selected cell.
 				for(i = 0; i < 9; i++)
-				{	
+				{
 					// don't bother looking at the selected
 					// cell. we already know the value will
 					// work.
@@ -672,7 +672,7 @@ function Sudoku() {
 							{
 								if((i == row) && (j == col))
 									continue;
-	
+
 								k = i * 9 + j;
 								if(mask[k] > 0)
 									continue;
@@ -973,7 +973,7 @@ function Sudoku() {
 				// look at each cell in the same row as the
 				// selected cell.
 				for(i = 0; i < 9; i++)
-				{	
+				{
 					// don't bother looking at the selected
 					// cell. we already know the value will
 					// work.
@@ -1049,7 +1049,7 @@ function Sudoku() {
 							{
 								if((i == row) && (j == col))
 									continue;
-	
+
 								k = i * 9 + j;
 								if(mask[k] > 0)
 									continue;
@@ -1166,24 +1166,23 @@ function Sudoku() {
 
 
 
-
-var SudokuGame = Game.extend({
-    constructor: function(config) {
-        this.base(config);
+class SudokuGame extends Game {
+    constructor(config) {
+        super(config);
         this.solver = new Sudoku();
         this.cellsize = 90;
         this.x0 = 95;
         this.y0 = 95;
         this.showMistakes = this.config.showMistakes;
-    },
+    }
     // set default embedding options for this Game
-    getEmbeddingOptions: function() {
+    getEmbeddingOptions() {
         return {
             renderTitle: false,
             renderAbortButton: true
         };
-    },
-    createGUI: function(r) {
+    }
+    createGUI(r) {
         var self = this;
         // create Sudoku GUI here...
         this.drawBackground();
@@ -1205,13 +1204,13 @@ var SudokuGame = Game.extend({
             self.editables.push(ee);
             self.errors.push(ff);
         }
-        this.body = new GroupWidget(); 
-    },
-    drawBackground: function() {
+        this.body = new GroupWidget();
+    }
+    drawBackground() {
         var xsize = 9 * this.cellsize;
         var ysize = 9 * this.cellsize;
         var bkgr = r.rect(this.x0, this.y0, xsize, ysize);
-        bkgr.attr({"stroke": "none", "fill": "white"});        
+        bkgr.attr({"stroke": "none", "fill": "white"});
         var thickLineStyle = {"stroke": "black", "stroke-width": "3"};
         var thinLineStyle = {"stroke": "black", "stroke-width": "1"};
         for(var i=0; i<10; i++) {
@@ -1219,11 +1218,11 @@ var SudokuGame = Game.extend({
             r.line(this.x0, this.y0+i*this.cellsize, this.x0+xsize, this.y0+i*this.cellsize).attr(style);
             r.line(this.x0+i*this.cellsize, this.y0, this.x0+i*this.cellsize, this.y0+ysize).attr(style);
         }
-    },
-    generateTaskData: function(options) {
+    }
+    generateTaskData(options) {
         return null;
-    },            
-    renderFrame: function() {
+    }
+    renderFrame() {
         var self = this;
 
         // initialize each cell.
@@ -1269,12 +1268,12 @@ var SudokuGame = Game.extend({
 
         // generate the new puzzle.
         this.solver.newGame();
-    },    
-    clickCell: function(i, j) {
+    }
+    clickCell(i, j) {
         var self = this;
         var oldval = self.solver.getVal(i, j);
         var newval = (oldval+1)%10;
-        self.setCell(i, j, newval);  
+        self.setCell(i, j, newval);
         self.solver.setVal(i, j, newval);
         self.checkCell(i, j);
         // check to see if the game is done.
@@ -1290,12 +1289,12 @@ var SudokuGame = Game.extend({
             });
 
         }
-    },
-    notifyFinished: function(callback) {
+    }
+    notifyFinished(callback) {
         // TODO show modal splash dialog
         setTimeout(callback, 500);
-    },
-    checkCell: function(row, col) {
+    }
+    checkCell(row, col) {
         for (var i = 0; i < 9; i++)
         {
             var val = this.solver.getVal(row, i);
@@ -1326,37 +1325,37 @@ var SudokuGame = Game.extend({
             }
         }
         this.updateErrorView();
-    },
-    updateErrorView: function() {
+    }
+    updateErrorView() {
         console.log("Errors:", this.errors);
         for(var i = 0; i < 9; i++) {
             for(var j = 0; j < 9; j++) {
                 this.updateCellErrorView(i, j, this.errors[i][j]);
             }
         }
-    },
-    updateCellErrorView: function(row, col, err) {
+    }
+    updateCellErrorView(row, col, err) {
         this.cells[row][col].setStyle({fill: (err && this.showMistakes) ? "red" : "black"});
-    },
-    makeCell: function(i,j) {
+    }
+    makeCell(i,j) {
         var labelSvg = new TextWidget(this.cellsize,this.cellsize*0.8, "middle", "");
         labelSvg.setPosition(this.x0 + j*this.cellsize, this.y0 + this.cellsize*0.15 + i*this.cellsize)
-        labelSvg.setStyle({"fill": "black"}); 
+        labelSvg.setStyle({"fill": "black"});
         labelSvg.setCssClass("sudoku-digit");
         return labelSvg;
-    },
-    setCell: function(i, j, value) {
+    }
+    setCell(i, j, value) {
         console.log("Set value:", i, j, value)
         this.cells[i][j].setText(value==0 ? "" : ""+value);
         this.cells[i][j].setCssClass("sudoku-digit");
-    },
-    loadGamepackData: function() {
+    }
+    loadGamepackData() {
         var self = this;
         // sudoku - empty gamepack
         return Promise.resolve({});
-    },
-    start: function(gamedata) {
-        this.base(gamedata);
+    }
+    start(gamedata) {
+        super.start(gamedata);
         var self = this;
         console.log("Sudoku:start");
 
@@ -1368,13 +1367,13 @@ var SudokuGame = Game.extend({
             self.startTimer();
             self.renderFrame();
         });
-    },
-    generateReport: function(evalResult) {
+    }
+    generateReport(evalResult) {
         return [
             this.loc("Total time") + ": " + evalResult.totalTime
         ];
-    },
-    startTimer: function() {
+    }
+    startTimer() {
         var self = this;
         self.currentTime = 0;
         var timer = new Timer();
@@ -1384,14 +1383,15 @@ var SudokuGame = Game.extend({
             self.currentTime = elapsedMillis;
             //console.log("Time", self.currentTime);
         }});
-    },
-    abort: function() {
-        this.base();       
-        this.timer.stop(); 
-    },
-    finish: function(result) {
-        this.timer.stop(); 
-        this.base(result);       
     }
-},{
-});
+    abort() {
+        super.abort();
+        this.timer.stop();
+    }
+    finish(result) {
+        this.timer.stop();
+        super.finish(result);
+    }
+}
+
+window.SudokuGame = SudokuGame;

@@ -1,31 +1,31 @@
 /**
  *  Class of game data validators.
  */
-var Task = Base.extend({
-    evaluate: function(answer) {
+class Task extends Base {
+    evaluate(answer) {
         // to be implemented in subclasses
     }
-});
+}
 
 
 // produces 'correctness ratio' - number between 0/1
-var ScalarTask = Task.extend({
+class ScalarTask extends Task {
 
-});
+}
 
 // produces information 0/1 - finished correctly or not
-var BinaryTask = ScalarTask.extend({
+class BinaryTask extends ScalarTask {
 
-});
+}
 
-var NullTask = Task.extend({
-    validate: function(answer) {
+class NullTask extends Task {
+    validate(answer) {
         return !!answer;
-    },
-    evaluate: function(answer) {
+    }
+    evaluate(answer) {
         return answer;
     }
-});
+}
 
 
 // special type of task connected with reading materials
@@ -33,27 +33,27 @@ var NullTask = Task.extend({
 // - how many pages were in the material
 // - how long it took to read them (or, to proceed to next page)
 // TODO add more data
-var InstructionalTask = Task.extend({
-    validate: function(answer) {
+class InstructionalTask extends Task {
+    validate(answer) {
         return (answer.length > 0);
-    },
-    evaluate: function(answer) {
+    }
+    evaluate(answer) {
         var pagesTotal = answer.length;
         return {
             pagesTotal: pagesTotal
         }
     }
-});
+}
 
 
 
-var ReactionTimeTask = Task.extend({
+class ReactionTimeTask extends Task {
     // tests if the answer contains correct data
     // (it is array of specific length)
-    validate: function(answer) {
+    validate(answer) {
         return (answer.length > 0);
-    },
-    evaluate: function(answer) {
+    }
+    evaluate(answer) {
         // there is no single "correctness" value
         var cuesTotal = 0;
         var cuesHit = 0;
@@ -85,16 +85,16 @@ var ReactionTimeTask = Task.extend({
             bestReactionTime: bestReactionTime
         }
     }
-});
+}
 
 
-var BinaryMultiTask = BinaryTask.extend({
+class BinaryMultiTask extends BinaryTask {
     // tests if the answer contains correct data
     // (it is array of specific length)
-    validate: function(answer) {
+    validate(answer) {
         return (answer.length > 0);
-    },
-    evaluate: function(answer) {
+    }
+    evaluate(answer) {
         // answer should be array with the same length and content as this.sequence
         var correct = false;
         var answeredTotal = 0;
@@ -120,48 +120,49 @@ var BinaryMultiTask = BinaryTask.extend({
             correctAnswers: correctAnswers
         }
     }
-});
+}
 
 
 // game: fill in the gaps in a single sequence
 // there is a single valid solution
 // if mask is not specified, it is assumed to be [0,0,0...0]
 // seq = array of anything (that can be compared by ==)
-var SequenceBinaryTask = BinaryTask.extend({
-    constructor: function(seq, mask) {
+class SequenceBinaryTask extends BinaryTask {
+    constructor(seq, mask) {
+        super();
         this.sequence = seq;
         var self = this;
         if(mask) {
-            this.mask = mask;                        
+            this.mask = mask;
         } else {
             this.mask = [];
             this.sequence.forEach(function(item) {
                 self.mask.push(0);
             });
         }
-    },
-    slotCount: function() {
+    }
+    slotCount() {
         var sc = 0;
         for(var i=0; i<this.mask.length; i++) {
             if(!this.mask[i]) sc++;
         }
         return sc;
-    },
-    question: function() {
+    }
+    question() {
         var q = this.sequence.slice();
         for(var i=0; i<this.mask.length; i++) {
             if(!this.mask[i]) q[i] = undefined;
         }
         return q;
-    },
+    }
     // tests if the answer contains correct data
     // (it is array of specific length)
-    validate: function(answer) {
+    validate(answer) {
         return (answer.length == this.sequence.length);
-    },
+    }
     // if answer passes validation (which is basically a type check), it can be evaluated
     // answer = original sequence with all gaps filled
-    evaluate: function(answer) {
+    evaluate(answer) {
         // answer should be array with the same length and content as this.sequence
         var correct = false;
         var answeredTotal = 0;
@@ -189,19 +190,20 @@ var SequenceBinaryTask = BinaryTask.extend({
             correctAnswers: correctAnswers
         }
     }
-});
+}
 
 
 
-var MultiSequenceTask = ScalarTask.extend({
-    constructor: function(sequences) {
+class MultiSequenceTask extends ScalarTask {
+    constructor(sequences) {
+        super();
         this.sequences = [];
         var self = this;
         sequences.forEach(function(s) {
             self.sequences.push(new SequenceBinaryTask(s[0], s[1]));
         });
-    },
-    validate: function(answers) {
+    }
+    validate(answers) {
         if(answers.length && answers.length==this.sequences.length) {
             for(var i=0; i<answers.length; i++) {
                 if(!this.sequence[i].validate(answers[i])) {
@@ -210,9 +212,9 @@ var MultiSequenceTask = ScalarTask.extend({
             }
         }
         return true;
-    },
+    }
     // answer = pair [a,b] of binary sequences N elements shorter than orig. sequences
-    evaluate: function(answers) {
+    evaluate(answers) {
         var evals = [];
         var correctness = 0;
         for(var i=0; i<answers.length; i++) {
@@ -225,17 +227,18 @@ var MultiSequenceTask = ScalarTask.extend({
             correctness: correctness / answers.length
         }
     }
-});
+}
 
 
 // game: items shown in sequence, one at a time. Indicate whether currently shown item is equal to an item shown N frames back. The answer is an array with N less elements than original sequence.
 // there is a single valid solution
-var NBackScalarTask = ScalarTask.extend({
-    constructor: function(seq, N) {
+class NBackScalarTask extends ScalarTask {
+    constructor(seq, N) {
+        super();
         this.sequence = seq;
         this.N = N;
-    },
-    expectedAnswer: function() {
+    }
+    expectedAnswer() {
         var expectedAnswer = [];
         for(var i=0; i<this.sequence.length-this.N; i++) {
             if(this.sequence[i+this.N] == this.sequence[i]) {
@@ -245,12 +248,12 @@ var NBackScalarTask = ScalarTask.extend({
             }
         }
         return expectedAnswer;
-    },
-    validate: function(answer) {
+    }
+    validate(answer) {
         return (answer.length == this.expectedAnswer().length);
-    },
+    }
     // answer = binary sequence N elements shorter than training sequence
-    evaluate: function(answer) {                       
+    evaluate(answer) {
         var answeredCorrectly = 0;
         var correctAnswers = [];
         var ea = this.expectedAnswer();
@@ -271,7 +274,7 @@ var NBackScalarTask = ScalarTask.extend({
             correctAnswers: correctAnswers
         }
     }
-});
+}
 
 // take multiple tasks at once and evaluate them together
 // compute correctness as average of correctnesses
@@ -279,8 +282,9 @@ var NBackScalarTask = ScalarTask.extend({
 // how to generalize to binary tasks? (AND/OR/M from N...)
 // scalar task can be implicitly converted to binary task
 // (threshold = 1)
-var ParallelScalarTask = ScalarTask.extend({
-    constructor: function(tasks, weights) {
+class ParallelScalarTask extends ScalarTask {
+    constructor(tasks, weights) {
+        super();
         this.tasks = tasks;
         this.weights = weights;
         if(!this.weights) {
@@ -289,8 +293,8 @@ var ParallelScalarTask = ScalarTask.extend({
                 this.weights.push(1);
             }
         }
-    },
-    validate: function(answers) {
+    }
+    validate(answers) {
         if(answers.length && answers.length==this.tasks.length) {
             for(var i=0; i<answers.length; i++) {
                 if(!this.tasks[i].validate(answers[i])) {
@@ -299,9 +303,9 @@ var ParallelScalarTask = ScalarTask.extend({
             }
         }
         return true;
-    },
+    }
     // answer = pair [a,b] of binary sequences N elements shorter than orig. sequences
-    evaluate: function(answers) {
+    evaluate(answers) {
         var evals = [];
         var correctness = 0;
         var totalWeight = 0;
@@ -316,71 +320,73 @@ var ParallelScalarTask = ScalarTask.extend({
             correctness: correctness / totalWeight
         }
     }
-});
+}
 
 
 // "abstract" - does nothing....
-var ParallelBinaryTask = BinaryTask.extend({
-    constructor: function(tasks) {
+class ParallelBinaryTask extends BinaryTask {
+    constructor(tasks) {
+        super();
         this.tasks = tasks;
         this.pst = new ParallelScalarTask(tasks);
-    },
-    validate: function(answers) {
+    }
+    validate(answers) {
         return this.pst.validate(answers);
-    },
-    evaluate: function(answers) {
+    }
+    evaluate(answers) {
         var result = this.pst.evaluate(answers);
         return result;
     }
-});
+}
 
-var ParallelBinaryAndTask = ParallelBinaryTask.extend({
-    constructor: function(tasks) {
-        this.base(tasks);
-    },
-    evaluate: function(answers) {
-        var result = this.base(answers);
+class ParallelBinaryAndTask extends ParallelBinaryTask {
+    constructor(tasks) {
+        super(tasks);
+    }
+    evaluate(answers) {
+        var result = super.evaluate(answers);
         result.correct = true;
         result.tasks.forEach(function(te) {
             result.correct = result.correct && te.correct;
         });
         return result;
     }
-});
+}
 
-var ParallelBinaryOrTask = ParallelBinaryTask.extend({
-    constructor: function(tasks) {
-        this.base(tasks);
-    },
-    evaluate: function(answers) {
-        var result = this.base(answers);
+class ParallelBinaryOrTask extends ParallelBinaryTask {
+    constructor(tasks) {
+        super(tasks);
+    }
+    evaluate(answers) {
+        var result = super.evaluate(answers);
         result.correct = false;
         result.tasks.forEach(function(te) {
             result.correct = result.correct || te.correct;
         });
         return result;
     }
-});
+}
 
 
 // specific example of "parallel task"
-var NBackDualScalarTask = ScalarTask.extend({
-    constructor: function(seqs, N) {
+class NBackDualScalarTask extends ScalarTask {
+    constructor(seqs, N) {
+        super();
         this.N = N;
         this.task1 = new NBackScalarTask(seqs[0], N);
         this.task2 = new NBackScalarTask(seqs[1], N);
-    },
-    expectedAnswer: function() {
+    }
+    expectedAnswer() {
         return [
             this.task1.expectedAnswer(),
             this.task2.expectedAnswer()
         ];
-    },
-    validate: function(answers) {
+    }
+    validate(answers) {
         return answer.length && answer.length==2 && this.task1.validate(answers[0]) && this.task2.validate(answers[1]);
-    },
+    }
     // answer = pair [a,b] of binary sequences N elements shorter than orig. sequences
-    evaluate: function(answers) {
+    evaluate(answers) {
         var val1 = this.task1.evaluate(answers[0]);
         var val2 = this.task2.evaluate(answers[1]);
         return {
@@ -389,62 +395,64 @@ var NBackDualScalarTask = ScalarTask.extend({
             correctness: (val1.correctness + val2.correctness)/2
         }
     }
-});
+}
 
 // task evaluator - evaluates a scalar task, and if
 // it reaches correctness >= threshold, it passes
 // makes binary task from scalar task
-var ThresholdTask = BinaryTask.extend({
-    constructor: function(scalarTask, threshold) {
+class ThresholdTask extends BinaryTask {
+    constructor(scalarTask, threshold) {
+        super();
         this.scalarTask = scalarTask;
         this.threshold = threshold;
-    },
+    }
     // answer - of the same type as in original scalar task
-    validate: function(answer) {
+    validate(answer) {
         return this.scalarTask.validate(answer);
-    },
+    }
     // answer - of the same type as in original scalar task
-    evaluate: function(answer) {
+    evaluate(answer) {
         var val = this.scalarTask.evaluate(answer);
         if(val) {
             val.correct = val.correctness >= this.threshold;
         }
         return val;
     }
-});
+}
 
 // game: fill in the gaps in empty spots in 3x3 grid
 // there may be multiple correct solutions
 // sum of numbers on rows and cols must be N
 // numbers can repeat!
 // grid, mask are arrays of 9 elements
-var MagicSquareBinaryTask = BinaryTask.extend({
-    constructor: function(grid, mask, N, checkDiagonals) {
+class MagicSquareBinaryTask extends BinaryTask {
+    constructor(grid, mask, N, checkDiagonals) {
+        super();
         this.grid = grid;
         this.mask = mask;
-        this.N = N;                        
+        this.N = N;
         this.checkDiagonals = checkDiagonals;
-    },
-    slotCount: function() {
+    }
+    slotCount() {
         var sc = 0;
         for(var i=0; i<this.mask.length; i++) {
             if(this.mask[i]) sc++;
         }
         return sc;
-    },
-    question: function() {
+    }
+    question() {
         var q = this.grid.slice();
         for(var i=0; i<this.mask.length; i++) {
             if(!this.mask[i]) q[i] = undefined;
         }
         return q;
-    },
+    }
     // answer = array of 9 ints, gaps filled
-    validate: function(answer) {
+    validate(answer) {
         return (answer.length == this.grid.length);
-    },
+    }
     // answer = array of 9 ints, gaps filled
-    evaluate: function(answer) {
+    evaluate(answer) {
         // answer should be array with the same length and content as this.sequence
         var correct = false;
         var a = answer;
@@ -483,23 +491,24 @@ var MagicSquareBinaryTask = BinaryTask.extend({
             correctRowsCols: correctMask
         }
     }
-});
+}
 
 // game: given a set of areas (circles, ellipses, rotated ellipses...), answer with an array of hits (circles)
 // hits <- intersections between the two
-var HitMissScalarTask = BinaryTask.extend({
+class HitMissScalarTask extends BinaryTask {
     // regions = array of arrays
     // either: [ x y r ] - circle
     //         [ x y rx ry ] - ellipse
     //         [ x y rx ry angle ] - rotated ellipse
-    constructor: function(regions) {
+    constructor(regions) {
+        super();
         this.regions = regions;
-    },               
-    // calculate matrix of distances between points (centers of answers) and regions   
+    }
+    // calculate matrix of distances between points (centers of answers) and regions
     // if a circle is touching a region -> distance -> 0
     // if for each region, there exists an answer that dist(region,answer)=0 -> correct solution
     // invalid answers: the answers that do not hit any of the regions
-    calculateDistance: function(reg, ans) {
+    calculateDistance(reg, ans) {
         var cx = reg[0];
         var cy = reg[1];
         var rx = ry = reg[2];
@@ -515,12 +524,12 @@ var HitMissScalarTask = BinaryTask.extend({
         var dist = safe_estimate_distance(x, y, rx, ry, cx, cy, angle);
         return Math.max(dist - ans[2], 0);
 
-    },
+    }
     // answer = array of circles - [[cx,cy,r], ...] of the same length as array of regions
-    validate: function(answer) {
+    validate(answer) {
         return (answer.length == this.regions.length);
-    },
-    evaluate: function(answer) {
+    }
+    evaluate(answer) {
         var self = this;
         var correct = false;
         var regionsTotal = this.regions.length;
@@ -531,7 +540,7 @@ var HitMissScalarTask = BinaryTask.extend({
             distances.push(dd);
             answer.forEach(function(ans) {
                 dd.push(self.calculateDistance(reg, ans));
-            });                                
+            });
 
         });
         // regions -> rows
@@ -550,7 +559,7 @@ var HitMissScalarTask = BinaryTask.extend({
             }
             hitRegions.push(missed ? 0 : 1);
         }
-        
+
         // .....
 
         correct = (regionsTotal == regionsHit);
@@ -563,4 +572,4 @@ var HitMissScalarTask = BinaryTask.extend({
             regionsBeenHit: hitRegions
         }
     }
-});
+}

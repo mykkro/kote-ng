@@ -1,25 +1,25 @@
 
 
 
-var Slideshow = Game.extend({
-    constructor: function(config) {
-        this.base(config);
-    },
+class Slideshow extends Game {
+    constructor(config) {
+        super(config);
+    }
     // set default embedding options for this Game
-    getEmbeddingOptions: function() {
+    getEmbeddingOptions() {
         return {
             renderTitle: false,
             renderAbortButton: false
         };
-    },
-    createGUI: function(r) {
+    }
+    createGUI(r) {
         var self = this;
-        this.body = new GroupWidget(); 
-    },
-    generateTaskData: function(options) {
+        this.body = new GroupWidget();
+    }
+    generateTaskData(options) {
         return null;
-    },            
-    renderFrame: function() {
+    }
+    renderFrame() {
         var self = this;
         this.body.clearContents();
         if(this.currentFrame >= this.totalFrames) {
@@ -37,46 +37,46 @@ var Slideshow = Game.extend({
                 console.error("Unsupported slide type: "+slide.type);
             }
         }
-    },
-    renderSlideBackground: function(slide) {
+    }
+    renderSlideBackground(slide) {
         if(slide.backgroundUrl) {
             var img = new ImageWidget(this.gamepack.slideshowBaseUrl + "/" + slide.backgroundUrl, 1000, 1000);
             this.body.addChild(img);
         }
-    },
-    renderSlideTitle: function(slide) {
+    }
+    renderSlideTitle(slide) {
         if(slide.title) {
             var labelSvg = new TextWidget(600, 40, "middle", slide.title);
             labelSvg.setPosition(200, 30)
             labelSvg.setStyle({"fill": "orange"})
             this.body.addChild(labelSvg);
         }
-    },
-    renderSlideSubtitle: function(slide) {
+    }
+    renderSlideSubtitle(slide) {
         if(slide.subtitle) {
             var tw = new TextWidget(600, 30, "middle", slide.subtitle);
             tw.setStyle({"fill": "#ddd"})
             tw.setPosition(200, 130);
             this.body.addChild(tw);
         }
-    },
-    renderSlideDescription: function(slide) {
+    }
+    renderSlideDescription(slide) {
         if(slide.description) {
             var tw = new TextWidget(800, 20, "start", slide.description);
             tw.setStyle({"fill": "white"})
             tw.setPosition(100, 200);
             this.body.addChild(tw);
         }
-    },
-    renderContentSlideTitle: function(slide) {
+    }
+    renderContentSlideTitle(slide) {
         if(slide.title) {
             var labelSvg = new TextWidget(600, 40, "middle", slide.title);
             labelSvg.setPosition(200, 30)
             labelSvg.setStyle({"fill": "orange"})
             this.body.addChild(labelSvg);
         }
-    },
-    renderStartButton: function(slide) {
+    }
+    renderStartButton(slide) {
         var self = this;
         btn1 = new ButtonWidget(this.loc("Start"), {fontSize: 35, border: 20, anchor: "middle", radius: 30});
         btn1.setPosition(500-btn1.w/2, 900);
@@ -84,8 +84,8 @@ var Slideshow = Game.extend({
             self.goToNextSlide();
         });
         this.body.addChild(btn1);
-    },
-    renderNextButton: function(slide) {
+    }
+    renderNextButton(slide) {
         var self = this;
         btn1 = new ButtonWidget(this.loc("Next"), {fontSize: 35, border: 20, anchor: "middle", radius: 30});
         btn1.setPosition(500-btn1.w/2, 900);
@@ -93,49 +93,49 @@ var Slideshow = Game.extend({
             self.goToNextSlide();
         });
         this.body.addChild(btn1);
-    },
-    renderFinishButton: function(slide) {
+    }
+    renderFinishButton(slide) {
         var self = this;
         btn1 = new ButtonWidget(this.loc("Finish"), {fontSize: 35, border: 20, anchor: "middle", radius: 30});
         btn1.setPosition(500-btn1.w/2, 900);
         btn1.onClick(function() {
-            self.answer[self.currentFrame] = 1; 
+            self.answer[self.currentFrame] = 1;
             self.finish(self.answer);
         });
         this.body.addChild(btn1);
-    },
-    renderIntroSlide: function(slide) {
+    }
+    renderIntroSlide(slide) {
         this.renderSlideBackground(slide);
         this.renderStartButton(slide);
         this.renderSlideTitle(slide);
         this.renderSlideSubtitle(slide);
         this.renderSlideDescription(slide);
-    },
-    renderOutroSlide: function(slide) {
+    }
+    renderOutroSlide(slide) {
         this.renderSlideBackground(slide);
         this.renderFinishButton(slide);
         this.renderSlideTitle(slide);
         this.renderSlideSubtitle(slide);
         this.renderSlideDescription(slide);
-    },
-    renderContentSlide: function(slide) {
+    }
+    renderContentSlide(slide) {
         this.renderSlideBackground(slide);
         this.renderNextButton(slide);
         this.renderContentSlideTitle(slide);
-    },
-    goToNextSlide: function() {
+    }
+    goToNextSlide() {
         this.advanceFrame();
-    },
-    advanceFrame: function() {
+    }
+    advanceFrame() {
         // indicate that the slide has been read
         // TODO also when
         var slide = this.slides[this.currentFrame];
         console.log("Last slide", slide, "Time", this.currentTime);
-        this.answer[this.currentFrame] = 1; 
+        this.answer[this.currentFrame] = 1;
         this.currentFrame++;
         this.renderFrame();
-    },    
-    loadGamepackData: function() {
+    }
+    loadGamepackData() {
         var self = this;
         var gamepackUrl = self.meta.appBaseUrl + "/gamepacks/" + self.meta.gamepackName;
         var slideshowUrl = self.meta.appBaseUrl + "/"+ self.meta.res("slideshow");
@@ -144,9 +144,9 @@ var Slideshow = Game.extend({
             console.log("Slideshow data loaded:", slideshow);
             return {name:name, url:gamepackUrl, slideshowUrl: slideshowUrl, slideshowBaseUrl: slideshowBaseUrl, slideshow:slideshow};
         });
-    },
-    start: function(gamedata) {
-        this.base(gamedata);
+    }
+    start(gamedata) {
+        super.start(gamedata);
         var self = this;
         console.log("Slideshow:start", self.meta);
 
@@ -162,13 +162,13 @@ var Slideshow = Game.extend({
             self.startTimer();
             self.renderFrame();
         });
-    },
-    generateReport: function(evalResult) {
+    }
+    generateReport(evalResult) {
         return [
             this.loc("Page count") + ": " + evalResult.pagesTotal
         ];
-    },
-    startTimer: function() {
+    }
+    startTimer() {
         var self = this;
         self.currentTime = 0;
         var timer = new Timer();
@@ -178,14 +178,15 @@ var Slideshow = Game.extend({
             self.currentTime = elapsedMillis;
             console.log("Time", self.currentTime);
         }});
-    },
-    abort: function() {
-        this.base();       
-        this.timer.stop(); 
-    },
-    finish: function(result) {
-        this.timer.stop(); 
-        this.base(result);       
     }
-},{
-});
+    abort() {
+        super.abort();
+        this.timer.stop();
+    }
+    finish(result) {
+        this.timer.stop();
+        super.finish(result);
+    }
+}
+
+window.Slideshow = Slideshow;

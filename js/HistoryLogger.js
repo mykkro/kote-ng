@@ -1,19 +1,19 @@
-
-var HistoryLogger = Base.extend({
-    constructor: function(db, locale, usertoken) {
+class HistoryLogger extends Base {
+    constructor(db, locale, usertoken) {
+        super();
         console.log("History.constructor", db, locale, usertoken);
         this.db = db;
         this.locale = locale;
         this.usertoken = usertoken;
-    },
-    stringifySettings: function(settings) {
-        out = [];
-        for(key in settings) {
+    }
+    stringifySettings(settings) {
+        var out = [];
+        for(var key in settings) {
             out.push(key+"="+settings[key]);
         }
         return out.join(",");
-    },
-    logGameEvent: function(game, gamepack, locale, settings, eventType, eventData, eventData2, eventData3) {
+    }
+    logGameEvent(game, gamepack, locale, settings, eventType, eventData, eventData2, eventData3) {
         var timestamp = new Date().toISOString();
         var settingsStr = this.stringifySettings(settings);
         var idStr = game + ":" + gamepack + ":" + locale + ":" + settingsStr;
@@ -35,8 +35,8 @@ var HistoryLogger = Base.extend({
             "eventData3": eventData3
         }
         this.storeToDB(logItem);
-    },
-    storeToDB: function(logItem) {
+    }
+    storeToDB(logItem) {
         var self = this;
         if(!self.db) {
             // database not available...
@@ -46,8 +46,8 @@ var HistoryLogger = Base.extend({
             // console.log("PouchDB.put:", err, result);
           });
         }
-    },
-    renderHistory: function(loc, data, messageIfEmpty) {
+    }
+    renderHistory(loc, data, messageIfEmpty) {
         var makeGameTitle = function(gameTitle) {
             return h('span', { 'class': 'gametitle' }, gameTitle);
         }
@@ -158,4 +158,4 @@ var HistoryLogger = Base.extend({
             out.appendChild(gi);
         });
     }
-});
+}

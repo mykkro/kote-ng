@@ -1,8 +1,8 @@
 
-var NBackGame = TimedGame.extend({
-    constructor: function(config) {
+class NBackGame extends TimedGame {
+    constructor(config) {
         console.log("Starting N-Back game with config", config);
-        this.base(config);
+        super(config);
         this.x0 = 200;
         this.y0 = 200;
         this.cellSize = 200;
@@ -16,8 +16,8 @@ var NBackGame = TimedGame.extend({
         this.repeatAfter = config.repeatAfter || 3000;
         this.maxColors = Math.min(config.nColors, NBackGame.colors.length);
         this.maxSigns = Math.min(config.nSigns, NBackGame.signImages.length);
-    },
-    createBackground: function(r) {
+    }
+    createBackground(r) {
         // create grid
         var self = this;
         this.r = r;
@@ -36,22 +36,22 @@ var NBackGame = TimedGame.extend({
         }
         var labelSvg = new TextWidget(600, 50, "middle", "");
         labelSvg.setPosition(200, 140)
-        labelSvg.setStyle({"fill": "black"});        
+        labelSvg.setStyle({"fill": "black"});
         this.label = labelSvg;
         this.updateCounter();
-    },
-    updateCounter: function() {
+    }
+    updateCounter() {
         this.label.setText((this.currentFrame+1)+"/"+this.L);
-    },
-    drawBox: function(r, col, row, color) {
+    }
+    drawBox(r, col, row, color) {
         var cs = this.cellSize - 40;
         return r.rect(this.x0+col*this.cellSize+20, this.y0+row*this.cellSize+20, cs, cs).attr({"fill":color});
-    },
-    drawImage: function(r, col, row, image) {
+    }
+    drawImage(r, col, row, image) {
         var cs = this.cellSize - 40;
         return r.image(image, this.x0+col*this.cellSize+20, this.y0+row*this.cellSize+20, cs, cs);
-    },
-    update: function(elapsedMillis) {
+    }
+    update(elapsedMillis) {
         if(this.finished) {
             this.timer.stop();
             return;
@@ -78,25 +78,25 @@ var NBackGame = TimedGame.extend({
                 this.boxMode = "show";
             }
         }
-    },
-    showObject: function() {
+    }
+    showObject() {
         // to be overridden in subclasses
-    },
-    startTimer: function() {
+    }
+    startTimer() {
         this.currentFrame = 0;
         this.lastBox = null;
         this.boxMode = "show";
         this.timeToHide = this.displayDuration;
         this.showObject();
-        this.base();
-    },
-    indexAsPosition: function(index) {
+        super.startTimer();
+    }
+    indexAsPosition(index) {
         var px = index % 3;
         var py = Math.floor(index / 3);
         return { x: px, y: py };
-    },
-    generateTaskData: function(options) {
-    },
+    }
+    generateTaskData(options) {
+    }
     /**
      *  Generate random sequence of numbers for N-Back task.
      *  L - length of the sequence
@@ -104,7 +104,7 @@ var NBackGame = TimedGame.extend({
      *  pMatch - percentage of values that matches their predecessor (seq[i] == seq[i-N])
      *  levels - output range (numbers in range 0..levels-1)
      */
-    generateNBackSequence: function(L, N, pMatch, levels) {
+    generateNBackSequence(L, N, pMatch, levels) {
         var seq = randomIntVector(L, levels);
         var M = L - N;
         var indices = [];
@@ -121,11 +121,11 @@ var NBackGame = TimedGame.extend({
         });
         return seq;
     }
-}, {
-    colors: [
+
+    static colors = [
         "red", "green", "blue", "yellow", "cyan", "magenta", "black", "orange", "brown", "teal"
-    ],
-    signImages: [
+    ];
+    static signImages = [
         "assets/signs/sign1.png",
         "assets/signs/sign2.jpg",
         "assets/signs/sign3.jpg",
@@ -136,5 +136,5 @@ var NBackGame = TimedGame.extend({
         "assets/signs/sign8.png",
         "assets/signs/sign9.png",
         "assets/signs/sign10.jpg"
-    ]
-});
+    ];
+}

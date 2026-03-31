@@ -1,57 +1,58 @@
 // TimedGame.js
 
 
-var StopWatch = Base.extend({
-    constructor: function() {
+class StopWatch extends Base {
+    constructor() {
+        super();
         this.frozen = null;
         this.reset();
-    },
-    reset: function() {
+    }
+    reset() {
         this.lastTime = window.performance.now();
-    },
-    now: function() {
+    }
+    now() {
         if(this.frozen !== null) {
             return this.frozen;
         }
         return window.performance.now() - this.lastTime;
-    },
-    millis: function() {
+    }
+    millis() {
         return Math.floor(this.now());
-    },
-    seconds: function() {
+    }
+    seconds() {
         return this.now() / 1000;
-    },
-    freeze: function() {
+    }
+    freeze() {
         this.frozen = this.now();
-    },
-    unfreeze: function() {
+    }
+    unfreeze() {
         this.frozen = null;
     }
-})
+}
 
 
-var TimedGame = Game.extend({
-    constructor: function(config) {
-        this.base(config);
-        this.currentTime = 0;        
+class TimedGame extends Game {
+    constructor(config) {
+        super(config);
+        this.currentTime = 0;
         this.stopwatch = new StopWatch();
-    },
+    }
     // override in subclasses
     // return a promise returning a gamepack
-    loadGamepackData: function() {
+    loadGamepackData() {
         // override in subclasses — must return a Promise
         return Promise.resolve({});
-    },
-    start: function() {
+    }
+    start() {
         var self = this;
         console.log("TimedGame.start");
 
         self.loadGamepackData().then(function(gamepack) {
-        	self.gamepackLoaded(gamepack);            
+        	self.gamepackLoaded(gamepack);
             self.onStart(self.gamedata);
         });
-    },
-    gamepackLoaded: function(gamepack) {
+    }
+    gamepackLoaded(gamepack) {
     	var self = this;
         console.log("TimedGame.gamepackLoaded", gamepack);
         self.gamepack = gamepack;
@@ -59,25 +60,25 @@ var TimedGame = Game.extend({
         self.initializeTask();
         self.renderFrame();
         self.startTimer();
-    },
+    }
     // override in subclasses
-    renderFrame: function() {
+    renderFrame() {
     	var self = this;
         console.log("TimedGame.renderFrame");
-    },
+    }
     // override in subclasses...
-    initializeTask: function() {
+    initializeTask() {
     	var self = this;
         self.answer = null;
-        self.task = new NullTask();    	
-    },
+        self.task = new NullTask();
+    }
     // override in subclasses...
-    generateReport: function(evalResult) {
+    generateReport(evalResult) {
         return [
             this.loc("Total time") + ": " + (evalResult.totalTime / 1000) + " s"
         ];
-    },
-    startTimer: function() {
+    }
+    startTimer() {
         var self = this;
         self.currentTime = 0;
         self.stopwatch.reset();
@@ -88,18 +89,17 @@ var TimedGame = Game.extend({
             self.currentTime = elapsedMillis;
             self.update(elapsedMillis);
         }});
-    },
-    // override in subclasses
-    update: function(elapsedMillis) {
-    	console.log("TimedGame.update", elapsedMillis, this.stopwatch.millis());
-    },
-    abort: function() {
-        this.base();       
-        this.timer.stop(); 
-    },
-    finish: function(result) {
-        this.timer.stop(); 
-        this.base(result);       
     }
-},{
-});
+    // override in subclasses
+    update(elapsedMillis) {
+    	console.log("TimedGame.update", elapsedMillis, this.stopwatch.millis());
+    }
+    abort() {
+        super.abort();
+        this.timer.stop();
+    }
+    finish(result) {
+        this.timer.stop();
+        super.finish(result);
+    }
+}

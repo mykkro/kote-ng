@@ -1,9 +1,9 @@
 
-var NBackDualGame = NBackGame.extend({
-    constructor: function(config) {
-        this.base(config);
-    },
-    createGUI: function(r) {
+class NBackDualGame extends NBackGame {
+    constructor(config) {
+        super(config);
+    }
+    createGUI(r) {
         // create grid
         var self = this;
         this.r = r;
@@ -38,8 +38,8 @@ var NBackDualGame = NBackGame.extend({
                 self.answer[1][self.currentFrame-self.N] = 1;
             }
         });
-    },
-    showObject: function() {
+    }
+    showObject() {
         var self = this;
         var data1 = self.gamedata[0][self.currentFrame];
         var data2 = self.gamedata[1][self.currentFrame];
@@ -50,21 +50,21 @@ var NBackDualGame = NBackGame.extend({
             self.lastBox = self.drawImage(r, p.x, p.y, self.baseUrl + "/"+ NBackGame.signImages[data2]);
         }
         player.playSound("newBox");
-    },
-    generateTaskData: function(options) {
+    }
+    generateTaskData(options) {
         var sequence1 = this.generateNBackSequence(this.L, this.N, this.matchProbability, 9);
         var sequence2 = this.generateNBackSequence(this.L, this.N, this.matchProbability, this.dualType == "colors" ? this.maxColors : this.maxSigns);
         console.log("NBackDualGame.generateTaskData", sequence1, sequence2);
         return [sequence1, sequence2];
-    },
-    generateReport: function(evalResult) {
+    }
+    generateReport(evalResult) {
         console.log("Generate report", evalResult);
         return [
             this.loc("Correctness") + ": "+ sprintf("%.1f%%", evalResult.correctness * 100)
             // this.loc("Total time") + ": " + (this.currentTime / 1000) + " s"
         ];
-    },
-    initializeTask: function() {
+    }
+    initializeTask() {
         this.task = new NBackDualScalarTask(this.gamedata, this.N);
         this.answer = [[],[]];
         for(var i=0; i<this.L-this.N; i++) {
@@ -72,6 +72,8 @@ var NBackDualGame = NBackGame.extend({
             this.answer[1].push(0);
         }
     }
-});
+}
 
 
+
+window.NBackDualGame = NBackDualGame;

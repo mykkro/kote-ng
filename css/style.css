@@ -1,35 +1,28 @@
+/* ── Design tokens ──────────────────────────────────────────────────────── */
+:root {
+    --bg:          #444;
+    --fg:          #fff;
+    --accent:      orange;
+    --panel-bg:    #def;
+    --panel-radius: 16px;
+    --panel-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    --record-even: #dee;
+    --record-odd:  #edc;
+    --font-ui:     'Helvetica Neue', Helvetica, 'Arial Unicode MS', Arial, sans-serif;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
 body {
-    background: #444;
-    color: #fff;
-    font: 300 100.1% "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    font: 300 100.1% var(--font-ui);
 }
 
 #stage {
-    -webkit-user-select: none;  /* Chrome all / Safari all */
-  -moz-user-select: none;     /* Firefox all */
-  -ms-user-select: none;      /* IE 10+ */
-  user-select: none;          /* Likely future */      
-}
-			
-
-.btn3 button {
-  font-size: 30px;
-  font-weight: bold;
-  background-color: lightgreen;  
-  border: none;
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
-  border-radius: 20px;
-}
-
-.btn4 button {
-  font-size: 30px;
-  font-weight: bold;
-  background-color: crimson;  
-  border: none;
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
-  border-radius: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    user-select: none;
 }
 
 #paper {
@@ -41,164 +34,42 @@ body {
     transform-origin: top left;
     overflow: visible;
 }
-.click-to-continue {
-    position: absolute;
-    bottom: 20px;
-    width: 440px;
-    text-align: center;
-    font-size: 20px;
-}
-#result-wrap {
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 250px;
-    padding: 30px;
-    background-color: #aaa;
-    width: 440px;
-    height: 440px;
-    color: black;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    border-radius: 30px;       
-    opacity: 0.9;                 
-}
-#gamebox-overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-}
-#gamebox-overlay-background {
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    opacity: 0.6;
-}
-.game-title {
-    margin-top: 10px;
-    font-size: 40px;
-    font-weight: bold;
-    color: black;
-}
-.abort-btn button {
-    border: none;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    border-radius: 30px;                        
-    background-color: "lightred";
-    font-size: 30px;
-}
-#info, #form-wrapper {
-    padding-left: 20px;
-}
-#info .imager img {
-    width: 300px;
-    height: 300px;
-    border: 2px solid #333;
-}
-#info .title {
-    font-size: 36px;
-    font-weight: bold;
-}
-#info .description {
-    margin-left: 330px;
-    width: 630px;
-    position: absolute;
-    font-size: 24px;
-}
-#info .instructions-title {
-    font-size: 24px;
-}
-#info .instructions {
-    font-size: 20px;
-}
-#form-wrapper .controls button, #info .controls button {
-    padding: 10px 15px 10px 15px;
-    font-size: 20px;
-    border: none;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    border-radius: 20px;                        
-    margin-right: 10px;        
-    background-color: #ccc;
-}
-#form-wrapper .controls button:hover, #info .controls button:hover {
-    background-color: #aaa;
-}
-#form-wrapper .controls, #info .controls {
-    margin: 50px 20px 20px 20px;
-}
 
-#settings-form-outer {
-    z-index: 9000;
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 15%;
-    height: 65%;
-    width: 100%;
-    display: none;
-}
-
-#settings-form {
-    position: relative;
-    padding: 10px;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: #def;
-    border-radius: 20px;
-}
-
-#about-form-outer {
-    z-index: 9000;
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 15%;
-    height: 65%;
-    width: 100%;
-    display: none;
-}
-
-#about-form {
-    position: relative;
-    padding: 10px;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: #def;
-    background-opacity: 0.5;
-    border-radius: 10px;
-}
-
+/* ── Overlay panels (settings / about / history) ────────────────────────── */
+/* All three share the same shell + inner structure */
+#settings-form-outer,
+#about-form-outer,
 #history-form-outer {
     z-index: 9000;
-    display: block;
+    display: none;
     position: absolute;
     left: 0;
-    top: 15%;
-    height: 65%;
+    top: 10%;
+    height: 75%;
     width: 100%;
-    display: none;
+    padding: 0 4%;
+    box-sizing: border-box;
+    transition: opacity 0.2s ease;
 }
 
+#settings-form,
+#about-form,
 #history-form {
     position: relative;
-    padding: 10px;
+    padding: 16px 20px;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: #def;
-    background-opacity: 0.5;
-    border-radius: 10px;
-    font-size: 1.2em;
+    background-color: var(--panel-bg);
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
     color: black;
+}
+
+/* ── History panel specifics ────────────────────────────────────────────── */
+#history-form {
+    font-size: 1.2em;
 }
 
 .historyempty {
@@ -208,123 +79,53 @@ body {
     margin-top: 2em;
 }
 
-.gametitle {
-  font-size: 2.0em;
-  font-weight: bold;
-  padding-right: 1em;
+.gametitle       { font-size: 2em;   font-weight: bold; padding-right: 1em; }
+.gamepacktitle   { font-size: 1.5em; padding-right: 0.5em; }
+.gametitlebar    { margin-bottom: 0.2em; }
+.gameitem        { margin-bottom: 1em; }
+.gamesettings    { font-style: italic; color: #666; font-size: 0.8em; }
+.gametopitem     { margin-bottom: 2em; }
+
+.datetime {
+    background-color: #ddd;
+    display: inline-block;
+    width: 6em;
+    padding: 1em 0;
+    border-radius: 1em;
+    vertical-align: top;
 }
+.gamedate  { text-align: center; margin-bottom: 0.5em; font-weight: bold; font-size: 1.1em; }
+.gametime  { text-align: center; }
 
-.gamepacktitle {
-  font-size: 1.5em;
-  padding-right: 0.5em;
- }
- 
- .gametitlebar {
-   margin-bottom: 0.2em;
- }
- 
- .datetime {
-   background-color: #ddd;
-   display: inline-block;
-   width: 6em;
-   padding: 1em 0;
-   border-radius: 1em;
-   vertical-align: top;
- }
- 
- .gamedate {
-   text-align: center;
-   margin-bottom: 0.5em;
-   font-weight: bold;
-   font-size: 1.1em;
- }
+.gameresults {
+    display: inline-block;
+    margin-left: 2em;
+    margin-top: 1em;
+    vertical-align: top;
+}
+.gamelabel  { display: inline-block; width: 13em; margin-right: 2em; }
+.gamevalue  { display: inline-block; width: 5em; }
+.gameresult { margin-bottom: 0.2em; }
 
- .gametime {
-   text-align: center;
- }
+.gamerecord {
+    margin-bottom: 0.3em;
+    display: block;
+}
+.gamerecord:nth-child(even) { background: var(--record-even); }
+.gamerecord:nth-child(odd)  { background: var(--record-odd); }
 
- .gameitem {
-   margin-bottom: 1em;
- }
- 
- .gameresults {
-   display: inline-block;
-   margin-left: 2em;
-   margin-top: 1em;
-   vertical-align: top;
- }
- 
- .gamelabel {
-   display: inline-block;
-   width: 13em;
-   margin-right: 2em;
- }
- 
- .gamevalue {
-   display: inline-block;
-   width: 5em;
- }
- 
- .gameresult {
-   margin-bottom: 0.2em;
- }
- 
- .gamerecord {
-   margin-bottom: 0.3em;
-   display: block;
- }
- 
-.gamerecord:nth-child(even) {background: #dee}
-.gamerecord:nth-child(odd) {background: #edc}
- 
- .gametopitem {
-   margin-bottom: 2em;
- }
- 
- .gamesettings {
-   font-style: italic;
-   color: #666;
-   font-size: 0.8em;
- }
-  
-
+/* ── Credits / About ────────────────────────────────────────────────────── */
 .credits-line {
     margin-bottom: 8px;
     color: #333;
-    font-size: 8px;
 }
 
-.centered {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  /* bring your own prefixes */
-  transform: translate(-50%, -50%);
+/* ── Form wrapper ───────────────────────────────────────────────────────── */
+#info,
+#form-wrapper {
+    padding-left: 20px;
 }
 
-#stage {
-    /* position: relative;  */
-    position: fixed;
-    left: 0px;
-    top: 0px;
-}
-
-:focus {outline:none;} ::-moz-focus-inner {border:0;}
-.kind0 button {
-    font-size: 40px;
-    font-family: Verdana;
-}
-.kind1 button {
-    font-size: 40px;
-    font-weight: bold;
-    font-family: Verdana;
-}
-.kind2 button {
-    font-size: 40px;
-    font-weight: bold;
-    font-family: Lucida;
-}
-
-.svgbutton {
-    pointer-events: visible;
-}
+/* ── Focus reset ────────────────────────────────────────────────────────── */
+:focus           { outline: none; }
+::-moz-focus-inner { border: 0; }

@@ -77,9 +77,9 @@ var MahjonggTileset = {
 	}
 }
 
-var MahjonggTileWidget = GroupWidget.extend({
-    constructor: function(mahjongg, type, index, x, y, z) {
-        this.base();
+class MahjonggTileWidget extends GroupWidget {
+    constructor(mahjongg, type, index, x, y, z) {
+        super();
 	    var k = 1000/1280.0;
 	    var xx = (42*x - 7*z);
 	    var yy = (64*y + 14*z);
@@ -92,26 +92,25 @@ var MahjonggTileWidget = GroupWidget.extend({
         rect.setPosition(xx * k, 100 + yy * k);
         this.tileStyle = {"fill": mahjongg.layersColors[z], "stroke": "none", "opacity": 1.0};
         this.overlay = rect;
-        this.clickable = new Clickable(img);
+        this.clickable = new Clickable(rect);  // rect is topmost — wraps it for click hit-area
         this.addChild(bordr);
         this.addChild(img);
-        this.addChild(rect);
-        this.addChild(this.clickable);
+        this.addChild(this.clickable);  // clickable(rect) on top; img stays as direct child
         this.setDefaultStyle();
-	},
-	setDefaultStyle: function() {
+	}
+	setDefaultStyle() {
         this.overlay.setStyle(this.tileStyle);
-	},
-	setSelectedStyle: function() {
+	}
+	setSelectedStyle() {
         this.overlay.setStyle({"fill":"rgba(0,255,0,0.4)", "opacity":1.0});
-	},
-	setNonmatchedStyle: function() {
+	}
+	setNonmatchedStyle() {
         this.overlay.setStyle({"fill":"rgba(255,0,0,0.4)", "opacity":1.0});
 	}
-});
+}
 
 
-var Mahjongg = TimedGame.extend({
+class Mahjongg extends TimedGame {
 
 	// 144 tiles
 	// bamboo: 9 types * 4 = 36
@@ -123,7 +122,7 @@ var Mahjongg = TimedGame.extend({
 	// 4 flowers, 1 of each, each matches each other = 4
 	// 4 seasons, 1 of each, each matches each other = 4
 
-	defaultOptions: {
+	static defaultOptions = {
 		layout: MahjonggLayouts.standard144,
 		tileset: MahjonggTileset.standard,
 		highlightDuration: 1000,
@@ -135,11 +134,11 @@ var Mahjongg = TimedGame.extend({
 			"rgba(0,255,255,0.25)",
 			"rgba(255,0,0,0.25)"
 		]
-	},
+	}
 
-	constructor: function(config) {
-        this.base(config);
-		var o = this.defaultOptions;
+	constructor(config) {
+        super(config);
+		var o = Mahjongg.defaultOptions;
 		this.opts = o;
 
 		this.highlightDuration = o.highlightDuration || 1000;
@@ -168,23 +167,23 @@ var Mahjongg = TimedGame.extend({
 		this.secondSelectedPos = null;
 		this.secondSelectedTile = null;
 
-	},
+	}
 
-	makeTileList: function() {
+	makeTileList() {
 		var out = []
 		for(var i=0; i<this.tileTypes.length; i++) {
 			var tt = this.tiles[this.tileTypes[i]]
 			for(var j=0; j<tt.icons.length; j++) {
-				for(k=0; k<tt.countInSet; k++) {
+				for(var k=0; k<tt.countInSet; k++) {
 					out.push({type:this.tileTypes[i], index: j, name: this.tileTypes[i]+(j+1)})
 				}
 			}
 		}
 		return out;
-	},
+	}
 
 	// find adjacencies...
-	findAdjacentPositions: function() {
+	findAdjacentPositions() {
 		for(var i=0; i<this.layout.length; i++) {
 			var currentPos = this.layout[i]
 			for(var j=0; j<this.layout.length; j++) {
@@ -194,9 +193,9 @@ var Mahjongg = TimedGame.extend({
 				}
 			}
 		}
-	},
+	}
 
-	testAdjacency: function(pos, otherPos) {
+	testAdjacency(pos, otherPos) {
 		// is other position below?
 		if(otherPos.z+1 == pos.z && Math.abs(pos.x-otherPos.x)<=1 && Math.abs(pos.y-otherPos.y)<=1) {
 			pos.tilesBelow.push(otherPos.index);
@@ -212,8 +211,8 @@ var Mahjongg = TimedGame.extend({
 				pos.tilesOnRight.push(otherPos.index);
 			}
 		}
-	},
-	renderBoard: function() {
+	}
+	renderBoard() {
 	    console.log("Mahjongg.renderBoard")
 		var tileList = this.makeTileList();
 
@@ -310,9 +309,9 @@ var Mahjongg = TimedGame.extend({
 		var occupiedPositions = {}
 		var freePositions = {}
 		var freePositionCount = 0
-	},
+	}
 
-	isPositionFree: function(index) {
+	isPositionFree(index) {
 		var pos = this.layout[index]
 		if(pos.occupiedBy) return false;
 		// is position valid?
@@ -322,63 +321,63 @@ var Mahjongg = TimedGame.extend({
 		// - row is empty (if we go as far as we can to the left/right, we encounter only empty positions)
 		// or - we bave occupied all the left neighbors or all the right neighbors
 		return this.areAllBelowPositionsOccupied(index) && (this.isRowEmpty(index) || this.areAllLeftPositionsOccupied(index) || this.areAllRightPositionsOccupied(index))
-	},
+	}
 
-	areAllBelowPositionsOccupied: function(index) {
+	areAllBelowPositionsOccupied(index) {
 		var pos = this.layout[index]
 		for(var i=0; i<pos.tilesBelow.length; i++) {
 			var otherPos = this.layout[pos.tilesBelow[i]]
 			if(!otherPos.occupiedBy) return false;
 		}
 		return true;
-	},
+	}
 
-	areAllAbovePositionsFree: function(index) {
+	areAllAbovePositionsFree(index) {
 		var pos = this.layout[index]
 		for(var i=0; i<pos.tilesAbove.length; i++) {
 			var otherPos = this.layout[pos.tilesAbove[i]]
 			if(otherPos.occupiedBy) return false;
 		}
 		return true;
-	},
+	}
 
-	areAllLeftPositionsOccupied: function(index) {
+	areAllLeftPositionsOccupied(index) {
 		var pos = this.layout[index]
 		for(var i=0; i<pos.tilesOnLeft.length; i++) {
 			var otherPos = this.layout[pos.tilesOnLeft[i]]
 			if(!otherPos.occupiedBy) return false;
 		}
 		return true;
-	},
+	}
 
-	areAllRightPositionsOccupied: function(index) {
+	areAllRightPositionsOccupied(index) {
 		var pos = this.layout[index]
 		for(var i=0; i<pos.tilesOnRight.length; i++) {
 			var otherPos = this.layout[pos.tilesOnRight[i]]
 			if(!otherPos.occupiedBy) return false;
 		}
 		return true;
-	},
+	}
 
-	areAllLeftPositionsFree: function(index) {
+	areAllLeftPositionsFree(index) {
 		var pos = this.layout[index]
 		for(var i=0; i<pos.tilesOnLeft.length; i++) {
 			var otherPos = this.layout[pos.tilesOnLeft[i]]
 			if(otherPos.occupiedBy) return false;
 		}
 		return true;
-	},
+	}
 
-	areAllRightPositionsFree: function(index) {
+	areAllRightPositionsFree(index) {
 		var pos = this.layout[index]
 		for(var i=0; i<pos.tilesOnRight.length; i++) {
 			var otherPos = this.layout[pos.tilesOnRight[i]]
 			if(otherPos.occupiedBy) return false;
 		}
 		return true;
-	},
+	}
 
-	isRowEmpty: function(index, direction) {
+	isRowEmpty(index, direction) {
 		var pos = this.layout[index]
 		var out = !pos.occupiedBy
 		if(out) {
@@ -396,29 +395,28 @@ var Mahjongg = TimedGame.extend({
 			}
 		}
 		return out;
-	},
+	}
 
-	testTilesIfMatching: function(tile1, tile2) {
+	testTilesIfMatching(tile1, tile2) {
 		var tt1 = this.tiles[tile1.type];
 		var tt2 = this.tiles[tile2.type];
 		return (tile1.type == tile2.type) && (tt1.matchesWithAnother || (tile1.index == tile2.index));
-	},
+	}
 
-	occupyPosition: function(index, tile) {
+	occupyPosition(index, tile) {
 	    // console.log("Occupy position:", index, tile);
 		var pos = this.layout[index];
 		pos.occupiedBy = tile;
 		return { index: index, pos: pos, tile: tile };
-	},
+	}
 
-	clearPosition: function(index) {
+	clearPosition(index) {
 		var pos = this.layout[index];
 		pos.occupiedBy = null;
 		return { index: index, pos: pos };
-	},
+	}
 
-
-	placeTile: function(tile) {
+	placeTile(tile) {
 		// find free place
 		var ind = Math.floor(Math.random()*144)
 		while(!this.isPositionFree(ind)) {
@@ -426,10 +424,10 @@ var Mahjongg = TimedGame.extend({
 		}
 		// found one!
 		return this.occupyPosition(ind, tile);
-	},
+	}
 
 	// randomize tiles...
-	shuffle: function(array) {
+	shuffle(array) {
 	  var currentIndex = array.length, temporaryValue, randomIndex ;
 
 	  // While there remain elements to shuffle...
@@ -446,9 +444,9 @@ var Mahjongg = TimedGame.extend({
 	  }
 
 	  return array;
-	},
+	}
 
-	canTileBeRemoved: function(index) {
+	canTileBeRemoved(index) {
 		var pos = this.layout[index]
 		var tile = pos.occupiedBy;
 		if(!tile) return false;
@@ -457,17 +455,17 @@ var Mahjongg = TimedGame.extend({
 		var aboveFree = this.areAllAbovePositionsFree(index);
 		var free = (leftFree || rightFree) && aboveFree;
 		return free;
-	},
+	}
 
-	isBoardCleared: function() {
+	isBoardCleared() {
 		for(var i=0; i<144; i++) {
 			var pos = this.layout[i];
 			if(pos.occupiedBy) return false;
 		}
 		return true;
-	},
+	}
 
-	getHints: function() {
+	getHints() {
 		var hints = {};
 		for(var i=0; i<144; i++) {
 			if(this.canTileBeRemoved(i)) {
@@ -488,9 +486,9 @@ var Mahjongg = TimedGame.extend({
 			}
 		}
 		return hintArray;
-	},
+	}
 
-	onTileClicked: function(tileDiv, tile, pos) {
+	onTileClicked(tileDiv, tile, pos) {
 		var self = this;
 		// console.log("Tile clicked: ", tile, pos)
 		// console.log("Free: "+this.canTileBeRemoved(pos.index));
@@ -549,25 +547,25 @@ var Mahjongg = TimedGame.extend({
 				}
 			}
 		}
-	},
+	}
     // set default embedding options for this Game
-    getEmbeddingOptions: function() {
+    getEmbeddingOptions() {
         return {
             renderTitle: false,
             renderAbortButton: true
         };
-    },
-    createGUI: function(r) {
+    }
+    createGUI(r) {
         var self = this;
         this.body = new GroupWidget();
-    },
-    generateTaskData: function(options) {
+    }
+    generateTaskData(options) {
         return null;
-    },            
-    renderFrame: function() {
+    }
+    renderFrame() {
         this.renderBoard();
-    },    
-    loadGamepackData: function() {
+    }
+    loadGamepackData() {
         var self = this;
         var name = self.meta.gamepackName;
         var gamepackUrl = self.meta.appBaseUrl + "/gamepacks/" + name;
@@ -576,20 +574,22 @@ var Mahjongg = TimedGame.extend({
             console.log("Data loaded:", tileset, tilesetUrl);
             return {name:name, url:gamepackUrl, tilesetUrl: tilesetUrl, tileset:tileset};
         });
-    },
-    initializeTask: function() {
+    }
+    initializeTask() {
         this.task = new NullTask();
         this.answer = null;
         this.tilesetBaseUrl = dirname(this.gamepack.tilesetUrl);
         console.log("Mahjongg.initializeTask", this.tilesetBaseUrl);
-    },
-    generateReport: function(evalResult) {
+    }
+    generateReport(evalResult) {
         return [
             this.cleared ? this.loc("All pairs found!") : this.loc("No more moves left!"),
             this.loc("Total time") + ": " + (this.currentTime / 1000) + " s"
         ];
-    },
-    update: function(elapsedMillis) {
     }
-},{
-});
+    update(elapsedMillis) {
+    }
+}
+
+window.MahjonggTileWidget = MahjonggTileWidget;
+window.Mahjongg = Mahjongg;

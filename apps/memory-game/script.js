@@ -1,33 +1,38 @@
 
-var MemoryGame = TimedGame.extend({
-    constructor: function(config) {
-        this.base(config);
-    },
-    createGUI: function(r) {
+class MemoryGame extends TimedGame {
+    constructor(config) {
+        super(config);
+    }
+
+    createGUI(r) {
         var self = this;
         console.log("MemoryGame:createGUI");
-    },
-    generateTaskData: function(options) {
+    }
+
+    generateTaskData(options) {
         return null;
-    },            
-    renderFrame: function() {
+    }
+
+    renderFrame() {
         var self = this;
 
         // render the board...
         self.renderBoard();
-    },
+    }
+
     //+ Jonas Raoni Soares Silva
     //@ http://jsfromhell.com/array/shuffle [v1.0]
-    shuffle: function(o){ //v1.0
+    shuffle(o){ //v1.0
       for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
       return o;
-    },     
-    renderBoard: function() {
+    }
+
+    renderBoard() {
         var self = this;
         console.log("Rendering MemoryGame board");
         console.log("Using gamepack:", self.gamepack);
 
-        self.tileset = self.gamepack.tileset;      
+        self.tileset = self.gamepack.tileset;
         self.tileBackUrl = self.tilesetBaseUrl+"/"+self.tileset.tiles.backgrounds[0].url
 
         self.cards = []
@@ -71,8 +76,9 @@ var MemoryGame = TimedGame.extend({
           this.playground[i].tile = card
       }
 
-    },
-    drawTile: function(tileObj, j) {
+    }
+
+    drawTile(tileObj, j) {
       var self = this
       var cardSize = this.cardSize-8
       var row = Math.floor(j/this.columns)
@@ -95,10 +101,11 @@ var MemoryGame = TimedGame.extend({
     clk.onClick(function() {
         self.uncoverTile(j);
     });
-    card = { "face": img, "back": bkImg, "free": true, "index": j };
+    var card = { "face": img, "back": bkImg, "free": true, "index": j };
     return card;
-  },
-  uncoverTile: function(index) {
+  }
+
+  uncoverTile(index) {
     var self = this;
     var card = this.playground[index].tile;
     if(self.playground[index].tile.free && this.canUncoverMore()) {
@@ -108,24 +115,27 @@ var MemoryGame = TimedGame.extend({
             self._uncovered(index);
         });
     }
-  },
-  hideTile: function(index) {
+  }
+
+  hideTile(index) {
     var self = this;
     var card = this.playground[index].tile;
     card.back.image.animate({"opacity":"1"}, 500, function() {
         self._hidden(index);
     });
-  },
-  canUncoverMore: function() {
+  }
+
+  canUncoverMore() {
     return this.turned.length < 2;
-  },
-  _uncovered: function(index) {
+  }
+
+  _uncovered(index) {
     var self = this;
     var tt = this.playground[index];
     console.log("Tile uncovered:", index, tt, tt.name, this.turned);
     if(this.turned.length == 2) {
-        tt1 = this.turned[0];
-        tt2 = this.turned[1];
+        var tt1 = this.turned[0];
+        var tt2 = this.turned[1];
         if(tt1.name == tt2.name) {
             // match!
             this.found.push(tt1.name);
@@ -141,31 +151,37 @@ var MemoryGame = TimedGame.extend({
             }, 1000);
         }
     }
-  },
-  winGame: function() {
+  }
+
+  winGame() {
     //alert("Well done!");
     this.finish();
-  },
-  generateReport: function(evalResult) {
+  }
+
+  generateReport(evalResult) {
       return [
         this.loc("All cards found!"),
         this.loc("Total time") + ": " + (this.currentTime / 1000) + " s"
       ];
-  },
-  turnTilesBack: function() {
+  }
+
+  turnTilesBack() {
     var self = this;
     this.turned.forEach(function(t) {
         self.hideTile(t.tile.index);
     });
     this.turned = [];
-  },
-  _hidden: function(index) {
+  }
+
+  _hidden(index) {
     console.log("Tile hidden:", index);
     this.playground[index].tile.free = true;
-  },
-  update: function(elapsedMillis) {
-  },
-  loadGamepackData: function() {
+  }
+
+  update(elapsedMillis) {
+  }
+
+  loadGamepackData() {
         var self = this;
         var name = self.meta.gamepackName;
         var gamepackUrl = self.meta.appBaseUrl + "/gamepacks/" + name;
@@ -174,12 +190,14 @@ var MemoryGame = TimedGame.extend({
             console.log("Data loaded:", tileset, tilesetUrl);
             return {name:name, url:gamepackUrl, tilesetUrl: tilesetUrl, tileset:tileset};
         });
-    },
-    initializeTask: function() {
+    }
+
+    initializeTask() {
         var gamedata = this.gamedata;
         var self = this;
         self.tilesetBaseUrl = dirname(self.gamepack.tilesetUrl);
         self.task = new NullTask();
     }
-},{
-});
+}
+
+window.MemoryGame = MemoryGame;

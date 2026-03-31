@@ -1,7 +1,8 @@
 var historyLogger = null;
 
-var AppsGUI = Base.extend({
-    constructor: function(db, locale, usertoken) {
+class AppsGUI extends Base {
+    constructor(db, locale, usertoken) {
+        super();
         console.log("AppsGUI.constructor", db, locale);
         var localeMap = {
             "en-US": "en",
@@ -23,15 +24,14 @@ var AppsGUI = Base.extend({
         historyLogger = this.historyLogger = new HistoryLogger(db, this.locale, usertoken);
 
         this.settingskey = "settings-" + usertoken + "-global"
-    },
-    buttonStyle: {
-        fontSize: 30, border: 15, anchor: "middle", radius: 25
-    },
-    loadAppIndex: function(callback) {
+    }
+
+    loadAppIndex(callback) {
         console.log("AppsGUI.loadAppIndex");
         fetch("index.json").then(function(r) { return r.json(); }).then(callback);
-    },
-    makeConfigForm: function(settings, callback) {
+    }
+
+    makeConfigForm(settings, callback) {
         // TODO load settings from PouchDB
         console.log("Load settings from DB:", this.settingskey)
 
@@ -47,9 +47,10 @@ var AppsGUI = Base.extend({
             self._makeConfigForm(settings)
             callback(settings)
         })
-        
-    },
-    _makeConfigForm: function(settings) {
+
+    }
+
+    _makeConfigForm(settings) {
         var settings = settings || {};
         var languages = this.index.index.languages;
         var self = this;
@@ -61,10 +62,10 @@ var AppsGUI = Base.extend({
                 {
                     "valueLabels": languageLabels,
                     "values": languages,
-                    "description": "", 
-                    "title": self.indexLocalized.tr("Language"), 
-                    "default": settings.language || self.locale, 
-                    "type": "string", 
+                    "description": "",
+                    "title": self.indexLocalized.tr("Language"),
+                    "default": settings.language || self.locale,
+                    "type": "string",
                     "name": "language"
                 }
             ]
@@ -74,14 +75,15 @@ var AppsGUI = Base.extend({
         formEl.innerHTML = '';
         formEl.appendChild(self.form.body);
         return self.form;
-    },
-    loadAppsMetadata: function(callback) {
+    }
+
+    loadAppsMetadata(callback) {
         var self = this;
         self.loadAppIndex(function(index) {
-            var settings = index.settings || {}; 
+            var settings = index.settings || {};
             if('language' in settings) {
                 self.locale = settings['language']
-            }         
+            }
             console.log("AppsGUI.loadAppsMetadata", index, settings);
             self.index = new Meta(index);
             self.indexLocalized = self.index.localized(self.locale);
@@ -90,23 +92,26 @@ var AppsGUI = Base.extend({
                 callback(self);
             });
         });
-    },
-    init: function() {
+    }
+
+    init() {
         var self = this;
         console.log("AppsGUI.init");
         this.loadAppsMetadata(function() {
             console.log("Apps index loaded!", self.index);
             self.onReady(self);
         })
-    },
-    onReady: function(val) {
+    }
+
+    onReady(val) {
         if(typeof(val)=="function") {
             this._onReady = val;
         } else {
             if(this._onReady) this._onReady(this, val);
         }
-    },
-    getSortedAppList: function(page) {
+    }
+
+    getSortedAppList(page) {
         var all = this.index.appsByLocale(this.locale);
         var pages = Math.floor((all.length+8)/9);
         var out = [];
@@ -116,8 +121,9 @@ var AppsGUI = Base.extend({
             }
         }
         return { pages: pages, page: page, contents: out };
-    },
-    getAllTags: function() {
+    }
+
+    getAllTags() {
         var tagMap = {};
         for(var key in this.apps) {
             var app = this.apps[key];
@@ -129,16 +135,18 @@ var AppsGUI = Base.extend({
         }
         tags.sort();
         return tags;
-    },
-    showSettingsPage: function() {
+    }
+
+    showSettingsPage() {
         this.resetScene();
         this.createSettingsPageButtons();
         document.getElementById('settings-form-outer').style.display = 'block';
-    },
-    createSettingsPageButtons: function() {
-        var saveBtn = new ButtonWidget(this.indexLocalized.tr("Save"), this.buttonStyle);        
-        var resetBtn = new ButtonWidget(this.indexLocalized.tr("Reset"), this.buttonStyle);        
-        var backBtn = new ButtonWidget(this.indexLocalized.tr("Back"), this.buttonStyle);        
+    }
+
+    createSettingsPageButtons() {
+        var saveBtn = new ButtonWidget(this.indexLocalized.tr("Save"), this.buttonStyle);
+        var resetBtn = new ButtonWidget(this.indexLocalized.tr("Reset"), this.buttonStyle);
+        var backBtn = new ButtonWidget(this.indexLocalized.tr("Back"), this.buttonStyle);
         var gap = 40;
         var yy = 900;
         Widget.layoutButtons([saveBtn, resetBtn, backBtn], gap, yy);
@@ -162,25 +170,29 @@ var AppsGUI = Base.extend({
         });
 
         return [saveBtn, resetBtn, backBtn];
-    },
-    showHistoryPage: function() {
+    }
+
+    showHistoryPage() {
         this.resetScene();
         this.showHtmlHistoryPage();
         this.showFrameworkTitle();
         this.createHistoryPageButtons();
-    },
-    showHtmlHistoryPage: function() {
+    }
+
+    showHtmlHistoryPage() {
         var self = this;
         document.getElementById('history-form-outer').style.display = 'block';
         FINDER().then(function(data) {
             self.historyLogger.renderHistory(self.localeLong, data, self.indexLocalized.tr("History is empty"));
         });
-    },
-    hideHtmlHistoryPage: function() {
+    }
+
+    hideHtmlHistoryPage() {
         document.getElementById('history-form-outer').style.display = 'none';
-    },
-    createHistoryPageButtons: function() {
-        var backBtn = new ButtonWidget(this.indexLocalized.tr("Back"), this.buttonStyle);        
+    }
+
+    createHistoryPageButtons() {
+        var backBtn = new ButtonWidget(this.indexLocalized.tr("Back"), this.buttonStyle);
         var gap = 40;
         var yy = 900;
         Widget.layoutButtons([backBtn], gap, yy);
@@ -188,12 +200,13 @@ var AppsGUI = Base.extend({
 
         backBtn.onClick(function() {
             self.hideHtmlHistoryPage();
-            self.showAppsPage(1);            
+            self.showAppsPage(1);
         });
 
         return [backBtn];
-    },
-    showAboutPage: function() {
+    }
+
+    showAboutPage() {
         this.resetScene();
         /* display SVG About Page */
         if(!AppsGUI.showHTML) {
@@ -203,27 +216,32 @@ var AppsGUI = Base.extend({
         }
         this.showFrameworkTitle();
         this.createAboutPageButtons();
-    },
-    showHtmlAboutPage: function() {
+    }
+
+    showHtmlAboutPage() {
         document.getElementById('about-form-outer').style.display = 'block';
         var credits = this.indexLocalized.credits;
         AppsGUI.displayCreditsTextHtml(credits);
-    },
-    hideHtmlAboutPage: function() {
+    }
+
+    hideHtmlAboutPage() {
         document.getElementById('about-form-outer').style.display = 'none';
-    },
-    showFrameworkTitle: function() {
+    }
+
+    showFrameworkTitle() {
         var labelSvg = new TextWidget(600, 40, "middle", this.indexLocalized.tr("$title"));
         labelSvg.setPosition(200, 60)
         labelSvg.setStyle({"fill": "orange"})
         return labelSvg;
-    }, 
-    showCredits: function() {
+    }
+
+    showCredits() {
         var credits = this.indexLocalized.credits;
         AppsGUI.displayCreditsText(credits);
-    },
-    createAboutPageButtons: function() {
-        var backBtn = new ButtonWidget(this.indexLocalized.tr("Back"), this.buttonStyle);        
+    }
+
+    createAboutPageButtons() {
+        var backBtn = new ButtonWidget(this.indexLocalized.tr("Back"), this.buttonStyle);
         var gap = 40;
         var yy = 900;
         Widget.layoutButtons([backBtn], gap, yy);
@@ -231,20 +249,22 @@ var AppsGUI = Base.extend({
 
         backBtn.onClick(function() {
             self.hideHtmlAboutPage();
-            self.showAppsPage(1);            
+            self.showAppsPage(1);
         });
 
         return [backBtn];
-    },
-    doChangeLanguage: function(settings) {
+    }
+
+    doChangeLanguage(settings) {
         var self = this;
         if(settings.language != this.locale) {
             this.locale = settings.language;
             this.page = 1;
             self.indexLocalized = self.index.localized(self.locale);
         }
-    },
-    retryUntilWritten: function(db, doc) {
+    }
+
+    retryUntilWritten(db, doc) {
         return db.get(doc._id).then(function (origDoc) {
           doc._rev = origDoc._rev;
           return db.put(doc);
@@ -255,19 +275,21 @@ var AppsGUI = Base.extend({
             return db.put(doc);
           }
         });
-      },
-    applySettings: function(settings) {
+    }
+
+    applySettings(settings) {
         // TODO save settings to PouchDB
         console.log("Save settings to DB:", this.settingskey, settings)
         var self = this
         this.retryUntilWritten(this.db, {_id: this.settingskey, settings: settings}).then(function() {
             console.log("AppsGUI.applySettings", settings);
             self.doChangeLanguage(settings);
-            self.showMainPage();    
+            self.showMainPage();
         })
 
-    },
-    showAppLaunchers: function(apps) {
+    }
+
+    showAppLaunchers(apps) {
         var self = this;
         console.log("AppsGUI.showAppLaunchers", apps);
         this.resetScene();
@@ -310,7 +332,7 @@ var AppsGUI = Base.extend({
             i++;
             var instance = this.index.instance(appName, gamepackName, locale);
             var previewUrl = instance.appBaseUrl + "/"+ instance.res("preview");
-            console.log("Game launcher instance:", instance);            
+            console.log("Game launcher instance:", instance);
             // create launcher and position it...
             console.log("Creating launcher for app", app, row, col);
             var x = x0 + (size + gap)*col;
@@ -337,8 +359,9 @@ var AppsGUI = Base.extend({
                 }
             }
         }
-    },
-    launchApp: function(selectedApp) {
+    }
+
+    launchApp(selectedApp) {
         var self = this;
         console.log("AppsGUI.launchApp", selectedApp);
         this.resetScene();
@@ -351,22 +374,23 @@ var AppsGUI = Base.extend({
         // TODO do not show "End" button
         var engine = new GameGUI(self, instance, { hideEndButton: true });
         engine.start();
-    },
-    // create buttons
-    createMainPageButtons: function(pg) {
-        var self = this;
-        var settingsBtn = new ButtonWidget(this.indexLocalized.tr("Settings"), this.buttonStyle);        
-        var aboutBtn = new ButtonWidget(this.indexLocalized.tr("About"), this.buttonStyle);        
+    }
 
-        var historyBtn = new ButtonWidget(this.indexLocalized.tr("History"), this.buttonStyle);        
+    // create buttons
+    createMainPageButtons(pg) {
+        var self = this;
+        var settingsBtn = new ButtonWidget(this.indexLocalized.tr("Settings"), this.buttonStyle);
+        var aboutBtn = new ButtonWidget(this.indexLocalized.tr("About"), this.buttonStyle);
+
+        var historyBtn = new ButtonWidget(this.indexLocalized.tr("History"), this.buttonStyle);
         historyBtn.onClick(function() {
             self.showHistoryPage();
         });
 
-        var prevBtn, bextBtn;
+        var prevBtn, nextBtn;
         var btns = [];
         if(pg.page>1) {
-            prevBtn = new ButtonWidget(this.indexLocalized.tr("Previous"), this.buttonStyle);        
+            prevBtn = new ButtonWidget(this.indexLocalized.tr("Previous"), this.buttonStyle);
             btns.push(prevBtn);
             prevBtn.onClick(function() {
                 self.showAppsPage(pg.page-1);
@@ -376,7 +400,7 @@ var AppsGUI = Base.extend({
         btns.push(aboutBtn);
         btns.push(historyBtn);
         if(pg.page<pg.pages) {
-            nextBtn = new ButtonWidget(this.indexLocalized.tr("Next"), this.buttonStyle);        
+            nextBtn = new ButtonWidget(this.indexLocalized.tr("Next"), this.buttonStyle);
             btns.push(nextBtn);
             nextBtn.onClick(function() {
                 self.showAppsPage(pg.page+1);
@@ -396,15 +420,17 @@ var AppsGUI = Base.extend({
         });
 
         return [settingsBtn];
-    },
-    showMainPage: function() {
+    }
+
+    showMainPage() {
         var self = this;
         self.makeConfigForm({}, function() {
             self.form.val(self.appSettings);
-            self.showAppsPage(this.page);
+            self.showAppsPage(self.page);
         });
-    },
-    showAppsPage: function(page) {
+    }
+
+    showAppsPage(page) {
         var page = page || 1;
         var pg = this.getSortedAppList(page);
         console.log("AppsGUI.showAppsPage", pg);
@@ -416,24 +442,31 @@ var AppsGUI = Base.extend({
             this.showAppLaunchers(pg.contents);
             this.createMainPageButtons(pg);
         }
-    },
+    }
+
     /**
      * Clears canvas, removes all widgets.
      */
-    resetScene: function() {
+    resetScene() {
         if (r) {
             r.clear();
             r = null;
         }
         r = this.makeScene();
-    },
-    makeScene: function() {
+    }
+
+    makeScene() {
         var container = document.getElementById('paper');
         return new DOMPaper(container);
     }
-}, {
-    showHTML: true,
-    parseCredits: function(credits) {
+
+    static buttonStyle = {
+        fontSize: 30, border: 15, anchor: "middle", radius: 25
+    };
+
+    static showHTML = true;
+
+    static parseCredits(credits) {
         return credits.map(function(c) {
             // does the line contain formatting metadata?
             var cc = c || "";
@@ -450,14 +483,15 @@ var AppsGUI = Base.extend({
                     m[key] = val;
                 });
                 console.log("META", m);
-                // metadata is sequence of aa=bb,cc=dd 
+                // metadata is sequence of aa=bb,cc=dd
                 c = c.substring(ndx+1);
             }
             m.fontSize = parseInt(m.fontSize || 20);
             return { "line": c, "style": m }
         });
-    },
-    displayCreditsText: function(credits) {
+    }
+
+    static displayCreditsText(credits) {
         var credits = credits || [];
         console.log("Credits:", credits);
         var yy = 200;
@@ -469,11 +503,12 @@ var AppsGUI = Base.extend({
             var lineHeight = Math.floor(fontSize*1.5);
             var tw = new TextWidget(800, fontSize, "start", c);
             tw.setStyle({"fill": "white"})
-            tw.setPosition(100, yy);        
+            tw.setPosition(100, yy);
             yy += Math.floor(Math.max(tw.getTextboxSize().height, fontSize) + lineHeight - fontSize);
         });
-    },
-    parseLinks: function(line) {
+    }
+
+    static parseLinks(line) {
         var c = line || "";
         var arr = [];
         var curr = {"type":"text", "content":""};
@@ -516,10 +551,11 @@ var AppsGUI = Base.extend({
         }
         arr = arr.filter(function(a) { return a.content; });
         return arr;
-    },
-    // TODO correct resizing 
+    }
+
+    // TODO correct resizing
     // maybe by css3 transform/zoom?
-    displayCreditsTextHtml: function(credits) {
+    static displayCreditsTextHtml(credits) {
         var credits = credits || [];
         console.log("Credits:", credits);
         var pc = AppsGUI.parseCredits(credits);
@@ -552,4 +588,4 @@ var AppsGUI = Base.extend({
             console.log(c);
         });
     }
-});
+}

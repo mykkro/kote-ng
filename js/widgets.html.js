@@ -1,5 +1,6 @@
-var HtmlWidget = Base.extend({
-    constructor: function(width, height, options) {
+class HtmlWidget extends Base {
+    constructor(width, height, options) {
+        super();
         this.width   = width;
         this.height  = height;
         this.options = options || {};
@@ -13,33 +14,33 @@ var HtmlWidget = Base.extend({
             this.addClass(options.class);
         }
         document.getElementById('html-widgets').appendChild(this.box);
-    },
-    addClass: function(cls) {
+    }
+    addClass(cls) {
         this.box.classList.add(cls);
-    },
-    removeClass: function(cls) {
+    }
+    removeClass(cls) {
         this.box.classList.remove(cls);
-    },
-    setPosition: function(x, y) {
+    }
+    setPosition(x, y) {
         this.x = x;
         this.y = y;
         this.box.style.left = x + 'px';
         this.box.style.top  = y + 'px';
-    },
-    initialize: function() {
+    }
+    initialize() {
         // override in subclasses...
         this.box.style.backgroundColor = 'red';
     }
-});
+}
 
-var HtmlLabelWidget = HtmlWidget.extend({
-    constructor: function(width, height, options, text) {
+class HtmlLabelWidget extends HtmlWidget {
+    constructor(width, height, options, text) {
         console.log("Creating label widget");
-        this.base(width, height, options);
+        super(width, height, options);
         this.setText(text);
         this.box.classList.add("html-label-widget");
-    },
-    initialize: function() {
+    }
+    initialize() {
         this.body = document.createElement('div');
         Object.assign(this.body.style, {
             width:     this.width  + 'px',
@@ -51,22 +52,22 @@ var HtmlLabelWidget = HtmlWidget.extend({
         }
         this.box.innerHTML = '';
         this.box.appendChild(this.body);
-    },
-    setText: function(text) {
+    }
+    setText(text) {
         this.text = text;
         this.body.textContent = text;
     }
-});
+}
 
 
-var HtmlImageWidget = HtmlWidget.extend({
-    constructor: function(width, height, options, src) {
+class HtmlImageWidget extends HtmlWidget {
+    constructor(width, height, options, src) {
         console.log("Creating image widget");
         this.src = src;
-        this.base(width, height, options);
+        super(width, height, options);
         this.box.classList.add("html-image-widget");
-    },
-    initialize: function() {
+    }
+    initialize() {
         this.body = document.createElement('img');
         this.body.src = this.src;
         Object.assign(this.body.style, {
@@ -80,17 +81,17 @@ var HtmlImageWidget = HtmlWidget.extend({
         this.box.innerHTML = '';
         this.box.appendChild(this.body);
     }
-});
+}
 
 
-var HtmlInputWidget = HtmlWidget.extend({
-    constructor: function(width, height, options, value) {
+class HtmlInputWidget extends HtmlWidget {
+    constructor(width, height, options, value) {
         console.log("Creating input widget");
-        this.base(width, height, options);
+        super(width, height, options);
         this.val(value);
         this.box.classList.add("html-input-widget");
-    },
-    initialize: function() {
+    }
+    initialize() {
         var self = this;
         this.input = document.createElement('input');
         this.input.type = 'text';
@@ -151,15 +152,15 @@ var HtmlInputWidget = HtmlWidget.extend({
         }
         this.box.innerHTML = '';
         this.box.appendChild(this.input);
-    },
-    onChange: function(val) {
+    }
+    onChange(val) {
         if (typeof(val) === "function") {
             this._onChange = val;
         } else {
             if (this._onChange) this._onChange(val);
         }
-    },
-    val: function(value) {
+    }
+    val(value) {
         if (arguments.length === 1) {
             this.value = value;
             this.input.value = this.value;
@@ -167,16 +168,16 @@ var HtmlInputWidget = HtmlWidget.extend({
             return this.input.value;
         }
     }
-});
+}
 
-var HtmlButtonWidget = HtmlWidget.extend({
-    constructor: function(width, height, options, text) {
+class HtmlButtonWidget extends HtmlWidget {
+    constructor(width, height, options, text) {
         console.log("Creating button widget");
-        this.base(width, height, options);
+        super(width, height, options);
         this.setText(text);
         this.box.classList.add("html-button-widget");
-    },
-    initialize: function() {
+    }
+    initialize() {
         var self = this;
         this.input = document.createElement('button');
         Object.assign(this.input.style, {
@@ -193,35 +194,35 @@ var HtmlButtonWidget = HtmlWidget.extend({
         });
         this.box.innerHTML = '';
         this.box.appendChild(this.input);
-    },
-    setText: function(text) {
+    }
+    setText(text) {
         this.text = text;
         this.input.textContent = text;
-    },
-    setDisabled: function(flag) {
+    }
+    setDisabled(flag) {
         this.input.disabled = flag;
-    },
-    onClick: function(val) {
+    }
+    onClick(val) {
         if (typeof(val) === "function") {
             this._onClick = val;
         } else {
             if (this._onClick) this._onClick(this);
         }
     }
-});
+}
 
 
 
-var HtmlGridInputWidget = HtmlWidget.extend({
-    constructor: function(width, height, rows, cols, options, value) {
+class HtmlGridInputWidget extends HtmlWidget {
+    constructor(width, height, rows, cols, options, value) {
         this.rows  = rows;
         this.cols  = cols;
         this.value = value;
-        this.base(width, height, options);
+        super(width, height, options);
         this.val(value);
         this.box.classList.add("html-grid-input-widget");
-    },
-    initialize: function() {
+    }
+    initialize() {
         var self = this;
         var gap  = this.options.gap || 0;
         var w = (this.width  - (this.cols - 1) * gap) / this.cols;
@@ -244,52 +245,52 @@ var HtmlGridInputWidget = HtmlWidget.extend({
                 i++;
             }
         }
-    },
-    onChange: function(val) {
+    }
+    onChange(val) {
         if (typeof(val) === "function") {
             this._onChange = val;
         } else {
             if (this._onChange) this._onChange(val);
         }
-    },
-    val: function(value) {
+    }
+    val(value) {
         if (arguments.length === 1) {
             this.value = value;
             this._setValue(this.value);
         } else {
             return this._getValue();
         }
-    },
-    isFilled: function() {
+    }
+    isFilled() {
         for (var i = 0; i < this.inputs.length; i++) {
             if (!this.inputs[i].val()) return false;
         }
         return true;
-    },
-    _setValue: function(val) {
+    }
+    _setValue(val) {
         for (var i = 0; i < this.inputs.length; i++) {
             this.inputs[i].val(val[i]);
         }
-    },
-    _getValue: function() {
+    }
+    _getValue() {
         var out = [];
         for (var i = 0; i < this.inputs.length; i++) {
             out.push(this.inputs[i].val());
         }
         return out;
     }
-});
+}
 
 
 
-var HtmlSeriesInputWidget = HtmlWidget.extend({
-    constructor: function(width, height, options, value) {
+class HtmlSeriesInputWidget extends HtmlWidget {
+    constructor(width, height, options, value) {
         this.value = value;
-        this.base(width, height, options);
+        super(width, height, options);
         this.val(value);
         this.box.classList.add("html-series-input-widget");
-    },
-    initialize: function() {
+    }
+    initialize() {
         var self = this;
         var gap  = this.options.gap || 0;
         var w    = (this.width - (this.value.length - 1) * gap) / this.value.length;
@@ -309,51 +310,51 @@ var HtmlSeriesInputWidget = HtmlWidget.extend({
             this.box.appendChild(inp.box);
             i++;
         }
-    },
-    onChange: function(val) {
+    }
+    onChange(val) {
         if (typeof(val) === "function") {
             this._onChange = val;
         } else {
             if (this._onChange) this._onChange(val);
         }
-    },
-    val: function(value) {
+    }
+    val(value) {
         if (arguments.length === 1) {
             this.value = value;
             this._setValue(this.value);
         } else {
             return this._getValue();
         }
-    },
-    isFilled: function() {
+    }
+    isFilled() {
         for (var i = 0; i < this.inputs.length; i++) {
             if (!this.inputs[i].val()) return false;
         }
         return true;
-    },
-    _setValue: function(val) {
+    }
+    _setValue(val) {
         for (var i = 0; i < this.inputs.length; i++) {
             this.inputs[i].val(val[i]);
         }
-    },
-    _getValue: function() {
+    }
+    _getValue() {
         var out = [];
         for (var i = 0; i < this.inputs.length; i++) {
             out.push(this.inputs[i].val());
         }
         return out;
     }
-});
+}
 
 
-var HtmlMultiSeriesInputWidget = HtmlWidget.extend({
-    constructor: function(width, height, options, value) {
+class HtmlMultiSeriesInputWidget extends HtmlWidget {
+    constructor(width, height, options, value) {
         this.value = value;
-        this.base(width, height, options);
+        super(width, height, options);
         this.val(value);
         this.box.classList.add("html-multi-series-input-widget");
-    },
-    initialize: function() {
+    }
+    initialize() {
         var self = this;
         var gap  = this.options.gap  || 0;
         var vgap = this.options.vgap || 0;
@@ -379,51 +380,51 @@ var HtmlMultiSeriesInputWidget = HtmlWidget.extend({
             this.inputs.push(inp);
             this.box.appendChild(inp.box);
         }
-    },
-    onChange: function(val) {
+    }
+    onChange(val) {
         if (typeof(val) === "function") {
             this._onChange = val;
         } else {
             if (this._onChange) this._onChange(val);
         }
-    },
-    val: function(value) {
+    }
+    val(value) {
         if (arguments.length === 1) {
             this.value = value;
             this._setValue(this.value);
         } else {
             return this._getValue();
         }
-    },
-    isFilled: function() {
+    }
+    isFilled() {
         for (var i = 0; i < this.inputs.length; i++) {
             if (!this.inputs[i].isFilled()) return false;
         }
         return true;
-    },
-    _setValue: function(val) {
+    }
+    _setValue(val) {
         for (var i = 0; i < this.inputs.length; i++) {
             this.inputs[i].val(val[i]);
         }
-    },
-    _getValue: function() {
+    }
+    _getValue() {
         var out = [];
         for (var i = 0; i < this.inputs.length; i++) {
             out.push(this.inputs[i].val());
         }
         return out;
     }
-});
+}
 
 
-var HtmlTimerWidget = HtmlWidget.extend({
-    constructor: function(width, height, options, countdown) {
+class HtmlTimerWidget extends HtmlWidget {
+    constructor(width, height, options, countdown) {
         console.log("Creating timer widget");
-        this.base(width, height, options);
+        super(width, height, options);
         this.countdown = countdown;
         this.box.classList.add("html-timer-widget");
-    },
-    initialize: function() {
+    }
+    initialize() {
         this.input = document.createElement('div');
         Object.assign(this.input.style, {
             width:  this.width  + 'px',
@@ -434,4 +435,4 @@ var HtmlTimerWidget = HtmlWidget.extend({
         this.box.innerHTML = '';
         this.box.appendChild(this.input);
     }
-});
+}

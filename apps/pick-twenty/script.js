@@ -1,13 +1,14 @@
 
 
-var PickTwentyGame = TimedGame.extend({
-    constructor: function(config) {
-        this.base(config);
+class PickTwentyGame extends TimedGame {
+    constructor(config) {
+        super(config);
         this.locations = [];
         this.N = config.N;
         this.rotateGoals = config.rotateGoals;
-    },
-    isPlaceFree: function(x, y, rad) {
+    }
+
+    isPlaceFree(x, y, rad) {
         console.log("Testing location:", x, y, rad);
         for(var i=0; i<this.locations.length; i++) {
             var xx = this.locations[i].x;
@@ -18,12 +19,15 @@ var PickTwentyGame = TimedGame.extend({
             }
         }
         return true;
-    },
-    renderFrame: function() {
-    },
-    update: function(elapsedMillis) {
-    },
-    placeGoal: function(x1, x2, y1, y2, rad, goal) {
+    }
+
+    renderFrame() {
+    }
+
+    update(elapsedMillis) {
+    }
+
+    placeGoal(x1, x2, y1, y2, rad, goal) {
         var p = randomPoint(x1, x2, y1, y2);
         while(!this.isPlaceFree(p.x, p.y, rad)) {
             p = randomPoint(x1, x2, y1, y2);
@@ -31,20 +35,24 @@ var PickTwentyGame = TimedGame.extend({
         console.log(p);
         console.log("Placing goal: ", p.x, p.y, rad, goal);
         this.locations.push({x:p.x, y:p.y, radius:rad});
-    },
-    createGUI: function(r) {
+    }
+
+    createGUI(r) {
         var self = this;
-    },
-    generateTaskData: function(options) {
+    }
+
+    generateTaskData(options) {
         return null;
-    },    
-    generateReport: function(evalResult) {
+    }
+
+    generateReport(evalResult) {
         return [
         this.loc("Total time") + ": " + sprintf("%.1f sec", evalResult.totalTime /1000),
         this.loc("Mistakes total")+ ": " + evalResult.mistakes
         ];
-    },        
-    initializeTask: function() {
+    }
+
+    initializeTask() {
         var gamedata = this.gamedata;
         this.locations = [];
         this.mistakes = 0;
@@ -65,10 +73,10 @@ var PickTwentyGame = TimedGame.extend({
             if(i==5 || i==8) caption += ".";
             var klazz = "round-btn btn1 "+pickRandom(kinds);
             var aa = new RoundButtonWidget(caption, {
-                "class":klazz, 
-                "border":10, 
-                "radius": 50, 
-                "fontSize": 60, 
+                "class":klazz,
+                "border":10,
+                "radius": 50,
+                "fontSize": 60,
                 "fontWeight": "bold",
                 "rotation": this.rotateGoals ? Math.random()*360.0 : 0,
                 backgroundStyle: {"fill": "#aac", "stroke":"#333", "stroke-width": 8},
@@ -124,10 +132,6 @@ var PickTwentyGame = TimedGame.extend({
         self.task = new NullTask();
 
     }
-},{
-});
+}
 
-
-
-
-
+window.PickTwentyGame = PickTwentyGame;

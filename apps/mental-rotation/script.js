@@ -1,12 +1,14 @@
 
 
-var MentalRotationGame = Game.extend({
-    constructor: function(config) {
-        this.base(config);
+
+class MentalRotationGame extends Game {
+    constructor(config) {
+        super(config);
         this.currentFrame = 0;
         this.totalFrames = 0;
-    },
-    createGUI: function(r) {
+    }
+
+    createGUI(r) {
         // create grid
         var self = this;
 
@@ -18,17 +20,20 @@ var MentalRotationGame = Game.extend({
 
         this.label2 = new TextWidget(500, 30, "start", this.loc("Which of the shapes below is a rotated version of the shape shown left?"));
         //this.label2.addClass("instruction");
-        this.label2.setPosition(300, 300);       
-        
-        this.body = new GroupWidget(); 
-    },
-    updateCounter: function() {
+        this.label2.setPosition(300, 300);
+
+        this.body = new GroupWidget();
+    }
+
+    updateCounter() {
         this.label.setText((this.currentFrame+1)+"/"+this.totalFrames);
-    },
-    generateTaskData: function(options) {
+    }
+
+    generateTaskData(options) {
         return MentalRotationGame.data;
-    },    
-    renderFrame: function() {
+    }
+
+    renderFrame() {
         var self = this;
         this.body.clearContents();
 
@@ -37,7 +42,7 @@ var MentalRotationGame = Game.extend({
         console.log(g);
 
         // render original...
-        var img0 = new ImageWidget(self.baseUrl + "/" + g.offered, 150, 150); 
+        var img0 = new ImageWidget(self.baseUrl + "/" + g.offered, 150, 150);
         img0.setPosition(100, 300);
         this.body.addChild(img0);
         //img0.addClass("item item-offered");
@@ -48,10 +53,10 @@ var MentalRotationGame = Game.extend({
         for(var i=0; i<n; i++) {
             (function() {
                 var gg = g.rest[i];
-                var img = new ImageWidget(self.baseUrl + "/" + gg.item, 150, 150); 
+                var img = new ImageWidget(self.baseUrl + "/" + gg.item, 150, 150);
                 self.body.addChild(img);
                 //img.addClass("item item-choice");
-                img.setPosition(100 + 200*i, y0);     
+                img.setPosition(100 + 200*i, y0);
                 var clk = new Clickable(img);
                 clk.onClick(function()  {
                     // collect answer!
@@ -61,17 +66,19 @@ var MentalRotationGame = Game.extend({
                 });
             })();
         }
-    },
-    advanceFrame: function() {
+    }
+
+    advanceFrame() {
         this.currentFrame++;
         if(this.currentFrame == this.goals.length) {
             this.finish(this.answer);
         } else {
             this.renderFrame();
         }
-    },
-    start: function(gamedata) {
-        this.base(gamedata);
+    }
+
+    start(gamedata) {
+        super.start(gamedata);
 
         var self = this;
         this.currentFrame = 0;
@@ -84,7 +91,7 @@ var MentalRotationGame = Game.extend({
             console.log("Gamedata:", gd);
             var N = gd[2];
             // offered item will come from the first array
-            // rest of items will be added to the second array            
+            // rest of items will be added to the second array
             // total length of array = N
             var src = gd[0].slice();
             var ri = Math.floor(Math.random() * src.length); // Random Index position in the array
@@ -111,16 +118,13 @@ var MentalRotationGame = Game.extend({
         self.renderFrame();
 
     }
-},{
-    data: [
+
+    static data = [
         // show 5 items, the first array - the "same" items, second array - the rest of items
         [["assets/a0.png", "assets/a1.png"], ["assets/a2.png", "assets/a3.png", "assets/a4.png"], 5],
         [["assets/b0.png", "assets/b1.png"], ["assets/b2.png", "assets/b3.png", "assets/b4.png"], 5],
         [["assets/c0.png", "assets/c1.png"], ["assets/c2.png", "assets/c3.png", "assets/c4.png"], 5]
-    ]
-});
+    ];
+}
 
-
-
-
-
+window.MentalRotationGame = MentalRotationGame;

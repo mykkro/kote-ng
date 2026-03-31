@@ -28,57 +28,58 @@ var renderInput = function(fld, loc) {
     return new TextInput(fld, loc);
 }
 
-var Input = Base.extend({
-    constructor: function(fld, loc) {
+class Input extends Base {
+    constructor(fld, loc) {
+        super();
         this.loc = loc || function(t) { return t; };
         this.fld = fld;
-    },
-    val: function(val) {
+    }
+    val(val) {
         if(arguments.length) {
             this._setValue(val);
         } else {
             return this._getValue();
         }
-    },
-    _setValue: function(val) {
-    },
-    _getValue: function() {
-    },
-    validate: function() {
+    }
+    _setValue(val) {
+    }
+    _getValue() {
+    }
+    validate() {
         var val = this._getValue();
         console.log("Validating input", val, this.fld);
         return !!val;
     }
-});
+}
 
-var TextInput = Input.extend({
-    constructor: function(fld, loc) {
-        this.base(fld, loc);
+class TextInput extends Input {
+    constructor(fld, loc) {
+        super(fld, loc);
         this.input = h('input', { type: 'text', name: fld.name, value: fld.default });
-    },
-    _setValue: function(val) {
+    }
+    _setValue(val) {
         this.input.value = val;
-    },
-    _getValue: function() {
+    }
+    _getValue() {
         return this.input.value;
     }
-});
+}
 
-var NumberInput = Input.extend({
-    constructor: function(fld, loc) {
-        this.base(fld, loc);
+class NumberInput extends Input {
+    constructor(fld, loc) {
+        super(fld, loc);
         this.input = h('input', { type: 'text', name: fld.name, value: fld.default });
-    },
-    _setValue: function(val) {
+    }
+    _setValue(val) {
         this.input.value = val;
-    },
-    _getValue: function() {
+    }
+    _getValue() {
         return parseInt(this.input.value);
-    },
-    validate: function() {
+    }
+    validate() {
         var val = this._getValue();
         console.log("Validating number input", val, this.fld);
-        var isParentValid = this.base();
+        var isParentValid = super.validate();
         if(isParentValid) {
             var isNumber = !isNaN(parseInt(val));
             if(isNumber) {
@@ -88,29 +89,29 @@ var NumberInput = Input.extend({
         }
         return false;
     }
-});
+}
 
-var CheckboxInput = Input.extend({
-    constructor: function(fld, loc) {
-        this.base(fld, loc);
+class CheckboxInput extends Input {
+    constructor(fld, loc) {
+        super(fld, loc);
         var inp = h('input', { type: 'checkbox', name: fld.name });
         inp.checked = !!fld.default;
         this.input = inp;
-    },
-    _setValue: function(val) {
+    }
+    _setValue(val) {
         this.input.checked = !!val;
-    },
-    _getValue: function() {
+    }
+    _getValue() {
         return this.input.checked;
-    },
-    validate: function() {
+    }
+    validate() {
         return true;
     }
-});
+}
 
-var SelectInput = Input.extend({
-    constructor: function(fld, loc) {
-        this.base(fld, loc);
+class SelectInput extends Input {
+    constructor(fld, loc) {
+        super(fld, loc);
         var self = this;
         console.log("Rendering select input", fld);
         var out = h('select', { name: fld.name });
@@ -130,22 +131,22 @@ var SelectInput = Input.extend({
         }
         out.value = fld.default;
         this.input = out;
-    },
-    _setValue: function(val) {
+    }
+    _setValue(val) {
         this.input.value = val;
-    },
-    _getValue: function() {
+    }
+    _getValue() {
         var out = this.input.value;
         if(this.fld.type == "int") {
             out = parseInt(out);
         }
         return out;
     }
-});
+}
 
-var RadioInput = Input.extend({
-    constructor: function(fld, loc) {
-        this.base(fld, loc);
+class RadioInput extends Input {
+    constructor(fld, loc) {
+        super(fld, loc);
         var self = this;
         console.log("Rendering radio input", fld);
         var out = h('div', { 'class': 'formix-radiogroup' });
@@ -169,14 +170,14 @@ var RadioInput = Input.extend({
             out.appendChild(inp);
         }
         this.input = out;
-    },
-    _setValue: function(val) {
+    }
+    _setValue(val) {
         var radios = document.querySelectorAll('input[type="radio"][name="' + this.fld.name + '"]');
         radios.forEach(function(radio) {
             radio.checked = (radio.value === "" + val);
         });
-    },
-    _getValue: function() {
+    }
+    _getValue() {
         var checked = document.querySelector('input[type="radio"][name="' + this.fld.name + '"]:checked');
         var out = checked ? checked.value : undefined;
         if(this.fld.type == "int") {
@@ -184,11 +185,12 @@ var RadioInput = Input.extend({
         }
         return out;
     }
-});
+}
 
 
-var Field = Base.extend({
-    constructor: function(fld, loc) {
+class Field extends Base {
+    constructor(fld, loc) {
+        super();
         this.loc = loc || function(t) { return t; };
         this.f = fld;
         this.name = fld.name;
@@ -198,17 +200,17 @@ var Field = Base.extend({
             renderLabel(this.loc(this.title)),
             this.input.input
         );
-    },
-    val: function(value) {
+    }
+    val(value) {
         if(arguments.length) {
             this.input.val(value);
         } else {
             return this.input.val();
         }
-    },
+    }
     // returns true if the field has correct value
     // returns false otherwise
-    validate: function() {
+    validate() {
         var valid = this.input.validate();
         if(!valid) {
             this.body.classList.add("error");
@@ -217,10 +219,11 @@ var Field = Base.extend({
         }
         return valid;
     }
-});
+}
 
-var Form = Base.extend({
-    constructor: function(frm, loc) {
+class Form extends Base {
+    constructor(frm, loc) {
+        super();
         this.loc = loc || function(t) { return t; };
         this.fields = [];
         var self = this;
@@ -235,27 +238,27 @@ var Form = Base.extend({
             body.appendChild(f.body);
         });
         this.body = out;
-    },
-    val: function(value) {
+    }
+    val(value) {
         if(arguments.length) {
             this._setValue(value);
         } else {
             return this._getValue();
         }
-    },
-    _setValue: function(val) {
+    }
+    _setValue(val) {
         this.fields.forEach(function(ff) {
             ff.val(val[ff.name]);
         });
-    },
-    _getValue: function() {
+    }
+    _getValue() {
         var out = {};
         this.fields.forEach(function(ff) {
             out[ff.name] = ff.val();
         });
         return out;
-    },
-    validate: function() {
+    }
+    validate() {
         console.log("Validating form", this.fields);
         var self = this;
         var valid = true;
@@ -264,4 +267,4 @@ var Form = Base.extend({
         });
         return valid;
     }
-});
+}

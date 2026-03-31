@@ -1,7 +1,8 @@
 
 /* Game GUI manager. */
-var GameGUI = Base.extend({
-    constructor: function(appgui, instance, options) {
+class GameGUI extends Base {
+    constructor(appgui, instance, options) {
+        super();
         console.log("Creating Game GUI", instance);
         this.appgui = appgui;
         this.instance = instance;
@@ -9,11 +10,13 @@ var GameGUI = Base.extend({
         this.options = options || {};
         this.settingskey = "settings-" + this.appgui.usertoken + "-" + this.instance.appName + "-" + this.appgui.locale
         console.log("SettingsKey:", this.settingskey)
-    },
-    logGameEvent: function(eventType, eventData, eventData2, eventData3) {
+    }
+
+    logGameEvent(eventType, eventData, eventData2, eventData3) {
         historyLogger.logGameEvent(this.instance.appName, this.instance.gamepackName, this.appgui.locale, this.gameSettings, eventType, eventData, eventData2, eventData3);
-    },
-    loadScriptAndStyle: function() {
+    }
+
+    loadScriptAndStyle() {
         var self = this;
         // load style dynamically
         var link = document.createElement('link');
@@ -29,48 +32,55 @@ var GameGUI = Base.extend({
             script.onerror = reject;
             document.head.appendChild(script);
         });
-    },
+    }
+
     // show various GUI pages
-    showGameLauncherPage: function() {
+    showGameLauncherPage() {
         r.clear();
         this.showGameTitle();
         this.showGamePreviewImage();
         this.showGameSubtitle();
         this.createGameLauncherButtons();
-    },
-    showInstructionsPage: function() {
+    }
+
+    showInstructionsPage() {
         r.clear();
         this.showGameTitle();
         this.showGameDescription();
         this.showGameInstructions();
         this.showGameSubtitle();
         this.createInstructionsPageButtons();
-    },
-    showSettingsPage: function() {
+    }
+
+    showSettingsPage() {
         r.clear();
         this.showGameTitle();
         this.createSettingsPageButtons();
         document.getElementById('settings-form-outer').style.display = 'block';
-    },
-    showHistoryPage: function() {
+    }
+
+    showHistoryPage() {
         r.clear();
         this.showHtmlHistoryPage();
         this.showGameTitle();
         this.createHistoryPageButtons();
-    },
-    showHtmlHistoryPage: function() {
+    }
+
+    showHtmlHistoryPage() {
         var self = this;
         document.getElementById('history-form-outer').style.display = 'block';
         // TODO search only this game's data
         FINDERBYGAME(this.instance.appName, this.instance.gamepackName, this.appgui.locale).then(function(data) {
             self.appgui.historyLogger.renderHistory(self.appgui.localeLong, data, self.instance.tr("History is empty"));
         });
-    },
-    hideHtmlHistoryPage: function() {
+    }
+
+    hideHtmlHistoryPage() {
         document.getElementById('history-form-outer').style.display = 'none';
-    },
-    createHistoryPageButtons: function() {
-        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);        
+    }
+
+    createHistoryPageButtons() {
+        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);
         var gap = 40;
         var yy = 900;
         Widget.layoutButtons([backBtn], gap, yy);
@@ -78,12 +88,13 @@ var GameGUI = Base.extend({
 
         backBtn.onClick(function() {
             self.hideHtmlHistoryPage();
-            self.showGameLauncherPage();          
+            self.showGameLauncherPage();
         });
 
         return [backBtn];
-    },
-    showAboutPage: function() {
+    }
+
+    showAboutPage() {
         r.clear();
         /* display SVG About Page */
         if(!AppsGUI.showHTML) {
@@ -93,21 +104,25 @@ var GameGUI = Base.extend({
         }
         this.showGameTitle();
         this.createAboutPageButtons();
-    },
-    showHtmlAboutPage: function() {
+    }
+
+    showHtmlAboutPage() {
         document.getElementById('about-form-outer').style.display = 'block';
         var credits = this.instance.credits;
         AppsGUI.displayCreditsTextHtml(credits);
-    },
-    hideHtmlAboutPage: function() {
+    }
+
+    hideHtmlAboutPage() {
         document.getElementById('about-form-outer').style.display = 'none';
-    },
-    showCredits: function() {
+    }
+
+    showCredits() {
         var credits = this.instance.credits;
         AppsGUI.displayCreditsText(credits);
-    },    
-    createAboutPageButtons: function() {
-        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);        
+    }
+
+    createAboutPageButtons() {
+        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);
         var gap = 40;
         var yy = 900;
         Widget.layoutButtons([backBtn], gap, yy);
@@ -119,23 +134,26 @@ var GameGUI = Base.extend({
         });
 
         return [backBtn];
-    },
-    showResultsPage: function(results, messages) {
+    }
+
+    showResultsPage(results, messages) {
         r.clear();
-        this.showGameTitle();    
+        this.showGameTitle();
         this.showGameResults(results, messages);
         this.createResultsPageButtons();
-    },
-    showGameSelectionPage: function() {
+    }
+
+    showGameSelectionPage() {
         this.appgui.showMainPage();
-    },
+    }
+
     // render various widgets
-    showGameResults: function(results, messages) {
+    showGameResults(results, messages) {
         var labelSvg = new TextWidget(600, 40, "middle", this.instance.tr("Results"));
         labelSvg.setPosition(200, 160);
         labelSvg.setStyle({"fill": "black"});
 
-        var yy = 250;    
+        var yy = 250;
         messages.forEach(function(m) {
             // m can be object!
             var textItems = [];
@@ -158,73 +176,76 @@ var GameGUI = Base.extend({
             yy += 40;
         });
 
-    },
-    showGameSubtitle: function() {
+    }
+
+    showGameSubtitle() {
         var tw = new TextWidget(600, 30, "middle", this.instance.tr("$subtitle"));
         tw.setStyle({"fill": "#ddd"})
         tw.setPosition(200, 130);
-    },
-    showGameDescription: function() {
+    }
+
+    showGameDescription() {
         var tw = new TextWidget(800, 20, "start", this.instance.tr("$description"));
         tw.setStyle({"fill": "white"})
         tw.setPosition(100, 200);
-    }, 
-    showGameInstructions: function() {
+    }
+
+    showGameInstructions() {
         var tw = new TextWidget(800, 25, "start", this.instance.tr("$instructions"));
         tw.setStyle({"fill": "white"})
         tw.setPosition(100, 400);
-    },
-    showGameTitle: function() {
+    }
+
+    showGameTitle() {
         var labelSvg = new TextWidget(600, 40, "middle", this.instance.tr("$title"));
         labelSvg.setPosition(200, 60)
         labelSvg.setStyle({"fill": "orange"})
         return labelSvg;
-    }, 
-    showGamePreviewImage: function() {
+    }
+
+    showGamePreviewImage() {
         var self = this;
         var previewUrl = this.instance.appBaseUrl + "/"+ this.instance.res("preview");
-        var img = new ImageWidget(previewUrl, 500, 500); 
+        var img = new ImageWidget(previewUrl, 500, 500);
         img.setPosition(250, 200);
         var clk = new Clickable(img);
         clk.onClick(function() {
             self.startGame();
         });
         return clk;
-    },
+    }
+
     // lays out buttons in centered layout
-    buttonStyle: {
-        fontSize: 30, border: 15, anchor: "middle", radius: 25
-    },
     // create buttons
-    createGameLauncherButtons: function() {
+    createGameLauncherButtons() {
         var self = this;
-        var startBtn = new ButtonWidget(this.instance.tr("Start"), this.buttonStyle);        
+        var startBtn = new ButtonWidget(this.instance.tr("Start"), this.buttonStyle);
         var settingsBtn = null;
-        var instrBtn = new ButtonWidget(this.instance.tr("Instructions"), this.buttonStyle);    
+        var instrBtn = new ButtonWidget(this.instance.tr("Instructions"), this.buttonStyle);
         var exitBtn = null;
         if(!(this.options.hideEndButton)) {
-            exitBtn = new ButtonWidget(this.instance.tr("Exit"), this.buttonStyle);        
+            exitBtn = new ButtonWidget(this.instance.tr("Exit"), this.buttonStyle);
             exitBtn.onClick(function() {
                 self.showGameSelectionPage();
             });
         }
-        var historyBtn = new ButtonWidget(this.instance.tr("History"), this.buttonStyle);    
+        var historyBtn = new ButtonWidget(this.instance.tr("History"), this.buttonStyle);
         historyBtn.onClick(function() {
             self.showHistoryPage();
         });
 
         /*
-        var aboutBtn = new ButtonWidget(this.instance.tr("About"), this.buttonStyle);    
+        var aboutBtn = new ButtonWidget(this.instance.tr("About"), this.buttonStyle);
         aboutBtn.setEnabled(true);
         aboutBtn.onClick(function() {
             self.showAboutPage();
         });
         */
-        
+
         var configFields = this.instance.config || [];
         console.log("Config fields:", configFields);
         if(configFields.length > 0) {
-            settingsBtn = new ButtonWidget(this.instance.tr("Settings"), this.buttonStyle);        
+            settingsBtn = new ButtonWidget(this.instance.tr("Settings"), this.buttonStyle);
             settingsBtn.onClick(function() {
                 self.showSettingsPage();
             });
@@ -256,9 +277,10 @@ var GameGUI = Base.extend({
         });
 
         return btns;
-    },
-    createInstructionsPageButtons: function() {
-        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);        
+    }
+
+    createInstructionsPageButtons() {
+        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);
         var gap = 40;
         var yy = 900;
         Widget.layoutButtons([backBtn], gap, yy);
@@ -270,9 +292,9 @@ var GameGUI = Base.extend({
         });
 
         return [backBtn];
-    },
+    }
 
-    retryUntilWritten: function(db, doc) {
+    retryUntilWritten(db, doc) {
         return db.get(doc._id).then(function (origDoc) {
           doc._rev = origDoc._rev;
           return db.put(doc);
@@ -283,12 +305,12 @@ var GameGUI = Base.extend({
             return db.put(doc);
           }
         });
-      },
+    }
 
-    createSettingsPageButtons: function() {
-        var saveBtn = new ButtonWidget(this.instance.tr("Save"), this.buttonStyle);        
-        var resetBtn = new ButtonWidget(this.instance.tr("Reset"), this.buttonStyle);        
-        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);        
+    createSettingsPageButtons() {
+        var saveBtn = new ButtonWidget(this.instance.tr("Save"), this.buttonStyle);
+        var resetBtn = new ButtonWidget(this.instance.tr("Reset"), this.buttonStyle);
+        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);
         var gap = 40;
         var yy = 900;
         Widget.layoutButtons([saveBtn, resetBtn, backBtn], gap, yy);
@@ -318,15 +340,16 @@ var GameGUI = Base.extend({
         });
 
         backBtn.onClick(function() {
-            $("#settings-form-outer").hide();
+            document.getElementById('settings-form-outer').style.display = 'none';
             self.showGameLauncherPage();
         });
 
         return [saveBtn, resetBtn, backBtn];
-    },
-    createResultsPageButtons: function() {
-        var againBtn = new ButtonWidget(this.instance.tr("Run again"), this.buttonStyle);        
-        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);        
+    }
+
+    createResultsPageButtons() {
+        var againBtn = new ButtonWidget(this.instance.tr("Run again"), this.buttonStyle);
+        var backBtn = new ButtonWidget(this.instance.tr("Back"), this.buttonStyle);
         var gap = 40;
         var yy = 900;
         Widget.layoutButtons([againBtn, backBtn], gap, yy);
@@ -342,16 +365,18 @@ var GameGUI = Base.extend({
         });
 
         return [againBtn, backBtn];
-    },
-    createAbortButton: function() {
-        var abortBtn = new ButtonWidget(this.instance.tr("Exit"), {fontSize: 30, border: 15, anchor: "middle", radius: 20});        
+    }
+
+    createAbortButton() {
+        var abortBtn = new ButtonWidget(this.instance.tr("Exit"), {fontSize: 30, border: 15, anchor: "middle", radius: 20});
         abortBtn.setPosition(1000-abortBtn.w-10, 10);
         return abortBtn;
-    },
+    }
+
     /**
      *  Initializes the game widget abnd starts the game.
     */
-    startGame: function() {
+    startGame() {
         var self = this;
         console.log("Starting the game!");
         var game = new window[self.instance.app.app.gameClass](this.gameSettings);
@@ -369,7 +394,7 @@ var GameGUI = Base.extend({
         this.gameInstance = game;
         this.appgui.resetScene();
 
-        game.createGUI(r);                        
+        game.createGUI(r);
 
         var eo = game.embeddingOptions;
         console.log("Embedding options:", eo);
@@ -393,9 +418,10 @@ var GameGUI = Base.extend({
             console.log("Aborted!");
             self.showGameLauncherPage();
         });
-        game.start();                        
-    },
-    start: function() {
+        game.start();
+    }
+
+    start() {
         var self = this;
         self.loadScriptAndStyle().then(function() {
             console.log("GameGUI.start - script and style loaded!")
@@ -428,14 +454,19 @@ var GameGUI = Base.extend({
                 self.gameSettings = self.form.val();
                 self.doStart(self.gameSettings)
             })
-    
-        });        
-    },
-    doStart: function(settings) {
+
+        });
+    }
+
+    doStart(settings) {
         var self = this;
         self.gameSettings = settings
         self.form.val(settings);
         console.log("Using settings:", self.gameSettings);
         self.showGameLauncherPage();
     }
-});
+
+    static buttonStyle = {
+        fontSize: 30, border: 15, anchor: "middle", radius: 25
+    };
+}
