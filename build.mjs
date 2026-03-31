@@ -22,8 +22,6 @@ const root      = __dirname;
 // with cordova.js excluded (it stays as its own tag, loaded before the bundle).
 // ---------------------------------------------------------------------------
 const JS_FILES = [
-  'js/pouchdb-3.3.0.min.js',
-  'js/pouchdb.find.min.js',
   'js/hammer.min.js',
   'js/hammer-time.min.js',
   'js/underscore.string.js',
@@ -47,6 +45,7 @@ const JS_FILES = [
   'js/AppsGUI.js',
   'js/GameGUI.js',
   'js/Grid.js',
+  'js/KoteDB.js',
   'js/main.js',
 ];
 
@@ -91,37 +90,35 @@ const bundlePath = path.join(distDir, 'bundle.js');
 fs.writeFileSync(bundlePath, bundle, 'utf-8');
 console.log(`\n✓ dist/bundle.js  (${formatBytes(bundle.length)})`);
 
-// 2. Produce dist/index.html ------------------------------------------------
+// 2. Produce dist/index.php ------------------------------------------------
 //
-// Strategy: read the original index.html, strip out all the individual
-// <script> tags that are now covered by bundle.js, and add a single
-// <script src="bundle.js"> in their place.  cordova.js stays as-is.
+// Strategy: read index.php, strip the individual <script> tags covered by
+// bundle.js, and insert a single <script src="bundle.js">.  cordova.js and
+// the inline KOTE_PROFILE <script> block stay as-is.
 //
-console.log('\nGenerating dist/index.html…');
-let html = readFile('index.html');
+console.log('\nGenerating dist/index.php…');
+let html = readFile('index.php');
 
-// Remove every <script> tag whose src is one of the bundled files.
-// We match the full opening+closing pair so whitespace-only lines don't pile up.
+// Remove every <script> tag whose src is one of the bundled JS files.
 for (const file of JS_FILES) {
-  // Escape any regex-special characters in the file name
   const escaped = file.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const re = new RegExp(`[ \\t]*<script[^>]+src="${escaped}"[^>]*>\\s*</script>[ \\t]*\\n?`, 'g');
   html = html.replace(re, '');
 }
 
-// Insert the single bundle tag right before </body>
+// Insert the bundle tag right before </body>
 html = html.replace(
   '</body>',
   '        <script src="bundle.js"></script>\n    </body>',
 );
 
-const htmlPath = path.join(distDir, 'index.html');
+const htmlPath = path.join(distDir, 'index.php');
 fs.writeFileSync(htmlPath, html, 'utf-8');
-console.log(`✓ dist/index.html`);
+console.log(`✓ dist/index.php`);
 
 // 3. Summary ----------------------------------------------------------------
 const remaining = (html.match(/<script/g) || []).length;
 const bundledCount = JS_FILES.filter(f => fs.existsSync(path.join(root, f))).length;
 console.log(`\n  Bundled ${bundledCount} scripts → 1  (cordova.js kept separate)`);
-console.log(`  <script> tags remaining in dist/index.html: ${remaining}`);
+console.log(`  <script> tags remaining in dist/index.php: ${remaining}`);
 console.log('\nDone.\n');

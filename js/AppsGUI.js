@@ -6,7 +6,10 @@ class AppsGUI extends Base {
         console.log("AppsGUI.constructor", db, locale);
         var localeMap = {
             "en-US": "en",
-            "cs-CZ": "cz"
+            "cs-CZ": "cz",
+            "en":    "en",
+            "cz":    "cz",
+            "cs":    "cz"
         }
         var revLocaleMap = {
             "en": "en-US",
@@ -18,6 +21,9 @@ class AppsGUI extends Base {
             this.locale = localeMap[locale];
         }
         this.localeLong = revLocaleMap[this.locale];
+        // If the page was opened with ?lang=, that value takes priority over
+        // any language saved in the database (e.g. ?lang=cz always shows Czech).
+        this._forcedLocale = (typeof KOTE_LANG !== 'undefined' && KOTE_LANG) ? this.locale : null;
         this.page = 1;
         this.usertoken = usertoken;
         // TODO global object for debugging purposes
@@ -39,6 +45,10 @@ class AppsGUI extends Base {
         self.db.get(self.settingskey)
         .then(function(data) {
             console.log("Received data from DB!", data)
+            // ?lang= URL parameter always overrides saved language.
+            if (self._forcedLocale) {
+                data.settings = Object.assign({}, data.settings, { language: self._forcedLocale });
+            }
             self.doChangeLanguage(data.settings);
             self._makeConfigForm(data.settings)
             callback(data.settings)
